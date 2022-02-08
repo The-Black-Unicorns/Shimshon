@@ -57,7 +57,7 @@ public class TrajectoryFollowingCommand extends CommandBase {
     // waypoints.add(new Translation2d(1.5, 0.3));
 
     // trajectory = TrajectoryGenerator.generateTrajectory(initialPose, waypoints, endPose, config);
-    trajectory = PathPlanner.loadPath("New Path", DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND * 0.8, DrivetrainSubsystem.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED);
+    trajectory = PathPlanner.loadPath("Test path", DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND * 0.8, DrivetrainSubsystem.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED);
     trajectoryLength = (int)(trajectory.getTotalTimeSeconds() * 50);
     //Create holonomic controller
         
@@ -70,14 +70,14 @@ public class TrajectoryFollowingCommand extends CommandBase {
   {
     double kp = 1.5 + taranis.getRawAxis(4);
     SmartDashboard.putNumber("Kp", kp);
-    // kp = 0.9375;
+    kp = 0.9375;
     double kd = 0.5 + taranis.getRawAxis(5) * 0.5;
     SmartDashboard.putNumber("Kd", kd);
-    //kd = 0;
+    kd = 0;
 
     controller = new HolonomicDriveController(new PIDController(kp, kd, 0),
                                               new PIDController(kp, kd, 0),
-                                              new ProfiledPIDController(Constants.ROTATION_FOLLOWING_KP, 0, 0, new TrapezoidProfile.Constraints(Math.PI * 4, Math.PI * 1.4)));
+                                              new ProfiledPIDController(Constants.ROTATION_FOLLOWING_KP, 0, 0, new TrapezoidProfile.Constraints(Math.PI * 5, Math.PI * 4)));
 
 
     System.out.println("Called! Length: " + trajectoryLength);

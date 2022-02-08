@@ -23,7 +23,7 @@ public class DefaultDriveCommand extends CommandBase {
     @Override
     public void execute() {
         double sensitivity = input.getRawAxis(4) / 2 + 0.5;
-        sensitivity = 0.25;
+        // sensitivity = 0.25;
         SmartDashboard.putNumber("X", -input.getRawAxis(Constants.DRIVER_CONTROLLER_Y_AXIS_ID));
         SmartDashboard.putNumber("Y", input.getRawAxis(Constants.DRIVER_CONTROLLER_X_AXIS_ID));
         SmartDashboard.putNumber("Z", input.getRawAxis(Constants.DRIVER_CONTROLLER_Z_AXIS_ID));
@@ -59,7 +59,12 @@ public class DefaultDriveCommand extends CommandBase {
     }
 
     private double deadband(double value, double lowerLimit) {
-        return Math.abs(value) < lowerLimit ? 0 : value;
+        // return Math.abs(value) < lowerLimit ? 0 : value;
+        if (Math.abs(value) < lowerLimit){
+            return 0;
+        } else{
+            return (value - lowerLimit) / (1-lowerLimit);
+        }
     }
 
     public void changePID() {

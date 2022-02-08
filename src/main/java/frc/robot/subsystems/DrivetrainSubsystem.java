@@ -55,7 +55,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
             * SdsModuleConfigurations.MK4_L1.getDriveReduction() * SdsModuleConfigurations.MK4_L1.getWheelDiameter()
             * Math.PI;
 
-    public static final double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 2;
+    public static final double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 5;
     /**
      * The maximum angular velocity of the robot in radians per second.
      * <p>
@@ -146,28 +146,28 @@ public class DrivetrainSubsystem extends SubsystemBase {
         double steerkI = 0;
         double steerkD = 0.3;
         double steerKf = 0;
-        updatePID(12, steerkP, steerkI, steerkD, steerKf, NeutralMode.Brake);
-        updatePID(22, steerkP, steerkI, steerkD, steerKf, NeutralMode.Brake);
-        updatePID(32, steerkP, steerkI, steerkD, steerKf, NeutralMode.Brake);
-        updatePID(42, steerkP, steerkI, steerkD, steerKf, NeutralMode.Brake);
+        updateFalconPID(12, steerkP, steerkI, steerkD, steerKf, NeutralMode.Brake);
+        updateFalconPID(22, steerkP, steerkI, steerkD, steerKf, NeutralMode.Brake);
+        updateFalconPID(32, steerkP, steerkI, steerkD, steerKf, NeutralMode.Brake);
+        updateFalconPID(42, steerkP, steerkI, steerkD, steerKf, NeutralMode.Brake);
         double drivekP = 0.1;
         double drivekI = 0;
         double drivekD = 0.05;
         double drivekF = 0.05;
-        updatePID(11, drivekP, drivekI, drivekD, drivekF, NeutralMode.Brake);
-        updatePID(21, drivekP, drivekI, drivekD, drivekF, NeutralMode.Brake);
-        updatePID(31, drivekP, drivekI, drivekD, drivekF, NeutralMode.Brake);
-        updatePID(41, drivekP, drivekI, drivekD, drivekF, NeutralMode.Brake);
+        updateFalconPID(11, drivekP, drivekI, drivekD, drivekF, NeutralMode.Brake);
+        updateFalconPID(21, drivekP, drivekI, drivekD, drivekF, NeutralMode.Brake);
+        updateFalconPID(31, drivekP, drivekI, drivekD, drivekF, NeutralMode.Brake);
+        updateFalconPID(41, drivekP, drivekI, drivekD, drivekF, NeutralMode.Brake);
     }
 
     public void zeroGyroscope() {
         System.out.println("Zero!");
         m_pigeon.setFusedHeading(0.0);
-        m_pigeon.setYaw(0.0);
+
         // m_navx.zeroYaw();
 
         // Reset odometry angle
-        driveOdometry.resetPosition(new Pose2d(), getGyroscopeRotation());
+        driveOdometry.resetPosition(new Pose2d(5, 5, Rotation2d.fromDegrees(0)), getGyroscopeRotation());
     }
 
     public Rotation2d getGyroscopeRotation() {
@@ -242,7 +242,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         extraBrake = false;
     }
 
-    public static void updatePID(int talonCanID,double kP, double kI, double kD, double kF, NeutralMode neutralMode) {
+    public static void updateFalconPID(int talonCanID,double kP, double kI, double kD, double kF, NeutralMode neutralMode) {
         TalonFXConfiguration talonConfiguration = new TalonFXConfiguration();
         talonConfiguration.slot0.kP = kP;
         talonConfiguration.slot0.kI = kI;
