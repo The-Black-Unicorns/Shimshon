@@ -4,6 +4,9 @@ import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.swervedrivespecialties.swervelib.*;
+
+import org.opencv.core.Mat;
+
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 
 import static com.swervedrivespecialties.swervelib.ctre.CtreUtils.checkCtreError;
@@ -147,7 +150,7 @@ public final class Falcon500SteerControllerFactoryBuilder {
     }
 
     private static class ControllerImplementation implements SteerController {
-        private static final int ENCODER_RESET_ITERATIONS = 500;
+        private static final int ENCODER_RESET_ITERATIONS = 50000;
         private static final double ENCODER_RESET_MAX_ANGULAR_VELOCITY = Math.toRadians(0.5);
 
         private final TalonFX motor;
@@ -185,11 +188,12 @@ public final class Falcon500SteerControllerFactoryBuilder {
             // Sometimes (~5% of the time) when we initialize, the absolute encoder isn't fully set up, and we don't
             // end up getting a good reading. If we reset periodically this won't matter anymore.
             if (motor.getSelectedSensorVelocity() * motorEncoderVelocityCoefficient < ENCODER_RESET_MAX_ANGULAR_VELOCITY) {
-                if (++resetIteration >= ENCODER_RESET_ITERATIONS) {
+                double absoluteAngle = absoluteEncoder.getAbsoluteAngle();
+                if (++resetIteration >= ENCODER_RESET_ITERATIONS /*Math.abs(currentAngleRadians - absoluteAngle) > Math.toRadians(3.0)*/) {
                     resetIteration = 0;
-                    double absoluteAngle = absoluteEncoder.getAbsoluteAngle();
                     motor.setSelectedSensorPosition(absoluteAngle / motorEncoderPositionCoefficient);
                     currentAngleRadians = absoluteAngle;
+                    System.out.println((System.currentTimeMillis()) + " Updated!");
                 }
             } else {
                 resetIteration = 0;

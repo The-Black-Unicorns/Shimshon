@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
@@ -82,7 +83,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     // The important thing about how you configure your gyroscope is that rotating
     // the robot counter-clockwise should
     // cause the angle reading to increase until it wraps back over to zero.
-    private final PigeonIMU m_pigeon = new PigeonIMU(DRIVETRAIN_PIGEON_ID);
+//     private final PigeonIMU m_pigeon = new PigeonIMU(DRIVETRAIN_PIGEON_ID);
     // private final AHRS m_navx = new AHRS(SPI.Port.kMXP, (byte) 200); // NavX
     // connected over MXP
 
@@ -131,7 +132,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 Mk4SwerveModuleHelper.GearRatio.L1, FRONT_RIGHT_MODULE_DRIVE_MOTOR, FRONT_RIGHT_MODULE_STEER_MOTOR,
                 FRONT_RIGHT_MODULE_STEER_ENCODER, FRONT_RIGHT_MODULE_STEER_OFFSET);
         backLeftModule = Mk4SwerveModuleHelper.createFalcon500(
-                tab.getLayout("Back Left Module", BuiltInLayouts.kList).withSize(2, 4).withPosition(4, 0),
+                tab.getLayout("Back Left M      odule", BuiltInLayouts.kList).withSize(2, 4).withPosition(4, 0),
                 Mk4SwerveModuleHelper.GearRatio.L1, BACK_LEFT_MODULE_DRIVE_MOTOR, BACK_LEFT_MODULE_STEER_MOTOR,
                 BACK_LEFT_MODULE_STEER_ENCODER, BACK_LEFT_MODULE_STEER_OFFSET);
 
@@ -141,7 +142,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 BACK_RIGHT_MODULE_STEER_ENCODER, BACK_RIGHT_MODULE_STEER_OFFSET);
 
         driveOdometry = new SwerveDriveOdometry(kinematics, getGyroscopeRotation());
-        
+        //SET PID
         double steerkP = 0.4;
         double steerkI = 0;
         double steerkD = 0.3;
@@ -150,28 +151,35 @@ public class DrivetrainSubsystem extends SubsystemBase {
         updateFalconPID(22, steerkP, steerkI, steerkD, steerKf, NeutralMode.Brake);
         updateFalconPID(32, steerkP, steerkI, steerkD, steerKf, NeutralMode.Brake);
         updateFalconPID(42, steerkP, steerkI, steerkD, steerKf, NeutralMode.Brake);
-        double drivekP = 0.1;
+        double drivekP = 0.15;
         double drivekI = 0;
         double drivekD = 0.05;
         double drivekF = 0.05;
-        updateFalconPID(11, drivekP, drivekI, drivekD, drivekF, NeutralMode.Brake);
-        updateFalconPID(21, drivekP, drivekI, drivekD, drivekF, NeutralMode.Brake);
-        updateFalconPID(31, drivekP, drivekI, drivekD, drivekF, NeutralMode.Brake);
-        updateFalconPID(41, drivekP, drivekI, drivekD, drivekF, NeutralMode.Brake);
-    }
+        updateFalconPID(11, drivekP, drivekI, drivekD, drivekF, NeutralMode.Coast);
+        updateFalconPID(21, drivekP, drivekI, drivekD, drivekF, NeutralMode.Coast);
+        updateFalconPID(31, drivekP, drivekI, drivekD, drivekF, NeutralMode.Coast);
+        updateFalconPID(41, drivekP, drivekI, drivekD, drivekF, NeutralMode.Coast);
+        
+        //Pigeon status frames
+        // m_pigeon.setStatusFramePeriod(6, 10);
+        // m_pigeon.setStatusFramePeriod(11, 10);
+        // m_pigeon.setStatusFramePeriod(4, 10);
+
+}
 
     public void zeroGyroscope() {
         System.out.println("Zero!");
-        m_pigeon.setFusedHeading(0.0);
+        // m_pigeon.setFusedHeading(0.0);
 
         // m_navx.zeroYaw();
 
         // Reset odometry angle
-        driveOdometry.resetPosition(new Pose2d(5, 5, Rotation2d.fromDegrees(0)), getGyroscopeRotation());
+        driveOdometry.resetPosition(new Pose2d(0, 0, Rotation2d.fromDegrees(0)), getGyroscopeRotation());
     }
 
     public Rotation2d getGyroscopeRotation() {
-        return Rotation2d.fromDegrees(m_pigeon.getFusedHeading() * 1.00278552);
+        return Rotation2d.fromDegrees(0);
+        // return Rotation2d.fromDegrees(m_pigeon.getFusedHeading() * 1.00278552);
 
         // if (m_navx.isMagnetometerCalibrated()) {
         // return Rotation2d.fromDegrees(m_navx.getFusedHeading());
@@ -186,7 +194,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
 
-        SwerveModuleState[] states = kinematics.toSwerveModuleStates(m_chassisSpeeds, new Translation2d(0.00, 0.00));
+        SwerveModuleState[] states = kinematics.toSwerveModuleStates(m_chassisSpeeds, new Translation2d(0, 0));
         // SwerveDriveKinematics.normalizeWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
         driveWithModuleStates(states);
         updateOdometry();
@@ -253,6 +261,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
         TalonFX talon = new TalonFX(talonCanID);
         talon.configAllSettings(talonConfiguration);
         talon.setNeutralMode(neutralMode);
-
+        talon.setStatusFramePeriod(3, 255);
     }
 }

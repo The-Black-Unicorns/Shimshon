@@ -48,7 +48,7 @@ public class TrajectoryFollowingCommand extends CommandBase {
 
 
     //Create Trajectory
-    config = new TrajectoryConfig(DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND * 0.8, DrivetrainSubsystem.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED);
+    config = new TrajectoryConfig(DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND * 0.2, DrivetrainSubsystem.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED);
     config.setKinematics(drivetrainSubsystem.kinematics);
     // Pose2d initialPose = new Pose2d();
     // Pose2d endPose = new Pose2d(2, 0, new Rotation2d(0));
@@ -57,7 +57,7 @@ public class TrajectoryFollowingCommand extends CommandBase {
     // waypoints.add(new Translation2d(1.5, 0.3));
 
     // trajectory = TrajectoryGenerator.generateTrajectory(initialPose, waypoints, endPose, config);
-    trajectory = PathPlanner.loadPath("Test path", DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND * 0.8, DrivetrainSubsystem.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED);
+    trajectory = PathPlanner.loadPath("Test path", DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND * 0.2, DrivetrainSubsystem.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED);
     trajectoryLength = (int)(trajectory.getTotalTimeSeconds() * 50);
     //Create holonomic controller
         
@@ -77,7 +77,7 @@ public class TrajectoryFollowingCommand extends CommandBase {
 
     controller = new HolonomicDriveController(new PIDController(kp, kd, 0),
                                               new PIDController(kp, kd, 0),
-                                              new ProfiledPIDController(Constants.ROTATION_FOLLOWING_KP, 0, 0, new TrapezoidProfile.Constraints(Math.PI * 5, Math.PI * 4)));
+                                              new ProfiledPIDController(Constants.ROTATION_FOLLOWING_KP, 0, 0, new TrapezoidProfile.Constraints(Math.PI * 1, Math.PI * 4)));
 
 
     System.out.println("Called! Length: " + trajectoryLength);
