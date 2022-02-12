@@ -13,6 +13,7 @@ import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -26,241 +27,278 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 import static frc.robot.Constants.*;
 
-
 public class DrivetrainSubsystem extends SubsystemBase {
-    /**
-     * The maximum voltage that will be delivered to the drive motors.
-     * <p>
-     * This can be reduced to cap the robot's maximum speed. Typically, this is
-     * useful during initial testing of the robot.
-     */
-    public static final double MAX_VOLTAGE = 12.0;
-    // The formula for calculating the theoretical maximum velocity is:
-    // <Motor free speed RPM> / 60 * <Drive reduction> * <Wheel diameter meters> *
-    // pi
-    // By default this value is setup for a Mk3 standard module using Falcon500s to
-    // drive.
-    // An example of this constant for a Mk4 L2 module with NEOs to drive is:
-    // 5880.0 / 60.0 / SdsModuleConfigurations.MK4_L2.getDriveReduction() *
-    // SdsModuleConfigurations.MK4_L2.getWheelDiameter() * Math.PI
-    /**
-     * The maximum velocity of the robot in meters per second.
-     * <p>
-     * This is a measure of how fast the robot should be able to drive in a straight
-     * line.
-     */
-    public static final double MAX_VELOCITY_METERS_PER_SECOND = 6380.0 / 60.0
-            * SdsModuleConfigurations.MK4_L1.getDriveReduction() * SdsModuleConfigurations.MK4_L1.getWheelDiameter()
-            * Math.PI;
+        /**
+         * The maximum voltage that will be delivered to the drive motors.
+         * <p>
+         * This can be reduced to cap the robot's maximum speed. Typically, this is
+         * useful during initial testing of the robot.
+         */
+        public static final double MAX_VOLTAGE = 12.0;
+        // The formula for calculating the theoretical maximum velocity is:
+        // <Motor free speed RPM> / 60 * <Drive reduction> * <Wheel diameter meters> *
+        // pi
+        // By default this value is setup for a Mk3 standard module using Falcon500s to
+        // drive.
+        // An example of this constant for a Mk4 L2 module with NEOs to drive is:
+        // 5880.0 / 60.0 / SdsModuleConfigurations.MK4_L2.getDriveReduction() *
+        // SdsModuleConfigurations.MK4_L2.getWheelDiameter() * Math.PI
+        /**
+         * The maximum velocity of the robot in meters per second.
+         * <p>
+         * This is a measure of how fast the robot should be able to drive in a straight
+         * line.
+         */
+        public static final double MAX_VELOCITY_METERS_PER_SECOND = 6380.0 / 60.0
+                        * SdsModuleConfigurations.MK4_L1.getDriveReduction()
+                        * SdsModuleConfigurations.MK4_L1.getWheelDiameter()
+                        * Math.PI;
 
-    public static final double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 5;
-    /**
-     * The maximum angular velocity of the robot in radians per second.
-     * <p>
-     * This is a measure of how fast the robot can rotate in place.
-     * 
-     * // Here we calculate the theoretical maximum angular velocity. You can also
-     * // replace this with a measured amount.
-     **/
-    public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = MAX_VELOCITY_METERS_PER_SECOND
-            / Math.hypot(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0);
+        public static final double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 5;
+        /**
+         * The maximum angular velocity of the robot in radians per second.
+         * <p>
+         * This is a measure of how fast the robot can rotate in place.
+         * 
+         * // Here we calculate the theoretical maximum angular velocity. You can also
+         * // replace this with a measured amount.
+         **/
+        public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = MAX_VELOCITY_METERS_PER_SECOND
+                        / Math.hypot(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0);
 
-    public final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
-            // Front left
-            new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0),
-            // Front right
-            new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0),
-            // Back left
-            new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0),
-            // Back right
-            new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0));
+        public final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
+                        // Front left
+                        new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0),
+                        // Front right
+                        new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0),
+                        // Back left
+                        new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0),
+                        // Back right
+                        new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0));
 
-    // By default we use a Pigeon for our gyroscope. But if you use another
-    // gyroscope, like a NavX, you can change this.
-    // The important thing about how you configure your gyroscope is that rotating
-    // the robot counter-clockwise should
-    // cause the angle reading to increase until it wraps back over to zero.
-//     private final PigeonIMU m_pigeon = new PigeonIMU(DRIVETRAIN_PIGEON_ID);
-    // private final AHRS m_navx = new AHRS(SPI.Port.kMXP, (byte) 200); // NavX
-    // connected over MXP
+        // By default we use a Pigeon for our gyroscope. But if you use another
+        // gyroscope, like a NavX, you can change this.
+        // The important thing about how you configure your gyroscope is that rotating
+        // the robot counter-clockwise should
+        // cause the angle reading to increase until it wraps back over to zero.
+        private final PigeonIMU m_pigeon = new PigeonIMU(DRIVETRAIN_PIGEON_ID);
+        // private final AHRS m_navx = new AHRS(SPI.Port.kMXP, (byte) 200); // NavX
+        // connected over MXP
 
-    // These are our modules. We initialize them in the constructor.
-    private final SwerveModule frontLeftModule;
-    private final SwerveModule frontRightModule;
-    private final SwerveModule backLeftModule;
-    private final SwerveModule backRightModule;
+        // These are our modules. We initialize them in the constructor.
+        private final SwerveModule frontLeftModule;
+        private final SwerveModule frontRightModule;
+        private final SwerveModule backLeftModule;
+        private final SwerveModule backRightModule;
 
-    private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
+        private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
-    private SwerveDriveOdometry driveOdometry;
+        private SwerveDriveOdometry driveOdometry;
 
-    public Pose2d robotPose;
+        public Pose2d robotPose;
 
-    public boolean extraBrake = false;
+        public boolean extraBrake = false;
 
-    double angle = 0;
-    int count = 0;
-    double previousSpeed = 0;
+        double angle = 0;
+        int count = 0;
+        double previousSpeed = 0;
+        public double holdAngleSetpoint = Math.toRadians(0);
+        int fromRotationCounter = 0;
 
-    public DrivetrainSubsystem() {
-        ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
+        private PIDController holdRobotAngleController = new PIDController(Constants.ROBOT_HOLD_ANGLE_KP, 0, 0);
 
+        public DrivetrainSubsystem() {
+                ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
 
-        frontLeftModule = Mk4SwerveModuleHelper.createFalcon500(
-                // This parameter is optional, but will allow you to see the current state of
-                // the module on the dashboard.
+                frontLeftModule = Mk4SwerveModuleHelper.createFalcon500(
+                                // This parameter is optional, but will allow you to see the current state of
+                                // the module on the dashboard.
 
-                tab.getLayout("Front Left Module", BuiltInLayouts.kList).withSize(2, 4).withPosition(0, 0),
-                // This can either be STANDARD or FAST depending on your gear configuration
-                Mk4SwerveModuleHelper.GearRatio.L1,
-                // This is the ID of the drive motor
-                FRONT_LEFT_MODULE_DRIVE_MOTOR,
-                // This is the ID of the steer motor
-                FRONT_LEFT_MODULE_STEER_MOTOR,
-                // This is the ID of the steer encoder
-                FRONT_LEFT_MODULE_STEER_ENCODER,
-                // This is how much the steer encoder is offset from true zero (In our case,
-                // zero is facing straight forward)
-                FRONT_LEFT_MODULE_STEER_OFFSET);
+                                tab.getLayout("Front Left Module", BuiltInLayouts.kList).withSize(2, 4).withPosition(0,
+                                                0),
+                                // This can either be STANDARD or FAST depending on your gear configuration
+                                Mk4SwerveModuleHelper.GearRatio.L1,
+                                // This is the ID of the drive motor
+                                FRONT_LEFT_MODULE_DRIVE_MOTOR,
+                                // This is the ID of the steer motor
+                                FRONT_LEFT_MODULE_STEER_MOTOR,
+                                // This is the ID of the steer encoder
+                                FRONT_LEFT_MODULE_STEER_ENCODER,
+                                // This is how much the steer encoder is offset from true zero (In our case,
+                                // zero is facing straight forward)
+                                FRONT_LEFT_MODULE_STEER_OFFSET);
 
-        // We will do the same for the other modules
-        frontRightModule = Mk4SwerveModuleHelper.createFalcon500(
-                tab.getLayout("Front Right Module", BuiltInLayouts.kList).withSize(2, 4).withPosition(2, 0),
-                Mk4SwerveModuleHelper.GearRatio.L1, FRONT_RIGHT_MODULE_DRIVE_MOTOR, FRONT_RIGHT_MODULE_STEER_MOTOR,
-                FRONT_RIGHT_MODULE_STEER_ENCODER, FRONT_RIGHT_MODULE_STEER_OFFSET);
-        backLeftModule = Mk4SwerveModuleHelper.createFalcon500(
-                tab.getLayout("Back Left M      odule", BuiltInLayouts.kList).withSize(2, 4).withPosition(4, 0),
-                Mk4SwerveModuleHelper.GearRatio.L1, BACK_LEFT_MODULE_DRIVE_MOTOR, BACK_LEFT_MODULE_STEER_MOTOR,
-                BACK_LEFT_MODULE_STEER_ENCODER, BACK_LEFT_MODULE_STEER_OFFSET);
+                // We will do the same for the other modules
+                frontRightModule = Mk4SwerveModuleHelper.createFalcon500(
+                                tab.getLayout("Front Right Module", BuiltInLayouts.kList).withSize(2, 4).withPosition(2,
+                                                0),
+                                Mk4SwerveModuleHelper.GearRatio.L1, FRONT_RIGHT_MODULE_DRIVE_MOTOR,
+                                FRONT_RIGHT_MODULE_STEER_MOTOR,
+                                FRONT_RIGHT_MODULE_STEER_ENCODER, FRONT_RIGHT_MODULE_STEER_OFFSET);
+                backLeftModule = Mk4SwerveModuleHelper.createFalcon500(
+                                tab.getLayout("Back Left M      odule", BuiltInLayouts.kList).withSize(2, 4)
+                                                .withPosition(4, 0),
+                                Mk4SwerveModuleHelper.GearRatio.L1, BACK_LEFT_MODULE_DRIVE_MOTOR,
+                                BACK_LEFT_MODULE_STEER_MOTOR,
+                                BACK_LEFT_MODULE_STEER_ENCODER, BACK_LEFT_MODULE_STEER_OFFSET);
 
-        backRightModule = Mk4SwerveModuleHelper.createFalcon500(
-                tab.getLayout("Back Right Module", BuiltInLayouts.kList).withSize(2, 4).withPosition(6, 0),
-                Mk4SwerveModuleHelper.GearRatio.L1, BACK_RIGHT_MODULE_DRIVE_MOTOR, BACK_RIGHT_MODULE_STEER_MOTOR,
-                BACK_RIGHT_MODULE_STEER_ENCODER, BACK_RIGHT_MODULE_STEER_OFFSET);
+                backRightModule = Mk4SwerveModuleHelper.createFalcon500(
+                                tab.getLayout("Back Right Module", BuiltInLayouts.kList).withSize(2, 4).withPosition(6,
+                                                0),
+                                Mk4SwerveModuleHelper.GearRatio.L1, BACK_RIGHT_MODULE_DRIVE_MOTOR,
+                                BACK_RIGHT_MODULE_STEER_MOTOR,
+                                BACK_RIGHT_MODULE_STEER_ENCODER, BACK_RIGHT_MODULE_STEER_OFFSET);
 
-        driveOdometry = new SwerveDriveOdometry(kinematics, getGyroscopeRotation());
-        //SET PID
-        double steerkP = 0.4;
-        double steerkI = 0;
-        double steerkD = 0.3;
-        double steerKf = 0;
-        updateFalconPID(12, steerkP, steerkI, steerkD, steerKf, NeutralMode.Brake);
-        updateFalconPID(22, steerkP, steerkI, steerkD, steerKf, NeutralMode.Brake);
-        updateFalconPID(32, steerkP, steerkI, steerkD, steerKf, NeutralMode.Brake);
-        updateFalconPID(42, steerkP, steerkI, steerkD, steerKf, NeutralMode.Brake);
-        double drivekP = 0.15;
-        double drivekI = 0;
-        double drivekD = 0.05;
-        double drivekF = 0.05;
-        updateFalconPID(11, drivekP, drivekI, drivekD, drivekF, NeutralMode.Coast);
-        updateFalconPID(21, drivekP, drivekI, drivekD, drivekF, NeutralMode.Coast);
-        updateFalconPID(31, drivekP, drivekI, drivekD, drivekF, NeutralMode.Coast);
-        updateFalconPID(41, drivekP, drivekI, drivekD, drivekF, NeutralMode.Coast);
-        
-        //Pigeon status frames
-        // m_pigeon.setStatusFramePeriod(6, 10);
-        // m_pigeon.setStatusFramePeriod(11, 10);
-        // m_pigeon.setStatusFramePeriod(4, 10);
+                driveOdometry = new SwerveDriveOdometry(kinematics, getGyroscopeRotation());
+                // SET PID
+                double steerkP = 0.4;
+                double steerkI = 0;
+                double steerkD = 0.3;
+                double steerKf = 0;
+                updateFalconPID(12, steerkP, steerkI, steerkD, steerKf, NeutralMode.Brake);
+                updateFalconPID(22, steerkP, steerkI, steerkD, steerKf, NeutralMode.Brake);
+                updateFalconPID(32, steerkP, steerkI, steerkD, steerKf, NeutralMode.Brake);
+                updateFalconPID(42, steerkP, steerkI, steerkD, steerKf, NeutralMode.Brake);
+                double drivekP = 0.15;
+                double drivekI = 0;
+                double drivekD = 0.05;
+                double drivekF = 0.05;
+                updateFalconPID(11, drivekP, drivekI, drivekD, drivekF, NeutralMode.Coast);
+                updateFalconPID(21, drivekP, drivekI, drivekD, drivekF, NeutralMode.Coast);
+                updateFalconPID(31, drivekP, drivekI, drivekD, drivekF, NeutralMode.Coast);
+                updateFalconPID(41, drivekP, drivekI, drivekD, drivekF, NeutralMode.Coast);
 
-}
+                // Pigeon status frames
+                m_pigeon.setStatusFramePeriod(6, 10);
+                m_pigeon.setStatusFramePeriod(11, 10);
+                m_pigeon.setStatusFramePeriod(4, 10);
 
-    public void zeroGyroscope() {
-        System.out.println("Zero!");
-        // m_pigeon.setFusedHeading(0.0);
+                holdRobotAngleController.disableContinuousInput();
+                holdRobotAngleController.setTolerance(Math.toRadians(2));
+        }
 
-        // m_navx.zeroYaw();
+        public void zeroGyroscope() {
+                System.out.println("Zero!");
+                m_pigeon.setFusedHeading(90.0);
+                holdAngleSetpoint = 90;
+                // m_navx.zeroYaw();
 
-        // Reset odometry angle
-        driveOdometry.resetPosition(new Pose2d(0, 0, Rotation2d.fromDegrees(0)), getGyroscopeRotation());
-    }
+                // Reset odometry angle
+                driveOdometry.resetPosition(new Pose2d(5, 5, Rotation2d.fromDegrees(90)), getGyroscopeRotation());
+        }
 
-    public Rotation2d getGyroscopeRotation() {
-        return Rotation2d.fromDegrees(0);
-        // return Rotation2d.fromDegrees(m_pigeon.getFusedHeading() * 1.00278552);
+        public Rotation2d getGyroscopeRotation() {
+                // return Rotation2d.fromDegrees(0);
+                return Rotation2d.fromDegrees(m_pigeon.getFusedHeading() * 1.00278552);
 
-        // if (m_navx.isMagnetometerCalibrated()) {
-        // return Rotation2d.fromDegrees(m_navx.getFusedHeading());
-        // }
-        // return Rotation2d.fromDegrees(360.0 - m_navx.getYaw());
-    }
+                // if (m_navx.isMagnetometerCalibrated()) {
+                // return Rotation2d.fromDegrees(m_navx.getFusedHeading());
+                // }
+                // return Rotation2d.fromDegrees(360.0 - m_navx.getYaw());
+        }
 
-    public void drive(ChassisSpeeds chassisSpeeds) {
-        m_chassisSpeeds = chassisSpeeds;
-    }
+        public void drive(ChassisSpeeds chassisSpeeds) {
+                System.out.println(chassisSpeeds);
+                if (chassisSpeeds.omegaRadiansPerSecond == 0) {
+                        fromRotationCounter++;
+                        if ((chassisSpeeds.vxMetersPerSecond != 0 || chassisSpeeds.vyMetersPerSecond != 0) && fromRotationCounter >= 25) {
+                                chassisSpeeds.omegaRadiansPerSecond = holdRobotAngleController.calculate(getGyroscopeRotation().getRadians(), holdAngleSetpoint);
+                                System.out.println("Fix");
+                        }
 
-    @Override
-    public void periodic() {
+                } else {
+                        fromRotationCounter = 0;
+                        holdAngleSetpoint = getGyroscopeRotation().getRadians();
+                }
+                SmartDashboard.putNumber("Gyro position", getGyroscopeRotation().getDegrees());
+                SmartDashboard.putNumber("Hold Angle", Math.toDegrees(holdAngleSetpoint));
+                m_chassisSpeeds = chassisSpeeds;
+        }
 
-        SwerveModuleState[] states = kinematics.toSwerveModuleStates(m_chassisSpeeds, new Translation2d(0, 0));
-        // SwerveDriveKinematics.normalizeWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
-        driveWithModuleStates(states);
-        updateOdometry();
+        @Override
+        public void periodic() {
 
-        SmartDashboard.putNumber("Wheel sent speed", states[0].speedMetersPerSecond);
-        SmartDashboard.putNumber("Wheel sent Voltage", states[0].speedMetersPerSecond  / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE);
-        SmartDashboard.putNumber("Wheel measured speed", frontLeftModule.getDriveVelocity());
-        System.out.println("Pose is: " + robotPose.getX() + ",   " + robotPose.getY() +",   " + robotPose.getRotation().getDegrees() + ", " +  getGyroscopeRotation().getDegrees()%360);
+                SwerveModuleState[] states = kinematics.toSwerveModuleStates(m_chassisSpeeds, new Translation2d(0, 0));
+                // SwerveDriveKinematics.normalizeWheelSpeeds(states,
+                // MAX_VELOCITY_METERS_PER_SECOND);
+                driveWithModuleStates(states);
+                updateOdometry();
 
-    }
+                // SmartDashboard.putNumber("Wheel sent speed", states[0].speedMetersPerSecond);
+                // SmartDashboard.putNumber("Wheel sent Voltage", states[0].speedMetersPerSecond
+                // / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE);
+                // SmartDashboard.putNumber("Wheel measured speed",
+                // frontLeftModule.getDriveVelocity());
+                // System.out.println("Pose is: " + robotPose.getX() + ", " + robotPose.getY()
+                // +", " + robotPose.getRotation().getDegrees() + ", " +
+                // getGyroscopeRotation().getDegrees()%360);
 
-    private void driveWithModuleStates(SwerveModuleState[] states){
-        if (m_chassisSpeeds.vxMetersPerSecond != 0 || m_chassisSpeeds.vyMetersPerSecond != 0
-                || m_chassisSpeeds.omegaRadiansPerSecond != 0) {
-            frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
-                    states[0].angle.getRadians());
-            frontRightModule.set(states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
-                    states[1].angle.getRadians());
-            backLeftModule.set(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
-                    states[2].angle.getRadians());
-            backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
-                    states[3].angle.getRadians());
-        } else if (extraBrake) {
-            frontLeftModule.set(0, Math.toRadians(45));
-            frontRightModule.set(0, Math.toRadians(135));
-            backLeftModule.set(0, Math.toRadians(135));
-            backRightModule.set(0, Math.toRadians(45));
-        } else {
-            frontLeftModule.set(0, frontLeftModule.getSteerAngle());
-            frontRightModule.set(0, frontRightModule.getSteerAngle());
-            backLeftModule.set(0, backLeftModule.getSteerAngle());
-            backRightModule.set(0, backRightModule.getSteerAngle());
-        }    
-    }
+        }
 
-    private void updateOdometry (){
-        robotPose = driveOdometry.update(getGyroscopeRotation(),
-        new SwerveModuleState(frontLeftModule.getDriveVelocity(),
-                new Rotation2d(frontLeftModule.getSteerAngle())),
-        new SwerveModuleState(frontRightModule.getDriveVelocity(),
-                new Rotation2d(frontRightModule.getSteerAngle())),
-        new SwerveModuleState(backLeftModule.getDriveVelocity(),
-                new Rotation2d(backLeftModule.getSteerAngle())),
-        new SwerveModuleState(backRightModule.getDriveVelocity(),
-                new Rotation2d(backRightModule.getSteerAngle())));
-    }
+        private void driveWithModuleStates(SwerveModuleState[] states) {
+                if (m_chassisSpeeds.vxMetersPerSecond != 0 || m_chassisSpeeds.vyMetersPerSecond != 0
+                                || m_chassisSpeeds.omegaRadiansPerSecond != 0) {
+                        frontLeftModule.set(
+                                        states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
+                                        states[0].angle.getRadians());
+                        frontRightModule.set(
+                                        states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
+                                        states[1].angle.getRadians());
+                        backLeftModule.set(
+                                        states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
+                                        states[2].angle.getRadians());
+                        backRightModule.set(
+                                        states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
+                                        states[3].angle.getRadians());
+                } else if (extraBrake) {
+                        frontLeftModule.set(0, Math.toRadians(45));
+                        frontRightModule.set(0, Math.toRadians(135));
+                        backLeftModule.set(0, Math.toRadians(135));
+                        backRightModule.set(0, Math.toRadians(45));
+                } else {
+                        frontLeftModule.set(0, frontLeftModule.getSteerAngle());
+                        frontRightModule.set(0, frontRightModule.getSteerAngle());
+                        backLeftModule.set(0, backLeftModule.getSteerAngle());
+                        backRightModule.set(0, backRightModule.getSteerAngle());
+                }
+        }
 
-    public void enableExtraBrake() {
-        extraBrake = true;
-    }
+        private void updateOdometry() {
+                robotPose = driveOdometry.update(getGyroscopeRotation(),
+                                new SwerveModuleState(frontLeftModule.getDriveVelocity(),
+                                                new Rotation2d(frontLeftModule.getSteerAngle())),
+                                new SwerveModuleState(frontRightModule.getDriveVelocity(),
+                                                new Rotation2d(frontRightModule.getSteerAngle())),
+                                new SwerveModuleState(backLeftModule.getDriveVelocity(),
+                                                new Rotation2d(backLeftModule.getSteerAngle())),
+                                new SwerveModuleState(backRightModule.getDriveVelocity(),
+                                                new Rotation2d(backRightModule.getSteerAngle())));
+        }
 
-    public void disableExtraBrake() {
-        extraBrake = false;
-    }
+        public void enableExtraBrake() {
+                extraBrake = true;
+        }
 
-    public static void updateFalconPID(int talonCanID,double kP, double kI, double kD, double kF, NeutralMode neutralMode) {
-        TalonFXConfiguration talonConfiguration = new TalonFXConfiguration();
-        talonConfiguration.slot0.kP = kP;
-        talonConfiguration.slot0.kI = kI;
-        talonConfiguration.slot0.kD = kD;
-        talonConfiguration.slot0.kF = kF;
-        //System.out.println("kP = " + kP + ", kD = " + kD);
-        // Shuffleboard.getTab("Drivetrain").add("D",kD);
-        TalonFX talon = new TalonFX(talonCanID);
-        talon.configAllSettings(talonConfiguration);
-        talon.setNeutralMode(neutralMode);
-        talon.setStatusFramePeriod(3, 255);
-    }
+        public void disableExtraBrake() {
+                extraBrake = false;
+        }
+
+        public static void updateFalconPID(int talonCanID, double kP, double kI, double kD, double kF,
+                        NeutralMode neutralMode) {
+                TalonFXConfiguration talonConfiguration = new TalonFXConfiguration();
+                talonConfiguration.slot0.kP = kP;
+                talonConfiguration.slot0.kI = kI;
+                talonConfiguration.slot0.kD = kD;
+                talonConfiguration.slot0.kF = kF;
+                // System.out.println("kP = " + kP + ", kD = " + kD);
+                // Shuffleboard.getTab("Drivetrain").add("D",kD);
+                TalonFX talon = new TalonFX(talonCanID);
+                talon.configAllSettings(talonConfiguration);
+                talon.setNeutralMode(neutralMode);
+                talon.setStatusFramePeriod(3, 255);
+        }
 }

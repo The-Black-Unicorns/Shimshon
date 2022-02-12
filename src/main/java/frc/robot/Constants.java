@@ -66,4 +66,5 @@ public final class Constants {
     public static final double MOVEMENT_FOLLOWING_KP = 1.5;
     public static final double MOVEMENT_FOLLOWING_KD = 0;
     public static final double ROTATION_FOLLOWING_KP = 6;
+    public static final double ROBOT_HOLD_ANGLE_KP = 3;
 }

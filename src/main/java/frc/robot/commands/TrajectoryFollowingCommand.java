@@ -48,7 +48,7 @@ public class TrajectoryFollowingCommand extends CommandBase {
 
 
     //Create Trajectory
-    config = new TrajectoryConfig(DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND * 0.2, DrivetrainSubsystem.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED);
+    config = new TrajectoryConfig(DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND * 0.8, DrivetrainSubsystem.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED);
     config.setKinematics(drivetrainSubsystem.kinematics);
     // Pose2d initialPose = new Pose2d();
     // Pose2d endPose = new Pose2d(2, 0, new Rotation2d(0));
@@ -57,7 +57,7 @@ public class TrajectoryFollowingCommand extends CommandBase {
     // waypoints.add(new Translation2d(1.5, 0.3));
 
     // trajectory = TrajectoryGenerator.generateTrajectory(initialPose, waypoints, endPose, config);
-    trajectory = PathPlanner.loadPath("Test path", DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND * 0.2, DrivetrainSubsystem.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED);
+    trajectory = PathPlanner.loadPath("New Path", DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND * 0.8, DrivetrainSubsystem.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED);
     trajectoryLength = (int)(trajectory.getTotalTimeSeconds() * 50);
     //Create holonomic controller
         
