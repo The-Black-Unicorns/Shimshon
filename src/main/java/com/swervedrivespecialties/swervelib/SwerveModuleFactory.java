@@ -58,7 +58,7 @@ public class SwerveModuleFactory<DriveConfiguration, SteerConfiguration> {
         }
 
         @Override
-        public void set(double driveVoltage, double steerAngle) {
+        public void set(double driveVoltage, double steerAngle, boolean matchEncoder) {
             steerAngle %= (2.0 * Math.PI);
             if (steerAngle < 0.0) {
                 steerAngle += 2.0 * Math.PI;
@@ -88,7 +88,7 @@ public class SwerveModuleFactory<DriveConfiguration, SteerConfiguration> {
             }
 
             driveController.setReferenceVoltage(driveVoltage);
-            steerController.setReferenceAngle(steerAngle);
+            steerController.setReferenceAngle(steerAngle, matchEncoder);
         }
     }
 }

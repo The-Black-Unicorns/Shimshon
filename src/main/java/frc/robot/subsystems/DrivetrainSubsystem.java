@@ -16,6 +16,7 @@ import com.swervedrivespecialties.swervelib.SwerveModule;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -99,7 +100,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         private SwerveDriveOdometry driveOdometry;
 
-        public Pose2d robotPose;
+        public Pose2d robotPose = new Pose2d();
 
         public boolean extraBrake = false;
 
@@ -108,6 +109,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         double previousSpeed = 0;
         public double holdAngleSetpoint = Math.toRadians(0);
         int fromRotationCounter = 0;
+        boolean resetEncoder = false;
 
         private PIDController holdRobotAngleController = new PIDController(Constants.ROBOT_HOLD_ANGLE_KP, 0, 0);
 
@@ -183,12 +185,16 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         public void zeroGyroscope() {
                 System.out.println("Zero!");
-                m_pigeon.setFusedHeading(90.0);
-                holdAngleSetpoint = 90;
+                m_pigeon.setFusedHeading(0.0);
+                holdAngleSetpoint = Math.toRadians(0);
                 // m_navx.zeroYaw();
 
                 // Reset odometry angle
-                driveOdometry.resetPosition(new Pose2d(5, 5, Rotation2d.fromDegrees(90)), getGyroscopeRotation());
+                driveOdometry.resetPosition(new Pose2d(5, 5, Rotation2d.fromDegrees(0)), getGyroscopeRotation());
+        }
+
+        public void matchEncoders (){
+                resetEncoder = true;
         }
 
         public Rotation2d getGyroscopeRotation() {
@@ -202,12 +208,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
         }
 
         public void drive(ChassisSpeeds chassisSpeeds) {
-                System.out.println(chassisSpeeds);
                 if (chassisSpeeds.omegaRadiansPerSecond == 0) {
                         fromRotationCounter++;
                         if ((chassisSpeeds.vxMetersPerSecond != 0 || chassisSpeeds.vyMetersPerSecond != 0) && fromRotationCounter >= 25) {
                                 chassisSpeeds.omegaRadiansPerSecond = holdRobotAngleController.calculate(getGyroscopeRotation().getRadians(), holdAngleSetpoint);
-                                System.out.println("Fix");
                         }
 
                 } else {
@@ -233,10 +237,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 // / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE);
                 // SmartDashboard.putNumber("Wheel measured speed",
                 // frontLeftModule.getDriveVelocity());
-                // System.out.println("Pose is: " + robotPose.getX() + ", " + robotPose.getY()
-                // +", " + robotPose.getRotation().getDegrees() + ", " +
-                // getGyroscopeRotation().getDegrees()%360);
+                System.out.println("Pose is: " + robotPose.getX() + ", " + robotPose.getY()
+                +", " + robotPose.getRotation().getDegrees() + ", " +
+                getGyroscopeRotation().getDegrees()%360);
 
+                resetEncoder = false;
         }
 
         private void driveWithModuleStates(SwerveModuleState[] states) {
@@ -244,31 +249,33 @@ public class DrivetrainSubsystem extends SubsystemBase {
                                 || m_chassisSpeeds.omegaRadiansPerSecond != 0) {
                         frontLeftModule.set(
                                         states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
-                                        states[0].angle.getRadians());
+                                        states[0].angle.getRadians(), resetEncoder);
                         frontRightModule.set(
                                         states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
-                                        states[1].angle.getRadians());
+                                        states[1].angle.getRadians(), resetEncoder);
                         backLeftModule.set(
                                         states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
-                                        states[2].angle.getRadians());
+                                        states[2].angle.getRadians(), resetEncoder);
                         backRightModule.set(
                                         states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
-                                        states[3].angle.getRadians());
+                                        states[3].angle.getRadians(), resetEncoder);
                 } else if (extraBrake) {
-                        frontLeftModule.set(0, Math.toRadians(45));
-                        frontRightModule.set(0, Math.toRadians(135));
-                        backLeftModule.set(0, Math.toRadians(135));
-                        backRightModule.set(0, Math.toRadians(45));
+                        frontLeftModule.set(0, Math.toRadians(45), resetEncoder);
+                        frontRightModule.set(0, Math.toRadians(135), resetEncoder);
+                        backLeftModule.set(0, Math.toRadians(135), resetEncoder);
+                        backRightModule.set(0, Math.toRadians(45), resetEncoder);
                 } else {
-                        frontLeftModule.set(0, frontLeftModule.getSteerAngle());
-                        frontRightModule.set(0, frontRightModule.getSteerAngle());
-                        backLeftModule.set(0, backLeftModule.getSteerAngle());
-                        backRightModule.set(0, backRightModule.getSteerAngle());
+                        frontLeftModule.set(0, frontLeftModule.getSteerAngle(), resetEncoder);
+                        frontRightModule.set(0, frontRightModule.getSteerAngle(), resetEncoder);
+                        backLeftModule.set(0, backLeftModule.getSteerAngle(), resetEncoder);
+                        backRightModule.set(0, backRightModule.getSteerAngle(), resetEncoder);
                 }
         }
 
         private void updateOdometry() {
-                robotPose = driveOdometry.update(getGyroscopeRotation(),
+
+
+                Pose2d tempPose = driveOdometry.update(getGyroscopeRotation(),
                                 new SwerveModuleState(frontLeftModule.getDriveVelocity(),
                                                 new Rotation2d(frontLeftModule.getSteerAngle())),
                                 new SwerveModuleState(frontRightModule.getDriveVelocity(),
@@ -277,6 +284,24 @@ public class DrivetrainSubsystem extends SubsystemBase {
                                                 new Rotation2d(backLeftModule.getSteerAngle())),
                                 new SwerveModuleState(backRightModule.getDriveVelocity(),
                                                 new Rotation2d(backRightModule.getSteerAngle())));
+
+
+                double difference = tempPose.getX() - robotPose.getX();
+                if (difference > 0){
+                        difference = difference * (1 - (double)100/105);
+                        SmartDashboard.putNumber("dif",difference);
+
+                        SmartDashboard.putNumber("x before", tempPose.getX());
+                         Pose2d tempPose2 = tempPose.plus(new Transform2d(new Translation2d(-difference, 0), new Rotation2d()));
+                        SmartDashboard.putNumber("x after", tempPose2 .getX());
+                        tempPose = tempPose2;
+                }
+                driveOdometry.resetPosition(tempPose, getGyroscopeRotation());
+                robotPose = tempPose;
+        }
+
+        public void resetHoldAngle(){
+                 holdAngleSetpoint = getGyroscopeRotation().getRadians();
         }
 
         public void enableExtraBrake() {
@@ -299,6 +324,5 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 TalonFX talon = new TalonFX(talonCanID);
                 talon.configAllSettings(talonConfiguration);
                 talon.setNeutralMode(neutralMode);
-                talon.setStatusFramePeriod(3, 255);
         }
 }

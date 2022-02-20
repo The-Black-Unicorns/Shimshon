@@ -66,6 +66,9 @@ public class RobotContainer {
     
     new JoystickButton(controller, 2)
         .whenPressed(() -> CommandScheduler.getInstance().schedule(trajectoryCommand));
+    
+    new JoystickButton(controller, 4)
+        .whenPressed(() -> drivetrainSubsystem.matchEncoders());
 
   }
 
@@ -104,6 +107,9 @@ public class RobotContainer {
    */
 
   public void onEnable() {
+    drivetrainSubsystem.resetHoldAngle();
+    
+
     
   }
 

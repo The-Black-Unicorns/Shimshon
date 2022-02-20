@@ -13,6 +13,8 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
+    public static final int DEBUG_LEVEL = 1; // 1: last momants prints.      5:inside swerve stuff.
     /**
      * The left-to-right distance between the drivetrain wheels
      *

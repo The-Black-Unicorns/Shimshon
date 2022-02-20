@@ -24,9 +24,6 @@ public class DefaultDriveCommand extends CommandBase {
     public void execute() {
         double sensitivity = input.getRawAxis(4) / 2 + 0.5;
         // sensitivity = 0.25;
-        SmartDashboard.putNumber("X", -input.getRawAxis(Constants.DRIVER_CONTROLLER_Y_AXIS_ID));
-        SmartDashboard.putNumber("Y", input.getRawAxis(Constants.DRIVER_CONTROLLER_X_AXIS_ID));
-        SmartDashboard.putNumber("Z", input.getRawAxis(Constants.DRIVER_CONTROLLER_Z_AXIS_ID));
 
         // You can use `new ChassisSpeeds(...)` for robot-oriented movement instead of
         // field-oriented movement
@@ -63,7 +60,11 @@ public class DefaultDriveCommand extends CommandBase {
         if (Math.abs(value) < lowerLimit){
             return 0;
         } else{
+            if (value > 0){
             return (value - lowerLimit) / (1-lowerLimit);
+            } else {
+                return (value + lowerLimit) / (1-lowerLimit);
+            }
         }
     }
 

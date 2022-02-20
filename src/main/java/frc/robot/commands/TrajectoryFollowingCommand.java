@@ -57,7 +57,7 @@ public class TrajectoryFollowingCommand extends CommandBase {
     // waypoints.add(new Translation2d(1.5, 0.3));
 
     // trajectory = TrajectoryGenerator.generateTrajectory(initialPose, waypoints, endPose, config);
-    trajectory = PathPlanner.loadPath("New Path", DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND * 0.8, DrivetrainSubsystem.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED);
+    trajectory = PathPlanner.loadPath("Test path", DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND * 0.8, DrivetrainSubsystem.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED);
     trajectoryLength = (int)(trajectory.getTotalTimeSeconds() * 50);
     //Create holonomic controller
         
