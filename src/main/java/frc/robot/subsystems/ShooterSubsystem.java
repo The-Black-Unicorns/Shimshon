@@ -27,7 +27,7 @@ public class ShooterSubsystem extends SubsystemBase {
     kickerWheel775 = new TalonSRX(Constants.KICKER_WHEEL_TALONSRX_MOTOR);
 
     DrivetrainSubsystem.updateFalconPID(Constants.SHOOTER_TALONFX_MOTOR, 0, 0, 0, 0.05, NeutralMode.Coast);
-    falconUnitsTargetVelocity = Constants.SHOOTER_FLYWHEEL_RPM_HIGH_GOAL * 2048 / 600;
+    setShooterSpeed(Constants.SHOOTER_FLYWHEEL_RPM_HIGH_GOAL);
   }
 
   @Override
@@ -44,14 +44,24 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterSpinning = true;
   }
  
-  public void Shooting (){
+  public void shooting (){
     if (shooterSpinning && shooterReachedSpeed){
       kickerWheel775.set(ControlMode.PercentOutput, Constants.KICKER_WHEEL_PERCENT);
     } else if (shooterSpinning){
-      //wait
+      kickerWheel775.set(ControlMode.PercentOutput, 0);
+      //Wait
     } else{
       startFlywheel();
     }
+  }
+
+  public void stopShooter(){
+    shooterFalcon.set(ControlMode.PercentOutput, 0);
+    shooterSpinning = false;
+  }
+
+  public void setShooterSpeed(int rpmTarget){
+    falconUnitsTargetVelocity = rpmTarget * 2048 / 600;    
   }
 
   
