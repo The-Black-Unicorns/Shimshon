@@ -13,6 +13,11 @@ public class BallTeleopCommand extends CommandBase {
   BallSubsystem ballSubsystem;
   XboxController controller;
 
+  double triggerThreashold = 0.3;
+
+  private double previousRightTrigger;
+  private double previousLeftTrigger;
+
   public BallTeleopCommand(BallSubsystem subsystem, XboxController secondDriverController) {
 
     ballSubsystem = subsystem;
@@ -29,16 +34,68 @@ public class BallTeleopCommand extends CommandBase {
   @Override
   public void execute() 
   {
-    if (controller.getLeftBumperPressed()){
-      ballSubsystem.prepareForShootingInit();
-    } else if (controller.getLeftBumper()){
-      ballSubsystem.prepareForShootingPereodic();
+    double rightTrigger = controller.getRightTriggerAxis();
+    double leftTrigger = controller.getLeftTriggerAxis();
+
+
+    //Triggers detection
+    if (rightTrigger >= triggerThreashold && previousRightTrigger < triggerThreashold)
+    {
+      rightTriggerPressed();
     }
+    if (rightTrigger >= triggerThreashold && previousRightTrigger >= triggerThreashold)
+    {
+      rightTrigger();
+    }
+    if (rightTrigger < triggerThreashold && previousRightTrigger >= triggerThreashold){
+      rightTriggerReleased();
+    }
+    if (leftTrigger >= triggerThreashold && previousLeftTrigger < triggerThreashold)
+    {
+      leftTriggerPressed();
+    }
+    if (leftTrigger >= triggerThreashold && previousLeftTrigger >= triggerThreashold)
+    {
+      leftTrigger();
+    }
+    if (leftTrigger < triggerThreashold && previousLeftTrigger >= triggerThreashold){
+      leftTriggerReleased();
+    }
+    previousRightTrigger = rightTrigger;
+    previousLeftTrigger = leftTrigger;
 
 
-    if (controller.getRightTriggerAxis() >= 0.2){
-      ballSubsystem.shoot();
-    } else if (!controller.getLeftBumper()){
+
+  }
+
+  void rightTriggerPressed ()
+  {
+    
+  }
+
+  void rightTrigger ()
+  {
+    ballSubsystem.shoot();
+  }
+
+  void rightTriggerReleased(){
+    if (controller.getLeftTriggerAxis() < triggerThreashold){
+      ballSubsystem.stopShooter();
+    }
+  }
+
+  void leftTriggerPressed ()
+  {
+    ballSubsystem.prepareForShootingInit();
+  }
+
+  void leftTrigger ()
+  {
+    ballSubsystem.prepareForShootingPereodic();
+  }
+
+  void leftTriggerReleased(){
+    if (controller.getRightTriggerAxis() < triggerThreashold){
       ballSubsystem.stopShooter();
     }
   }

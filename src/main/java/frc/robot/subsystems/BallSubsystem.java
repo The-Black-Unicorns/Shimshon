@@ -12,7 +12,9 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -23,6 +25,7 @@ public class BallSubsystem extends SubsystemBase {
   TalonSRX conveyor775;
   TalonSRX intake775;
   DoubleSolenoid intakeSolenoid;
+  PowerDistribution pdp;
 
   int falconUnitsTargetVelocity;
   boolean shooterReachedSpeed;
@@ -30,6 +33,7 @@ public class BallSubsystem extends SubsystemBase {
   boolean ballAtBarrel = false;
   boolean intakeOpen = false;
   int framesSinceIntakeOpen = 0;
+  boolean shooterWarming = false;
 
   public BallSubsystem() 
   {
@@ -37,6 +41,7 @@ public class BallSubsystem extends SubsystemBase {
     conveyor775 = new TalonSRX(Constants.CONVEYOR_TALONSRX_MOTOR);
     intake775 = new TalonSRX(Constants.INTAKE_TALONSRX_MOTOR);
     intakeSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 6, 7);
+    pdp = new PowerDistribution(0, ModuleType.kCTRE);
 
     // DrivetrainSubsystem.updateFalconPID(Constants.SHOOTER_TALONFX_MOTOR, 0, 0, 0, 0.05, NeutralMode.Coast);
     setShooterSpeed(Constants.SHOOTER_FLYWHEEL_RPM_HIGH_GOAL);
@@ -61,13 +66,12 @@ public class BallSubsystem extends SubsystemBase {
 
   public void prepareForShootingInit(){
     closeIntake();
-    
+    shooterWarming = true;
     conveyor775.set(ControlMode.PercentOutput, Constants.CONVEYOR_SPEED_PERCENT_REVERSE);
     conveyorReverseTimer = Constants.CONVEYER_REVERSE_DURATION_FRAMES;
   }
 
   public void prepareForShootingPereodic(){
-    System.out.println(conveyorReverseTimer);
     if (conveyorReverseTimer == 0){
       shooterFalcon.set(ControlMode.Velocity, falconUnitsTargetVelocity);
       conveyor775.set(ControlMode.PercentOutput, 0);
@@ -84,13 +88,18 @@ public class BallSubsystem extends SubsystemBase {
     if (shooterReachedSpeed && !ballAtBarrel)
     {
       conveyor775.set(ControlMode.PercentOutput, Constants.CONVEYOR_SPEED_PERCENT);
-    }  
+    }  else if (!shooterWarming){
+      prepareForShootingInit();
+    } else{
+      prepareForShootingPereodic();
+    }
   }
 
   public void stopShooter (){
     if (!intakeOpen)
     conveyor775.set(ControlMode.PercentOutput, 0);
 
+    shooterWarming = false;
     shooterFalcon.set(ControlMode.PercentOutput, 0);
     conveyorReverseTimer = -1;
   }
@@ -113,7 +122,7 @@ public class BallSubsystem extends SubsystemBase {
       intakeSolenoid.set(Value.kOff);
     }
 
-    if (framesSinceIntakeOpen >= 50 && conveyor775.getSupplyCurrent() > 10){
+    if (framesSinceIntakeOpen >= 50 && pdp.getCurrent(1) > 10 && conveyorReverseTimer < 0){
       closeIntake();
     }
 
