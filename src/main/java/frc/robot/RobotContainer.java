@@ -4,17 +4,27 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.XboxController;
+
+import javax.swing.plaf.basic.BasicBorders.FieldBorder;
+
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.BallTeleopCommand;
 import frc.robot.commands.DefaultDriveCommand;
+import frc.robot.commands.TeleopKickerShooter;
 import frc.robot.commands.TrajectoryFollowingCommand;
+import frc.robot.subsystems.BallSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.ShooterKickerSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -29,22 +39,28 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 public class RobotContainer {
   // Subsystems
   private final DrivetrainSubsystem drivetrainSubsystem = new DrivetrainSubsystem();
+  // private final ShooterKickerSubsystem shooterSubsystem = new ShooterKickerSubsystem();
+  private final BallSubsystem ballSubsystem = new BallSubsystem();
   //Controllers
   private final Joystick controller = new Joystick(0);
+  private final XboxController secondDriverController = new XboxController(1);
   //Commands
   private final DefaultDriveCommand driveCommand = new DefaultDriveCommand(drivetrainSubsystem, controller);
   private final TrajectoryFollowingCommand trajectoryCommand = new TrajectoryFollowingCommand(drivetrainSubsystem, controller);
+  // private final TeleopKickerShooter teleopShooterCommand = new TeleopKickerShooter(shooterSubsystem, secondDriverController);
+  private final BallTeleopCommand ballTeleopCommand = new BallTeleopCommand(ballSubsystem, secondDriverController);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    // Set up the default command for the drivetrain.
-    // The controls are for field-oriented driving:
-    // Left stick Y axis -> forward and backwards movement
-    // Left stick X axis -> left and right movement
-    // Right stick X axis -> rotation
+
     drivetrainSubsystem.setDefaultCommand(driveCommand);
+    ballSubsystem.setDefaultCommand(ballTeleopCommand);
+
+    Compressor phCompressor = new Compressor(1, PneumaticsModuleType.REVPH);
+    phCompressor.enableDigital();
+    // phCompressor.disable(); 
 
     // Configure the button bindings
     configureButtonBindings();
@@ -69,6 +85,12 @@ public class RobotContainer {
     
     new JoystickButton(controller, 4)
         .whenPressed(() -> drivetrainSubsystem.matchEncoders());
+
+    new JoystickButton(secondDriverController, 1)
+        .whenPressed(() -> ballTeleopCommand.openIntake());
+    
+    new JoystickButton(secondDriverController, 2)
+        .whenPressed(() -> ballTeleopCommand.closeIntake());
 
   }
 

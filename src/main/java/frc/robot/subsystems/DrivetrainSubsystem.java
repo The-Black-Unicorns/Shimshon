@@ -237,9 +237,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 // / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE);
                 // SmartDashboard.putNumber("Wheel measured speed",
                 // frontLeftModule.getDriveVelocity());
-                System.out.println("Pose is: " + robotPose.getX() + ", " + robotPose.getY()
-                +", " + robotPose.getRotation().getDegrees() + ", " +
-                getGyroscopeRotation().getDegrees()%360);
+                // System.out.println("Pose is: " + robotPose.getX() + ", " + robotPose.getY()
+                // +", " + robotPose.getRotation().getDegrees() + ", " +
+                // getGyroscopeRotation().getDegrees()%360);
 
                 resetEncoder = false;
         }

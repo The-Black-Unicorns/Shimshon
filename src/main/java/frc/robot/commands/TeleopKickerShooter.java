@@ -6,15 +6,15 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.ShooterKickerSubsystem;
 
-public class TeleopShooter extends CommandBase {
+public class TeleopKickerShooter extends CommandBase {
 
-  ShooterSubsystem shooter;
+  ShooterKickerSubsystem shooter;
   XboxController secondDrivController;
 
   /** Creates a new teleopShooter. */
-  public TeleopShooter(ShooterSubsystem shooterSubsystem, XboxController controller) {
+  public TeleopKickerShooter(ShooterKickerSubsystem shooterSubsystem, XboxController controller) {
     // Use addRequirements() here to declare subsystem dependencies.
     secondDrivController = controller;
     shooter = shooterSubsystem;
@@ -35,6 +35,7 @@ public class TeleopShooter extends CommandBase {
       shooter.shooting();
     }else if (secondDrivController.getLeftTriggerAxis() >= 0.5){
       shooter.startFlywheel();
+      shooter.stopShooting();
     } else {
       shooter.stopShooter();
     }

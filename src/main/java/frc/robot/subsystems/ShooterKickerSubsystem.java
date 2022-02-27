@@ -12,7 +12,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-public class ShooterSubsystem extends SubsystemBase {
+public class ShooterKickerSubsystem extends SubsystemBase {
 
   TalonFX shooterFalcon;
   TalonSRX kickerWheel775;
@@ -21,7 +21,7 @@ public class ShooterSubsystem extends SubsystemBase {
   boolean shooterReachedSpeed;
   boolean shooterSpinning;
 
-  public ShooterSubsystem() 
+  public ShooterKickerSubsystem() 
   {
     shooterFalcon = new TalonFX(Constants.SHOOTER_TALONFX_MOTOR);
     kickerWheel775 = new TalonSRX(Constants.KICKER_WHEEL_TALONSRX_MOTOR);
@@ -57,7 +57,12 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void stopShooter(){
     shooterFalcon.set(ControlMode.PercentOutput, 0);
+    kickerWheel775.set(ControlMode.PercentOutput, 0);
     shooterSpinning = false;
+  }
+  
+  public void stopShooting(){
+    kickerWheel775.set(ControlMode.PercentOutput, 0);   
   }
 
   public void setShooterSpeed(int rpmTarget){
