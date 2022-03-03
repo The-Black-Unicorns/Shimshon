@@ -39,14 +39,20 @@ public class BallSubsystem extends SubsystemBase {
   public BallSubsystem() 
   {
     shooterFalcon = new TalonFX(Constants.SHOOTER_TALONFX_MOTOR);
-    conveyor775 = new TalonSRX(Constants.CONVEYOR_TALONSRX_MOTOR);
-    intake775 = new TalonSRX(Constants.INTAKE_TALONSRX_MOTOR);
+    try {
+      conveyor775 = new TalonSRX(Constants.CONVEYOR_TALONSRX_MOTOR);
+      intake775 = new TalonSRX(Constants.INTAKE_TALONSRX_MOTOR);
+    } finally {
+      System.out.println("No shooter");
+    }
+
     intakeSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 6, 7);
     pdp = new PowerDistribution(0, ModuleType.kCTRE);
 
     // DrivetrainSubsystem.updateFalconPID(Constants.SHOOTER_TALONFX_MOTOR, 0, 0, 0, 0.05, NeutralMode.Coast);
     setShooterSpeed(Constants.SHOOTER_FLYWHEEL_RPM);
     closeIntake();
+    stopShooter();
   }
 
   public void openIntake (){

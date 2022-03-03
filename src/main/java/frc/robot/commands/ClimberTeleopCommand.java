@@ -4,7 +4,6 @@
 
 package frc.robot.commands;
 
-import java.lang.ModuleLayer.Controller;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -33,8 +32,14 @@ public class ClimberTeleopCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    climberSubsystem.moveOutsideArm(-deadband(secondController.getLeftY(), 0.2));
-    climberSubsystem.moveInsideArm(deadband(mainController.getRawAxis(0), 0.2));
+    climberSubsystem.moveInsideArm(-deadband(secondController.getLeftY(), 0.2));
+    
+    if (!mainController.getRawButton(5))
+    {
+    climberSubsystem.moveOutsideArm(deadband(mainController.getRawAxis(2), 0.2));
+    } else {
+      climberSubsystem.moveOutsideArm(0);
+    }
   }
 
   // Called once the command ends or is interrupted.

@@ -28,7 +28,6 @@ public class TrajectoryFollowingCommand extends CommandBase {
   TrajectoryConfig config;
   PathPlannerTrajectory trajectory;
   HolonomicDriveController controller;
-  Joystick taranis;
 
   DrivetrainSubsystem driveTrain;
   //Frames
@@ -36,25 +35,16 @@ public class TrajectoryFollowingCommand extends CommandBase {
   //In frames
   int trajectoryLength;
   
-  public TrajectoryFollowingCommand(DrivetrainSubsystem drivetrainSubsystem, Joystick taraniscController) {
+  public TrajectoryFollowingCommand(DrivetrainSubsystem drivetrainSubsystem, String trajectoryName) {
     driveTrain = drivetrainSubsystem;
-    taranis = taraniscController;
     addRequirements(drivetrainSubsystem);
 
 
     //Create Trajectory
-    config = new TrajectoryConfig(DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND * 0.8, DrivetrainSubsystem.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED);
-    config.setKinematics(drivetrainSubsystem.kinematics);
-    // Pose2d initialPose = new Pose2d();
-    // Pose2d endPose = new Pose2d(2, 0, new Rotation2d(0));
-    // ArrayList<Translation2d> waypoints = new ArrayList<Translation2d>();
-    // waypoints.add(new Translation2d(0.75, -0.3));
-    // waypoints.add(new Translation2d(1.5, 0.3));
-
-    // trajectory = TrajectoryGenerator.generateTrajectory(initialPose, waypoints, endPose, config);
-    trajectory = PathPlanner.loadPath("Test path", DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND * 0.8, DrivetrainSubsystem.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED);
+    // config = new TrajectoryConfig(DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND * 0.8, DrivetrainSubsystem.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED);
+    // config.setKinematics(drivetrainSubsystem.kinematics);
+    trajectory = PathPlanner.loadPath(trajectoryName, DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND * 0.8, 3);
     trajectoryLength = (int)(trajectory.getTotalTimeSeconds() * 50);
-    //Create holonomic controller
         
   }
 
@@ -63,12 +53,8 @@ public class TrajectoryFollowingCommand extends CommandBase {
   @Override
   public void initialize() 
   {
-    double kp = 1.5 + taranis.getRawAxis(4);
-    SmartDashboard.putNumber("Kp", kp);
-    kp = 0.9375;
-    double kd = 0.5 + taranis.getRawAxis(5) * 0.5;
-    SmartDashboard.putNumber("Kd", kd);
-    kd = 0;
+    double kp = 0.9375;
+    double kd = 0;
 
     controller = new HolonomicDriveController(new PIDController(kp, kd, 0),
                                               new PIDController(kp, kd, 0),

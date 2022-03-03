@@ -24,6 +24,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
   DoubleSolenoid outsideSolenoid;
   DoubleSolenoid insideSolenoid;
+  DoubleSolenoid insideBrake;
 
   double sensorToMeterCoefficient = 1 * 0.05 * 0.03 * Math.PI;
   double outsideWinchMaxHeight = 0.3;
@@ -45,6 +46,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
     outsideSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 5, 8);
     insideSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 14, 15);
+    insideBrake = new DoubleSolenoid(PneumaticsModuleType.REVPH, 3, 4);
   }
 
   public void setOutsideSolenoid (boolean open){
@@ -80,21 +82,28 @@ public class ClimberSubsystem extends SubsystemBase {
   }
 
   public void moveOutsideArm(double value){
-  double armExtension = outsideEncoder.getPosition() * sensorToMeterCoefficient;
-  if (armExtension < outsideWinchMaxHeight && armExtension > outsideWinchMinHeight){
-    outsideWinch.set(value);
-  } else if (value < 0 && armExtension > outsideWinchMaxHeight)
-  {
-    outsideWinch.set(value);
-  } else if  (armExtension < outsideWinchMinHeight && value > 0){
-    outsideWinch.set(value);
-  } else{
-    outsideWinch.set(0);
-  }
+  // double armExtension = outsideEncoder.getPosition() * sensorToMeterCoefficient;
+  // if (armExtension < outsideWinchMaxHeight && armExtension > outsideWinchMinHeight){
+  //   outsideWinch.set(value);
+  // } else if (value < 0 && armExtension > outsideWinchMaxHeight)
+  // {
+  //   outsideWinch.set(value);
+  // } else if  (armExtension < outsideWinchMinHeight && value > 0){
+  //   outsideWinch.set(value);
+  // } else{
+  //   outsideWinch.set(0);
+  // }
+  outsideWinch.set(value);
 }
 
   public void moveInsideArm(double value){
     insideWinch.set(value);
+    if (value == 0){
+      insideBrake.set(Value.kForward);
+    } else {
+      insideBrake.set(Value.kReverse);
+    }
+    
   }
 
   @Override

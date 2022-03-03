@@ -43,7 +43,7 @@ public class RobotContainer {
   private final XboxController secondDriverController = new XboxController(1);
   //Commands
   private final DefaultDriveCommand driveCommand = new DefaultDriveCommand(drivetrainSubsystem, controller);
-  private final TrajectoryFollowingCommand trajectoryCommand = new TrajectoryFollowingCommand(drivetrainSubsystem, controller);
+  private final TrajectoryFollowingCommand trajectoryCommand = new TrajectoryFollowingCommand(drivetrainSubsystem, "Test path");
   private final BallTeleopCommand ballTeleopCommand = new BallTeleopCommand(ballSubsystem, secondDriverController);
   private final ClimberTeleopCommand climberCommand = new ClimberTeleopCommand(climberSubsystem, controller, secondDriverController);
 

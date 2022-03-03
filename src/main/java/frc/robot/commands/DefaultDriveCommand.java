@@ -1,7 +1,6 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
@@ -27,25 +26,30 @@ public class DefaultDriveCommand extends CommandBase {
 
         // You can use `new ChassisSpeeds(...)` for robot-oriented movement instead of
         // field-oriented movement
-        if (!input.getRawButton(3)) {
-            m_drivetrainSubsystem.drive(
+        if (input.getRawButton(5))
+        {
+            if (!input.getRawButton(3)) {
+                m_drivetrainSubsystem.drive(
 
-                    ChassisSpeeds.fromFieldRelativeSpeeds(
-                            deadband(input.getRawAxis(Constants.DRIVER_CONTROLLER_Y_AXIS_ID), 0.05) * sensitivity
-                                    * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-                            deadband(-input.getRawAxis(Constants.DRIVER_CONTROLLER_X_AXIS_ID), 0.05) * sensitivity
-                                    * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-                            deadband(-input.getRawAxis(Constants.DRIVER_CONTROLLER_Z_AXIS_ID), 0.05) * sensitivity
-                                    * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
-                            m_drivetrainSubsystem.getGyroscopeRotation()));
+                        ChassisSpeeds.fromFieldRelativeSpeeds(
+                                deadband(input.getRawAxis(Constants.DRIVER_CONTROLLER_Y_AXIS_ID), 0.05) * sensitivity
+                                        * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+                                deadband(-input.getRawAxis(Constants.DRIVER_CONTROLLER_X_AXIS_ID), 0.05) * sensitivity
+                                        * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+                                deadband(-input.getRawAxis(Constants.DRIVER_CONTROLLER_Z_AXIS_ID), 0.05) * sensitivity
+                                        * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
+                                m_drivetrainSubsystem.getGyroscopeRotation()));
+            } else {
+                m_drivetrainSubsystem.drive(new ChassisSpeeds(
+                        deadband(input.getRawAxis(Constants.DRIVER_CONTROLLER_Y_AXIS_ID), 0.05) * sensitivity
+                                * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+                        deadband(-input.getRawAxis(Constants.DRIVER_CONTROLLER_X_AXIS_ID), 0.05) * sensitivity
+                                * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+                        deadband(-input.getRawAxis(Constants.DRIVER_CONTROLLER_Z_AXIS_ID), 0.05) * sensitivity
+                                * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND));
+            }
         } else {
-            m_drivetrainSubsystem.drive(new ChassisSpeeds(
-                    deadband(input.getRawAxis(Constants.DRIVER_CONTROLLER_Y_AXIS_ID), 0.05) * sensitivity
-                            * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-                    deadband(-input.getRawAxis(Constants.DRIVER_CONTROLLER_X_AXIS_ID), 0.05) * sensitivity
-                            * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-                    deadband(-input.getRawAxis(Constants.DRIVER_CONTROLLER_Z_AXIS_ID), 0.05) * sensitivity
-                            * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND));
+            m_drivetrainSubsystem.drive(new ChassisSpeeds(0.0, 0.0, 0.0));
         }
 
     }
