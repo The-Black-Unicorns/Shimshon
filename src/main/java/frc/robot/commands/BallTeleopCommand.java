@@ -91,7 +91,6 @@ public class BallTeleopCommand extends CommandBase {
 
   void leftTrigger ()
   {
-    ballSubsystem.prepareForShootingPereodic();
   }
 
   void leftTriggerReleased(){

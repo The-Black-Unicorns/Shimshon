@@ -33,6 +33,7 @@ public class BallSubsystem extends SubsystemBase {
   boolean ballAtBarrel = false;
   boolean intakeOpen = false;
   int framesSinceIntakeOpen = 0;
+  int framesSinceIntakeClosed = 0;
   boolean shooterWarming = false;
 
   public BallSubsystem() 
@@ -44,16 +45,17 @@ public class BallSubsystem extends SubsystemBase {
     pdp = new PowerDistribution(0, ModuleType.kCTRE);
 
     // DrivetrainSubsystem.updateFalconPID(Constants.SHOOTER_TALONFX_MOTOR, 0, 0, 0, 0.05, NeutralMode.Coast);
-    setShooterSpeed(Constants.SHOOTER_FLYWHEEL_RPM_HIGH_GOAL);
+    setShooterSpeed(Constants.SHOOTER_FLYWHEEL_RPM);
+    closeIntake();
   }
 
   public void openIntake (){
     intakeOpen = true;
-    intake775.set(ControlMode.PercentOutput, Constants.INTAKE_SPEED_PERCENT);
+    ballAtBarrel = true;
     conveyor775.set(ControlMode.PercentOutput, Constants.CONVEYOR_SPEED_PERCENT);
     intakeSolenoid.set(Value.kForward);
-    ballAtBarrel = true;
     framesSinceIntakeOpen = 0;
+    framesSinceIntakeClosed = Integer.MIN_VALUE;
   }
 
   public void closeIntake(){
@@ -61,22 +63,18 @@ public class BallSubsystem extends SubsystemBase {
     conveyor775.set(ControlMode.PercentOutput, 0);
     intakeSolenoid.set(Value.kReverse);
     framesSinceIntakeOpen = Integer.MIN_VALUE;
+    framesSinceIntakeClosed = 0;
     intakeOpen = false;
   }
 
   public void prepareForShootingInit(){
+    if (intakeOpen)
     closeIntake();
+
     shooterWarming = true;
     conveyor775.set(ControlMode.PercentOutput, Constants.CONVEYOR_SPEED_PERCENT_REVERSE);
     conveyorReverseTimer = Constants.CONVEYER_REVERSE_DURATION_FRAMES;
-  }
-
-  public void prepareForShootingPereodic(){
-    if (conveyorReverseTimer == 0){
-      shooterFalcon.set(ControlMode.Velocity, falconUnitsTargetVelocity);
-      conveyor775.set(ControlMode.PercentOutput, 0);
-      ballAtBarrel = false;
-    }
+    shooterFalcon.set(ControlMode.PercentOutput, -0.4);
   }
 
   public void setShooterSpeed(int rpmTarget){
@@ -90,9 +88,7 @@ public class BallSubsystem extends SubsystemBase {
       conveyor775.set(ControlMode.PercentOutput, Constants.CONVEYOR_SPEED_PERCENT);
     }  else if (!shooterWarming){
       prepareForShootingInit();
-    } else{
-      prepareForShootingPereodic();
-    }
+    } 
   }
 
   public void stopShooter (){
@@ -106,27 +102,54 @@ public class BallSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+
+    //Checking if reached speed
     if (Math.abs(shooterFalcon.getSelectedSensorVelocity() - falconUnitsTargetVelocity) < Constants.SHOOTER_FLYWHEEL_RPM_ERROR * 2048 / 600){
       shooterReachedSpeed = true;
     } else {
       shooterReachedSpeed = false;
     }
+
+    //RPM on dashboard
     SmartDashboard.putNumber("RPM", shooterFalcon.getSelectedSensorVelocity() * 600 /2048);
 
-
-    if (framesSinceIntakeOpen == 10){
-      intakeSolenoid.set(Value.kReverse);
-    } else if (framesSinceIntakeOpen ==17){
-      intakeSolenoid.set(Value.kForward);
-    } else if (framesSinceIntakeOpen == 18){
-      intakeSolenoid.set(Value.kOff);
+    //Waiting to spin the intake
+    if (framesSinceIntakeOpen == 20 ){
+      intake775.set(ControlMode.PercentOutput, Constants.INTAKE_SPEED_PERCENT);
     }
 
-    if (framesSinceIntakeOpen >= 50 && pdp.getCurrent(1) > 10 && conveyorReverseTimer < 0){
+    //Soften intake open and close
+
+    // if (framesSinceIntakeOpen == 10){
+    //   intakeSolenoid.set(Value.kReverse);
+    // } else if (framesSinceIntakeOpen ==17){
+    //   intakeSolenoid.set(Value.kForward);
+    // } else if (framesSinceIntakeOpen == 18){
+    //   intakeSolenoid.set(Value.kOff);
+    // }
+    if (framesSinceIntakeClosed == 15){
+      intakeSolenoid.set(Value.kForward);
+
+    } else if (framesSinceIntakeClosed ==20){
+      intakeSolenoid.set(Value.kReverse);
+    } else if (framesSinceIntakeClosed == 21 ){
+      intakeSolenoid.set(Value.kReverse);
+    }
+
+    //Close intake when ball stuck
+    if (framesSinceIntakeOpen >= 50 && pdp.getCurrent(7) > 22 && conveyorReverseTimer < 0 && intakeOpen){
       closeIntake();
     }
 
+    //Stop warming up when finished warming up
+    if (conveyorReverseTimer == 0){
+      shooterFalcon.set(ControlMode.Velocity, falconUnitsTargetVelocity);
+      conveyor775.set(ControlMode.PercentOutput, 0);
+      ballAtBarrel = false;
+    }
+
     framesSinceIntakeOpen++;
+    framesSinceIntakeClosed++;
     conveyorReverseTimer--;
     
   }

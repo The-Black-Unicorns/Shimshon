@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
@@ -26,7 +25,6 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -218,8 +216,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
                         fromRotationCounter = 0;
                         holdAngleSetpoint = getGyroscopeRotation().getRadians();
                 }
-                SmartDashboard.putNumber("Gyro position", getGyroscopeRotation().getDegrees());
-                SmartDashboard.putNumber("Hold Angle", Math.toDegrees(holdAngleSetpoint));
+
                 m_chassisSpeeds = chassisSpeeds;
         }
 
@@ -274,7 +271,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         private void updateOdometry() {
 
-
+                //Updating the odometry
                 Pose2d tempPose = driveOdometry.update(getGyroscopeRotation(),
                                 new SwerveModuleState(frontLeftModule.getDriveVelocity(),
                                                 new Rotation2d(frontLeftModule.getSteerAngle())),
@@ -286,6 +283,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
                                                 new Rotation2d(backRightModule.getSteerAngle())));
 
 
+
+                //Compensation for field carpet grain
                 double difference = tempPose.getX() - robotPose.getX();
                 if (difference > 0){
                         difference = difference * (1 - (double)100/105);

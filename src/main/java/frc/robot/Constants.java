@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -63,13 +61,12 @@ public final class Constants {
     public static final int CONVEYOR_TALONSRX_MOTOR = 7;
     public static final int INTAKE_TALONSRX_MOTOR = 8;
     public static final double KICKER_WHEEL_PERCENT = 0.2;
-    public static final double CONVEYOR_SPEED_PERCENT = -0.5;
+    public static final double CONVEYOR_SPEED_PERCENT = -1;
     public static final double CONVEYOR_SPEED_PERCENT_REVERSE = 0.5;
-    public static final int CONVEYER_REVERSE_DURATION_FRAMES = 30; 
-    public static final double INTAKE_SPEED_PERCENT = -0.8;
-    public static final int SHOOTER_FLYWHEEL_RPM_LOW_GOAL = 2000;
-    public static final int SHOOTER_FLYWHEEL_RPM_HIGH_GOAL = 5500;
-    public static final int SHOOTER_FLYWHEEL_RPM_ERROR = 1000; 
+    public static final int CONVEYER_REVERSE_DURATION_FRAMES = 15; 
+    public static final double INTAKE_SPEED_PERCENT = -1;
+    public static final int SHOOTER_FLYWHEEL_RPM = 2000;
+    public static final int SHOOTER_FLYWHEEL_RPM_ERROR = 100; 
 
 
     public static final double SWERVE_ROTATION_KP  = 0.2;
