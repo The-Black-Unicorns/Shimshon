@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.BallSubsystem;
@@ -11,14 +12,14 @@ import frc.robot.subsystems.BallSubsystem;
 public class BallTeleopCommand extends CommandBase {
 
   BallSubsystem ballSubsystem;
-  XboxController controller;
+  PS4Controller controller;
 
   double triggerThreashold = 0.3;
 
   private double previousRightTrigger;
   private double previousLeftTrigger;
 
-  public BallTeleopCommand(BallSubsystem subsystem, XboxController secondDriverController) {
+  public BallTeleopCommand(BallSubsystem subsystem, PS4Controller secondDriverController) {
 
     ballSubsystem = subsystem;
     controller = secondDriverController;
@@ -34,8 +35,8 @@ public class BallTeleopCommand extends CommandBase {
   @Override
   public void execute() 
   {
-    double rightTrigger = controller.getRightTriggerAxis();
-    double leftTrigger = controller.getLeftTriggerAxis();
+    double rightTrigger = controller.getR2Axis();
+    double leftTrigger = controller.getL2Axis();
 
 
     //Triggers detection
@@ -79,7 +80,7 @@ public class BallTeleopCommand extends CommandBase {
   }
 
   void rightTriggerReleased(){
-    if (controller.getLeftTriggerAxis() < triggerThreashold){
+    if (controller.getL2Axis() < triggerThreashold){
       ballSubsystem.stopShooter();
     }
   }
@@ -94,7 +95,7 @@ public class BallTeleopCommand extends CommandBase {
   }
 
   void leftTriggerReleased(){
-    if (controller.getRightTriggerAxis() < triggerThreashold){
+    if (controller.getR2Axis() < triggerThreashold){
       ballSubsystem.stopShooter();
     }
   }

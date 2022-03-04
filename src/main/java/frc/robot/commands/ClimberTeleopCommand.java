@@ -6,18 +6,18 @@ package frc.robot.commands;
 
 
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ClimberSubsystem;
 
 public class ClimberTeleopCommand extends CommandBase {
 
   ClimberSubsystem climberSubsystem;
-  XboxController secondController;
+  PS4Controller secondController;
   Joystick mainController;
 
 
-  public ClimberTeleopCommand(ClimberSubsystem subsystem, Joystick taranis, XboxController controller) {
+  public ClimberTeleopCommand(ClimberSubsystem subsystem, Joystick taranis, PS4Controller controller) {
     climberSubsystem = subsystem;
     mainController = taranis;
     secondController = controller;

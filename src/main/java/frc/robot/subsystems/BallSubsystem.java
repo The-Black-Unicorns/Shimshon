@@ -5,12 +5,10 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -39,12 +37,10 @@ public class BallSubsystem extends SubsystemBase {
   public BallSubsystem() 
   {
     shooterFalcon = new TalonFX(Constants.SHOOTER_TALONFX_MOTOR);
-    try {
-      conveyor775 = new TalonSRX(Constants.CONVEYOR_TALONSRX_MOTOR);
-      intake775 = new TalonSRX(Constants.INTAKE_TALONSRX_MOTOR);
-    } finally {
-      System.out.println("No shooter");
-    }
+    
+    conveyor775 = new TalonSRX(Constants.CONVEYOR_TALONSRX_MOTOR);
+    intake775 = new TalonSRX(Constants.INTAKE_TALONSRX_MOTOR);
+    
 
     intakeSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 6, 7);
     pdp = new PowerDistribution(0, ModuleType.kCTRE);
@@ -58,7 +54,7 @@ public class BallSubsystem extends SubsystemBase {
   public void openIntake (){
     intakeOpen = true;
     ballAtBarrel = true;
-    conveyor775.set(ControlMode.PercentOutput, Constants.CONVEYOR_SPEED_PERCENT);
+    conveyor775.set(ControlMode.PercentOutput, Constants.CONVEYOR_SPEED_PERCENT_INTAKING);
     intakeSolenoid.set(Value.kForward);
     framesSinceIntakeOpen = 0;
     framesSinceIntakeClosed = Integer.MIN_VALUE;
@@ -87,11 +83,10 @@ public class BallSubsystem extends SubsystemBase {
     falconUnitsTargetVelocity = rpmTarget * 2048 / 600;    
   }
 
-  public void shoot()
-  {
+  public void shoot(){
     if (shooterReachedSpeed && !ballAtBarrel)
     {
-      conveyor775.set(ControlMode.PercentOutput, Constants.CONVEYOR_SPEED_PERCENT);
+      conveyor775.set(ControlMode.PercentOutput, Constants.CONVEYOR_SPEED_PERCENT_SHOOTING);
     }  else if (!shooterWarming){
       prepareForShootingInit();
     } 
@@ -104,6 +99,12 @@ public class BallSubsystem extends SubsystemBase {
     shooterWarming = false;
     shooterFalcon.set(ControlMode.PercentOutput, 0);
     conveyorReverseTimer = -1;
+  }
+
+  public void startSpittingShooter(){
+    stopShooter();
+    conveyor775.set(ControlMode.PercentOutput, Constants.CONVEYOR_SPEED_PERCENT_INTAKING);
+    shooterFalcon.set(ControlMode.PercentOutput, 500 * 2048 / 600);
   }
 
   @Override

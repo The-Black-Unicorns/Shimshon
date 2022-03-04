@@ -26,13 +26,15 @@ public class Auto1BallSystems extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
-    switch (counter){
-      case 10:
-        ballSubsystem.shoot();
-      
+    
+    if (counter < 75){
+      ballSubsystem.shoot();
+    } else if (counter == 75){
+      ballSubsystem.stopShooter();
+      ballSubsystem.openIntake();
+    } else if (counter == 150){
+      ballSubsystem.closeIntake();
     }
-
     counter++;
   }
 
@@ -43,6 +45,6 @@ public class Auto1BallSystems extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return counter == 750;
   }
 }

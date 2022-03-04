@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.XboxController;
 
@@ -15,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.Auto1BallLeft;
 import frc.robot.commands.BallTeleopCommand;
 import frc.robot.commands.ClimberTeleopCommand;
 import frc.robot.commands.DefaultDriveCommand;
@@ -40,12 +42,15 @@ public class RobotContainer {
   private final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
   //Controllers
   private final Joystick controller = new Joystick(0);
-  private final XboxController secondDriverController = new XboxController(1);
+  private final PS4Controller secondDriverController = new PS4Controller(1);
   //Commands
   private final DefaultDriveCommand driveCommand = new DefaultDriveCommand(drivetrainSubsystem, controller);
   private final TrajectoryFollowingCommand trajectoryCommand = new TrajectoryFollowingCommand(drivetrainSubsystem, "Test path");
   private final BallTeleopCommand ballTeleopCommand = new BallTeleopCommand(ballSubsystem, secondDriverController);
   private final ClimberTeleopCommand climberCommand = new ClimberTeleopCommand(climberSubsystem, controller, secondDriverController);
+
+  //Autonomus Commands
+  private final Auto1BallLeft auto1BallLeft = new Auto1BallLeft(ballSubsystem, drivetrainSubsystem, "1 Ball Auto Blue Left", "1 Ball Auto Red Left");
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -75,7 +80,7 @@ public class RobotContainer {
     // Back button zeros the gyroscope
     new JoystickButton(controller, 1)
         // No requirements because we don't need to interrupt anything
-        .whenPressed(() -> drivetrainSubsystem.zeroGyroscope());
+        .whenPressed(() -> drivetrainSubsystem.zeroPosition());
     
     new JoystickButton(controller, 2)
         .whenPressed(() -> CommandScheduler.getInstance().schedule(trajectoryCommand));
@@ -83,16 +88,16 @@ public class RobotContainer {
     new JoystickButton(controller, 4)
         .whenPressed(() -> drivetrainSubsystem.matchEncoders());
 
-    new JoystickButton(secondDriverController, 1)
+    new JoystickButton(secondDriverController, PS4Controller.Button.kCross.value)
         .whenPressed(() -> ballTeleopCommand.openIntake());
     
-    new JoystickButton(secondDriverController, 2)
+    new JoystickButton(secondDriverController, PS4Controller.Button.kCircle.value)
         .whenPressed(() -> ballTeleopCommand.closeIntake());
 
-    new JoystickButton(secondDriverController, XboxController.Button.kRightBumper.value)
+    new JoystickButton(secondDriverController, PS4Controller.Button.kL1.value)
         .whenPressed(() -> climberSubsystem.toggleOutsideSolenoid());
     
-    new JoystickButton(secondDriverController, XboxController.Button.kLeftBumper.value)
+    new JoystickButton(secondDriverController, PS4Controller.Button.kR1.value)
         .whenPressed(() -> climberSubsystem.toggleInsideSolenoid());
   }
 
@@ -103,7 +108,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return new InstantCommand();
+    return auto1BallLeft;
   }
 
   /*
@@ -139,5 +144,9 @@ public class RobotContainer {
 
   public void onDisable() {
 
+  }
+
+  public void updateGyroAngle(){
+    drivetrainSubsystem.updateGyroAngle();
   }
 }

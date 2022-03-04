@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -43,7 +44,7 @@ public class TrajectoryFollowingCommand extends CommandBase {
     //Create Trajectory
     // config = new TrajectoryConfig(DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND * 0.8, DrivetrainSubsystem.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED);
     // config.setKinematics(drivetrainSubsystem.kinematics);
-    trajectory = PathPlanner.loadPath(trajectoryName, DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND * 0.8, 3);
+    trajectory = PathPlanner.loadPath(trajectoryName, DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND * 0.2, 2);
     trajectoryLength = (int)(trajectory.getTotalTimeSeconds() * 50);
         
   }
@@ -63,6 +64,12 @@ public class TrajectoryFollowingCommand extends CommandBase {
 
     System.out.println("Called! Length: " + trajectoryLength);
     counter = 0;
+
+    Trajectory.State goal = trajectory.sample(0);
+    PathPlannerState headingGoal = (PathPlannerState) trajectory.sample(0);
+    Pose2d startingPose = new Pose2d(goal.poseMeters.getX(), goal.poseMeters.getY(), headingGoal.holonomicRotation);
+    
+    driveTrain.zeroPosition(startingPose);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -70,11 +77,9 @@ public class TrajectoryFollowingCommand extends CommandBase {
   public void execute() 
   {
       Trajectory.State goal = trajectory.sample(counter * 0.02);
-      SmartDashboard.putNumber("Trajectory Speed", goal.velocityMetersPerSecond);
       PathPlannerState headingGoal = (PathPlannerState) trajectory.sample(counter * 0.02);
 
       ChassisSpeeds movement = controller.calculate(driveTrain.robotPose, goal, Rotation2d.fromDegrees(headingGoal.holonomicRotation.getDegrees()));
-      SmartDashboard.putNumber("Controller Speed", movement.vxMetersPerSecond);
       //System.out.println(movement);
       driveTrain.drive(movement);
 
@@ -83,7 +88,9 @@ public class TrajectoryFollowingCommand extends CommandBase {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    driveTrain.drive(new ChassisSpeeds(0, 0, 0));
+  }
 
   // Returns true when the command should end.
   @Override
