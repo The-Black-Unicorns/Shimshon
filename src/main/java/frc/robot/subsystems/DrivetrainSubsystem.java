@@ -68,15 +68,19 @@ public class DrivetrainSubsystem extends SubsystemBase {
     public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = MAX_VELOCITY_METERS_PER_SECOND
             / Math.hypot(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0);
 
-    public final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
+    public SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
             // Front left
-            new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0),
+            new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
+                    DRIVETRAIN_WHEELBASE_METERS / 2.0),
             // Front right
-            new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0),
+            new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
+                    -DRIVETRAIN_WHEELBASE_METERS / 2.0),
             // Back left
-            new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0),
+            new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
+                    DRIVETRAIN_WHEELBASE_METERS / 2.0),
             // Back right
-            new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0));
+            new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
+                    -DRIVETRAIN_WHEELBASE_METERS / 2.0));;
 
     // By default we use a Pigeon for our gyroscope. But if you use another
     // gyroscope, like a NavX, you can change this.
@@ -156,6 +160,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 BACK_RIGHT_MODULE_STEER_MOTOR,
                 BACK_RIGHT_MODULE_STEER_ENCODER, BACK_RIGHT_MODULE_STEER_OFFSET);
 
+        updateGyroAngle();
+
         driveOdometry = new SwerveDriveOdometry(kinematics, getGyroscopeRotation());
         // SET PID
         double steerkP = 0.4;
@@ -210,14 +216,14 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     public void updateGyroAngle() {
         gyroAngle = Rotation2d.fromDegrees(m_pigeon.getFusedHeading() * 1.00278552);
-        System.out.println(callsPerLoop);
-        callsPerLoop = 0;
+        // System.out.println(callsPerLoop);
+        // callsPerLoop = 0;
     }
 
     public Rotation2d getGyroscopeRotation() {
         // return Rotation2d.fromDegrees(0);
         // return Rotation2d.fromDegrees(m_pigeon.getFusedHeading() * 1.00278552);
-        callsPerLoop++;
+        // callsPerLoop++;
         return gyroAngle;
         // if (m_navx.isMagnetometerCalibrated()) {
         // return Rotation2d.fromDegrees(m_navx.getFusedHeading());
@@ -344,5 +350,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
         TalonFX talon = new TalonFX(talonCanID);
         talon.configAllSettings(talonConfiguration);
         talon.setNeutralMode(neutralMode);
+        talon.setStatusFramePeriod(1, 20);
     }
 }
