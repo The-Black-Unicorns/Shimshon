@@ -21,6 +21,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -115,7 +117,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private PIDController holdRobotAngleController = new PIDController(Constants.ROBOT_HOLD_ANGLE_KP, 0, 0);
 
     private Rotation2d gyroAngle;
-
+    private boolean compensationDirection;
     private int callsPerLoop = 0;
 
     public DrivetrainSubsystem() {
@@ -188,6 +190,13 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         holdRobotAngleController.disableContinuousInput();
         holdRobotAngleController.setTolerance(Math.toRadians(2));
+
+        if (DriverStation.getAlliance() == Alliance.Red) {
+            compensationDirection = true;
+        } else {
+            compensationDirection = false;
+        }
+        compensationDirection = compensationDirection ^ Constants.INVERT_COMPENSATION;
     }
 
     public void zeroPosition() {
@@ -311,18 +320,25 @@ public class DrivetrainSubsystem extends SubsystemBase {
                         new Rotation2d(backRightModule.getSteerAngle())));
 
         // Compensation for field carpet grain
-        double difference = tempPose.getX() - robotPose.getX();
-        if (difference > 0) {
-            difference = difference * (1 - (double) 100 / 105);
-            SmartDashboard.putNumber("dif", difference);
+        if (Constants.CARPET_COMPENSATION) {
+            double difference = tempPose.getX() - robotPose.getX();
+            if (difference > 0 && compensationDirection) {
+                difference = difference * (1 - (double) 100 / 105);
 
-            SmartDashboard.putNumber("x before", tempPose.getX());
-            Pose2d tempPose2 = tempPose
-                    .plus(new Transform2d(new Translation2d(-difference, 0), new Rotation2d()));
-            SmartDashboard.putNumber("x after", tempPose2.getX());
-            tempPose = tempPose2;
+                Pose2d tempPose2 = tempPose
+                        .plus(new Transform2d(new Translation2d(-difference, 0),
+                                new Rotation2d()));
+                tempPose = tempPose2;
+            } else if (difference < 0 && !compensationDirection) {
+                difference = difference * (1 - (double) 100 / 105);
+
+                Pose2d tempPose2 = tempPose
+                        .plus(new Transform2d(new Translation2d(difference, 0),
+                                new Rotation2d()));
+                tempPose = tempPose2;
+            }
+            driveOdometry.resetPosition(tempPose, getGyroscopeRotation());
         }
-        driveOdometry.resetPosition(tempPose, getGyroscopeRotation());
         robotPose = tempPose;
     }
 

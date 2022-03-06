@@ -10,13 +10,15 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.XboxController;
-
-
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.Auto1BallLeft;
+import frc.robot.commands.Auto2Ball;
+import frc.robot.commands.Auto3Ball;
 import frc.robot.commands.BallTeleopCommand;
 import frc.robot.commands.ClimberTeleopCommand;
 import frc.robot.commands.DefaultDriveCommand;
@@ -45,13 +47,16 @@ public class RobotContainer {
   private final PS4Controller secondDriverController = new PS4Controller(1);
   //Commands
   private final DefaultDriveCommand driveCommand = new DefaultDriveCommand(drivetrainSubsystem, controller);
-  private final TrajectoryFollowingCommand trajectoryCommand = new TrajectoryFollowingCommand(drivetrainSubsystem, "Test path");
   private final BallTeleopCommand ballTeleopCommand = new BallTeleopCommand(ballSubsystem, secondDriverController);
   private final ClimberTeleopCommand climberCommand = new ClimberTeleopCommand(climberSubsystem, controller, secondDriverController);
 
   //Autonomus Commands
-  private final Auto1BallLeft auto1BallLeft = new Auto1BallLeft(ballSubsystem, drivetrainSubsystem, "1 Ball Auto Blue Left", "1 Ball Auto Red Left");
-
+  private final Auto1BallLeft auto1BallLeft = new Auto1BallLeft(ballSubsystem, drivetrainSubsystem, "1 Ball Auto Blue Left", "1 Ball Auto Red Left", 0.5);
+  private final Auto3Ball auto3Ball = new Auto3Ball(ballSubsystem, drivetrainSubsystem, "3 Ball Auto Red", "3 Ball Auto Red", 0.3);
+  private final Auto2Ball auto2Ball = new Auto2Ball(ballSubsystem, drivetrainSubsystem, "2 Ball Auto Red", "2 Ball Auto Red", 0.2);
+ 
+  SendableChooser<Command> autoChooser =  new SendableChooser<>();
+ 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -60,9 +65,19 @@ public class RobotContainer {
     drivetrainSubsystem.setDefaultCommand(driveCommand);
     ballSubsystem.setDefaultCommand(ballTeleopCommand);
     climberSubsystem.setDefaultCommand(climberCommand);
+
+    //Enable or disable compressor
     Compressor phCompressor = new Compressor(1, PneumaticsModuleType.REVPH);
     phCompressor.enableDigital();
     // phCompressor.disable();
+
+    //Autonomus Chooser
+    autoChooser.setDefaultOption("1 Ball Left", auto1BallLeft);
+    autoChooser.addOption("2 Ball", auto2Ball);
+    autoChooser.addOption("3 Ball", auto3Ball);
+
+    SmartDashboard.putData(autoChooser);
+    
 
     // Configure the button bindings
     configureButtonBindings();
@@ -81,9 +96,7 @@ public class RobotContainer {
     new JoystickButton(controller, 1)
         // No requirements because we don't need to interrupt anything
         .whenPressed(() -> drivetrainSubsystem.zeroPosition());
-    
-    new JoystickButton(controller, 2)
-        .whenPressed(() -> CommandScheduler.getInstance().schedule(trajectoryCommand));
+  
     
     new JoystickButton(controller, 4)
         .whenPressed(() -> drivetrainSubsystem.matchEncoders());
@@ -108,7 +121,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return auto1BallLeft;
+    return autoChooser.getSelected();
   }
 
   /*

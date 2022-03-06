@@ -36,7 +36,7 @@ public class TrajectoryFollowingCommand extends CommandBase {
   //In frames
   int trajectoryLength;
   
-  public TrajectoryFollowingCommand(DrivetrainSubsystem drivetrainSubsystem, String trajectoryName) {
+  public TrajectoryFollowingCommand(DrivetrainSubsystem drivetrainSubsystem, String trajectoryName, double speedMultiplier) {
     driveTrain = drivetrainSubsystem;
     addRequirements(drivetrainSubsystem);
 
@@ -44,7 +44,7 @@ public class TrajectoryFollowingCommand extends CommandBase {
     //Create Trajectory
     // config = new TrajectoryConfig(DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND * 0.8, DrivetrainSubsystem.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED);
     // config.setKinematics(drivetrainSubsystem.kinematics);
-    trajectory = PathPlanner.loadPath(trajectoryName, DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND * 0.2, 2);
+    trajectory = PathPlanner.loadPath(trajectoryName, DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND * speedMultiplier, 3);
     trajectoryLength = (int)(trajectory.getTotalTimeSeconds() * 50);
         
   }
@@ -65,9 +65,8 @@ public class TrajectoryFollowingCommand extends CommandBase {
     System.out.println("Called! Length: " + trajectoryLength);
     counter = 0;
 
-    Trajectory.State goal = trajectory.sample(0);
     PathPlannerState headingGoal = (PathPlannerState) trajectory.sample(0);
-    Pose2d startingPose = new Pose2d(goal.poseMeters.getX(), goal.poseMeters.getY(), headingGoal.holonomicRotation);
+    Pose2d startingPose = new Pose2d(headingGoal.poseMeters.getX(), headingGoal.poseMeters.getY(), headingGoal.holonomicRotation);
     
     driveTrain.zeroPosition(startingPose);
   }

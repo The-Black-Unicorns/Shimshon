@@ -47,7 +47,7 @@ public class BallSubsystem extends SubsystemBase {
 
     // DrivetrainSubsystem.updateFalconPID(Constants.SHOOTER_TALONFX_MOTOR, 0, 0, 0, 0.05, NeutralMode.Coast);
     setShooterSpeed(Constants.SHOOTER_FLYWHEEL_RPM);
-    closeIntake();
+    closeIntake(true);
     stopShooter();
   }
 
@@ -60,18 +60,20 @@ public class BallSubsystem extends SubsystemBase {
     framesSinceIntakeClosed = Integer.MIN_VALUE;
   }
 
-  public void closeIntake(){
+  public void closeIntake(boolean stopConveyor){
     intake775.set(ControlMode.PercentOutput, 0);
-    conveyor775.set(ControlMode.PercentOutput, 0);
     intakeSolenoid.set(Value.kReverse);
     framesSinceIntakeOpen = Integer.MIN_VALUE;
     framesSinceIntakeClosed = 0;
     intakeOpen = false;
+    if (stopConveyor){
+      conveyor775.set(ControlMode.PercentOutput, 0);
+    } 
   }
 
   public void prepareForShootingInit(){
     if (intakeOpen)
-    closeIntake();
+    closeIntake(false);
 
     shooterWarming = true;
     conveyor775.set(ControlMode.PercentOutput, Constants.CONVEYOR_SPEED_PERCENT_REVERSE);
@@ -124,28 +126,28 @@ public class BallSubsystem extends SubsystemBase {
     if (framesSinceIntakeOpen == 20 ){
       intake775.set(ControlMode.PercentOutput, Constants.INTAKE_SPEED_PERCENT);
     }
+    
+    if (framesSinceIntakeClosed == 100){
+      conveyor775.set(ControlMode.PercentOutput, 0);
+    }
 
     //Soften intake open and close
 
-    // if (framesSinceIntakeOpen == 10){
-    //   intakeSolenoid.set(Value.kReverse);
-    // } else if (framesSinceIntakeOpen ==17){
-    //   intakeSolenoid.set(Value.kForward);
-    // } else if (framesSinceIntakeOpen == 18){
-    //   intakeSolenoid.set(Value.kOff);
-    // }
-    if (framesSinceIntakeClosed == 15){
-      intakeSolenoid.set(Value.kForward);
-
-    } else if (framesSinceIntakeClosed ==20){
+    if (framesSinceIntakeOpen == 15){
       intakeSolenoid.set(Value.kReverse);
-    } else if (framesSinceIntakeClosed == 21 ){
+    } else if (framesSinceIntakeOpen == 20){
+      intakeSolenoid.set(Value.kForward);
+    } 
+
+    if (framesSinceIntakeClosed ==12){
+      intakeSolenoid.set(Value.kForward);
+    } else if (framesSinceIntakeClosed == 20){
       intakeSolenoid.set(Value.kReverse);
     }
 
     //Close intake when ball stuck
     if (framesSinceIntakeOpen >= 50 && pdp.getCurrent(7) > 22 && conveyorReverseTimer < 0 && intakeOpen){
-      closeIntake();
+      closeIntake(true);
     }
 
     //Stop warming up when finished warming up

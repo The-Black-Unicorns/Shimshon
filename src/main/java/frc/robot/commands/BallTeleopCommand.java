@@ -101,7 +101,7 @@ public class BallTeleopCommand extends CommandBase {
   }
 
   public void closeIntake(){
-    ballSubsystem.closeIntake();
+    ballSubsystem.closeIntake(false);
   }
 
   public void openIntake(){

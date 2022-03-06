@@ -7,13 +7,13 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.BallSubsystem;
 
-public class Auto1BallSystems extends CommandBase {
+public class Auto2BallSystems extends CommandBase {
 
   BallSubsystem ballSubsystem;
 
   int counter = 0;
 
-  public Auto1BallSystems(BallSubsystem subsystem) {
+  public Auto2BallSystems(BallSubsystem subsystem) {
 
     ballSubsystem = subsystem;
     addRequirements(subsystem);
@@ -31,7 +31,13 @@ public class Auto1BallSystems extends CommandBase {
       ballSubsystem.shoot();
     } else if (counter == 100){
       ballSubsystem.stopShooter();
-    } 
+      ballSubsystem.openIntake();
+    } else if (counter == 400){
+      ballSubsystem.closeIntake(false);
+      ballSubsystem.prepareForShootingInit();
+    } else if (counter > 450){
+      ballSubsystem.shoot();
+    }
     counter++;
   }
 

@@ -34,15 +34,35 @@ public class ClimberTeleopCommand extends CommandBase {
         climberSubsystem.setLimitsEnabled(mainController.getRawButton(6));
 
         // climberSubsystem.setBrake(secondController.getSquareButton());
+        
 
-        climberSubsystem.moveInsideArm(-deadband(secondController.getLeftY(), 0.2));
-
-        if (!mainController.getRawButton(5)) {
-            climberSubsystem.moveOutsideArm(deadband(mainController.getRawAxis(2), 0.2));
-        } else {
-            climberSubsystem.moveOutsideArm(0);
+        boolean resetInsideArm = secondController.getShareButton();
+        if (!resetInsideArm)
+        {
+            if (!mainController.getRawButton(5)) {
+                climberSubsystem.moveOutsideArm(deadband(mainController.getRawAxis(2), 0.2));
+            } else {
+                climberSubsystem.moveOutsideArm(0);
+            }
         }
+        if (secondController.getShareButtonPressed())
+        climberSubsystem.startResetInsideArmsLength();
+        if (secondController.getShareButtonReleased())
+        climberSubsystem.stopResetInsideArm(false);
+
+        boolean resetOutsideArm = secondController.getRawButton(PS4Controller.Button.kOptions.value);
+        if (!resetOutsideArm)
+        {
+            climberSubsystem.moveInsideArm(-deadband(secondController.getLeftY(), 0.2));
+           
+        }
+        if (secondController.getOptionsButtonPressed())
+        climberSubsystem.startResetOutsideArmsLength();
+        if (secondController.getOptionsButtonReleased())
+        climberSubsystem.stopResetOutsideArm(false);
     }
+
+    
 
     // Called once the command ends or is interrupted.
     @Override
