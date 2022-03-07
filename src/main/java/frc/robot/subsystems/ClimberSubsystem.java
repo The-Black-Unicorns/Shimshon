@@ -9,6 +9,7 @@ import javax.swing.event.InternalFrameAdapter;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -31,10 +32,15 @@ public class ClimberSubsystem extends SubsystemBase {
 
     double sensorToMeterCoefficient = 1 * 0.05 * 0.03 * Math.PI;
     // Units are meters!!
-    double outsideWinchMaxHeight = 0.6;
-    double insideWinchMaxHeight = 0.6;
-    double outsideWinchMinHeight = 0.02;
-    double insideWinchMinHeight = 0.02;
+    double outsideWinchMaxHeight = 0.54;
+    double insideWinchMaxHeight = 0.55;
+    double outsideWinchMaxHeightClosed = 0.4;
+    double insideWinchMaxHeightClosed = 0.4;
+    double outsideWinchMinHeight = 0.005;
+    double insideWinchMinHeight = 0.005;
+
+    private double outsideMaxHeight;
+    private double insideMaxHeight;
 
     boolean useLimits = true;
 
@@ -62,6 +68,15 @@ public class ClimberSubsystem extends SubsystemBase {
         outsideSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 14, 15);
         insideSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 5, 8);
         insideBrake = new DoubleSolenoid(PneumaticsModuleType.REVPH, 3, 4);
+        
+        // setOutsideSolenoid(false);
+        // setInsideSolenoid(false);
+        outsideMaxHeight = outsideWinchMaxHeightClosed;
+        insideMaxHeight = insideWinchMaxHeightClosed;
+
+        outsideWinch.setIdleMode(IdleMode.kBrake);
+        insideWinch.setIdleMode(IdleMode.kBrake); 
+        
     }
 
     public void setOutsideSolenoid(boolean open) {
@@ -69,10 +84,13 @@ public class ClimberSubsystem extends SubsystemBase {
             outsideSolenoid.set(Value.kForward);
             frameSinceOutsideOpen = 0;
             frameSinceOutsideClose = Integer.MIN_VALUE;
+            outsideMaxHeight = outsideWinchMaxHeight;
         } else {
             outsideSolenoid.set(Value.kReverse);
             frameSinceOutsideClose = 0;
             frameSinceOutsideOpen = Integer.MIN_VALUE;
+            outsideMaxHeight = outsideWinchMaxHeightClosed;
+            
         }
         ;
     }
@@ -82,10 +100,12 @@ public class ClimberSubsystem extends SubsystemBase {
             insideSolenoid.set(Value.kForward);
             frameSinceInsideOpen = 0;
             frameSinceInsideClose = Integer.MIN_VALUE;
+            insideMaxHeight = insideWinchMaxHeight;
         } else {
             insideSolenoid.set(Value.kReverse);
             frameSinceInsideClose = 0;
             frameSinceInsideOpen = Integer.MIN_VALUE;
+            insideMaxHeight = insideWinchMaxHeightClosed;
         }
     }
 
@@ -94,10 +114,12 @@ public class ClimberSubsystem extends SubsystemBase {
             outsideSolenoid.set(Value.kForward);
             frameSinceOutsideOpen = 0;
             frameSinceOutsideClose = Integer.MIN_VALUE;
+            outsideMaxHeight = outsideWinchMaxHeight;
         } else {
             outsideSolenoid.set(Value.kReverse);
             frameSinceOutsideClose = 0;
             frameSinceOutsideOpen = Integer.MIN_VALUE;
+            outsideMaxHeight = outsideWinchMaxHeightClosed;
         }
     }
 
@@ -106,19 +128,21 @@ public class ClimberSubsystem extends SubsystemBase {
             insideSolenoid.set(Value.kForward);
             frameSinceInsideOpen = 0;
             frameSinceInsideClose = Integer.MIN_VALUE;
+            insideMaxHeight = insideWinchMaxHeight;
         } else {
             insideSolenoid.set(Value.kReverse);
             frameSinceInsideClose = 0;
             frameSinceInsideOpen = Integer.MIN_VALUE;
+            insideMaxHeight = insideWinchMaxHeightClosed;
         }
     }
 
     public void moveOutsideArm(double value) {
         double armExtension = outsideEncoder.getPosition() * sensorToMeterCoefficient;
         if (!useLimits) {
-            if (armExtension < outsideWinchMaxHeight && armExtension > outsideWinchMinHeight) {
+            if (armExtension < outsideMaxHeight && armExtension > outsideWinchMinHeight) {
                 outsideWinch.set(value);
-            } else if (value < 0 && armExtension > outsideWinchMaxHeight) {
+            } else if (value < 0 && armExtension > outsideMaxHeight) {
                 outsideWinch.set(value);
             } else if (armExtension < outsideWinchMinHeight && value > 0) {
                 outsideWinch.set(value);
@@ -139,9 +163,9 @@ public class ClimberSubsystem extends SubsystemBase {
 
         double armExtension = insideEncoder.getPosition() * sensorToMeterCoefficient;
         if (!useLimits) {
-            if (armExtension < insideWinchMaxHeight && armExtension > insideWinchMinHeight) {
+            if (armExtension < insideMaxHeight && armExtension > insideWinchMinHeight) {
                 insideWinch.set(value);
-            } else if (value < 0 && armExtension > insideWinchMaxHeight) {
+            } else if (value < 0 && armExtension > insideMaxHeight) {
                 insideWinch.set(value);
             } else if (armExtension < insideWinchMinHeight && value > 0) {
                 insideWinch.set(value);
@@ -170,8 +194,12 @@ public class ClimberSubsystem extends SubsystemBase {
         isResetingOutsideArm = false;
         outsideWinch.set(0);
         if (finished)
-        outsideEncoder.setPosition(0);
+        {
+            outsideEncoder.setPosition(0);
+        }
     }
+
+
 
     public void startResetInsideArmsLength() {
         insideBrake.set(Value.kReverse);
@@ -198,22 +226,22 @@ public class ClimberSubsystem extends SubsystemBase {
 
         if (frameSinceOutsideOpen == 8){
             outsideSolenoid.set(Value.kReverse);
-        } else if (frameSinceOutsideOpen == 13){
+        } else if (frameSinceOutsideOpen == 15){
             outsideSolenoid.set(Value.kForward);
         }
-        if (frameSinceOutsideClose == 8){
+        if (frameSinceOutsideClose == 12){
             outsideSolenoid.set(Value.kForward);
-        } else if (frameSinceOutsideClose == 13){
+        } else if (frameSinceOutsideClose == 18){
             outsideSolenoid.set(Value.kReverse);
         }
-        if (frameSinceInsideOpen == 8){
+        if (frameSinceInsideOpen == 10){
             insideSolenoid.set(Value.kReverse);
-        } else if (frameSinceInsideOpen == 13){
+        } else if (frameSinceInsideOpen == 15){
             insideSolenoid.set(Value.kForward);
         }
-        if (frameSinceInsideClose == 8){
+        if (frameSinceInsideClose == 12){
             insideSolenoid.set(Value.kForward);
-        } else if (frameSinceInsideClose == 13){
+        } else if (frameSinceInsideClose == 18){
             insideSolenoid.set(Value.kReverse);
         }
 

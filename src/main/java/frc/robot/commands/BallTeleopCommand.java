@@ -7,6 +7,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.subsystems.BallSubsystem;
 
 public class BallTeleopCommand extends CommandBase {
@@ -18,6 +19,7 @@ public class BallTeleopCommand extends CommandBase {
 
   private double previousRightTrigger;
   private double previousLeftTrigger;
+  private int previousPov;
 
   public BallTeleopCommand(BallSubsystem subsystem, PS4Controller secondDriverController) {
 
@@ -35,38 +37,41 @@ public class BallTeleopCommand extends CommandBase {
   @Override
   public void execute() 
   {
-    double rightTrigger = controller.getR2Axis();
-    double leftTrigger = controller.getL2Axis();
 
 
     //Triggers detection
-    if (rightTrigger >= triggerThreashold && previousRightTrigger < triggerThreashold)
-    {
+    double rightTrigger = controller.getR2Axis();
+    if (rightTrigger >= triggerThreashold && previousRightTrigger < triggerThreashold){
       rightTriggerPressed();
     }
-    if (rightTrigger >= triggerThreashold && previousRightTrigger >= triggerThreashold)
-    {
+    if (rightTrigger >= triggerThreashold && previousRightTrigger >= triggerThreashold){
       rightTrigger();
     }
     if (rightTrigger < triggerThreashold && previousRightTrigger >= triggerThreashold){
       rightTriggerReleased();
     }
-    if (leftTrigger >= triggerThreashold && previousLeftTrigger < triggerThreashold)
-    {
+    previousRightTrigger = rightTrigger;
+
+    double leftTrigger = controller.getL2Axis();
+    if (leftTrigger >= triggerThreashold && previousLeftTrigger < triggerThreashold){
       leftTriggerPressed();
     }
-    if (leftTrigger >= triggerThreashold && previousLeftTrigger >= triggerThreashold)
-    {
+    if (leftTrigger >= triggerThreashold && previousLeftTrigger >= triggerThreashold){
       leftTrigger();
     }
     if (leftTrigger < triggerThreashold && previousLeftTrigger >= triggerThreashold){
       leftTriggerReleased();
     }
-    previousRightTrigger = rightTrigger;
     previousLeftTrigger = leftTrigger;
 
+    int pov = controller.getPOV();
+    if (pov ==  0 && previousPov != 0){
+      upPressed();
+    } else if (pov != 0 & previousPov == 0){
+      upReleased();
+    } 
 
-
+    previousPov = pov;
   }
 
   void rightTriggerPressed ()
@@ -98,6 +103,14 @@ public class BallTeleopCommand extends CommandBase {
     if (controller.getR2Axis() < triggerThreashold){
       ballSubsystem.stopShooter();
     }
+  }
+
+  void upPressed (){
+    ballSubsystem.setShooterSpeed(Constants.SHOOTER_FLYWHEEL_RPM_HIGH_GOAL);
+  }
+
+  void upReleased (){
+    ballSubsystem.setShooterSpeed(Constants.SHOOTER_FLYWHEEL_RPM_LOW_GOAL);
   }
 
   public void closeIntake(){

@@ -23,6 +23,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.DriverStation.MatchType;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -107,18 +108,17 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     public boolean extraBrake = false;
 
-    double angle = 0;
-    int count = 0;
-    double previousSpeed = 0;
     public double holdAngleSetpoint = Math.toRadians(0);
     int fromRotationCounter = 0;
     boolean resetEncoder = false;
+
+    boolean enabled = false;
+    int framesSinceEnable = 0;
 
     private PIDController holdRobotAngleController = new PIDController(Constants.ROBOT_HOLD_ANGLE_KP, 0, 0);
 
     private Rotation2d gyroAngle;
     private boolean compensationDirection;
-    private int callsPerLoop = 0;
 
     public DrivetrainSubsystem() {
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
@@ -264,8 +264,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
         // SwerveDriveKinematics.normalizeWheelSpeeds(states,
         // MAX_VELOCITY_METERS_PER_SECOND);
         driveWithModuleStates(states);
+        
+        if (framesSinceEnable < 750)
         updateOdometry();
-
+        if (enabled)
+        framesSinceEnable++;
         // SmartDashboard.putNumber("Wheel sent speed", states[0].speedMetersPerSecond);
         // SmartDashboard.putNumber("Wheel sent Voltage", states[0].speedMetersPerSecond
         // / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE);
@@ -342,8 +345,14 @@ public class DrivetrainSubsystem extends SubsystemBase {
         robotPose = tempPose;
     }
 
-    public void resetHoldAngle() {
+    public void onEnable() {
         holdAngleSetpoint = getGyroscopeRotation().getRadians();
+        enabled = true;
+        framesSinceEnable = 0;
+    }
+
+    public void onDisable(){
+        enabled = false;
     }
 
     public void enableExtraBrake() {

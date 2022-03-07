@@ -23,6 +23,7 @@ import frc.robot.commands.BallTeleopCommand;
 import frc.robot.commands.ClimberTeleopCommand;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.TrajectoryFollowingCommand;
+import frc.robot.commands.PitTest.TestCommand;
 import frc.robot.subsystems.BallSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -55,6 +56,9 @@ public class RobotContainer {
   private final Auto3Ball auto3Ball = new Auto3Ball(ballSubsystem, drivetrainSubsystem, "3 Ball Auto Red", "3 Ball Auto Red", 0.3);
   private final Auto2Ball auto2Ball = new Auto2Ball(ballSubsystem, drivetrainSubsystem, "2 Ball Auto Red", "2 Ball Auto Red", 0.2);
  
+  //Test commands
+  private final TestCommand test = new TestCommand(drivetrainSubsystem, ballSubsystem, climberSubsystem, secondDriverController);
+
   SendableChooser<Command> autoChooser =  new SendableChooser<>();
  
   /**
@@ -112,7 +116,13 @@ public class RobotContainer {
     
     new JoystickButton(secondDriverController, PS4Controller.Button.kR1.value)
         .whenPressed(() -> climberSubsystem.toggleInsideSolenoid());
-  }
+
+    new JoystickButton(secondDriverController, PS4Controller.Button.kTouchpad.value)
+        .whenPressed(() -> ballSubsystem.startSpittingShooter())
+        .whenReleased(()-> ballSubsystem.stopSpittingShooter());
+
+      }
+
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -149,14 +159,15 @@ public class RobotContainer {
    */
 
   public void onEnable() {
-    drivetrainSubsystem.resetHoldAngle();
-    
-
-    
+    drivetrainSubsystem.onEnable();    
   }
 
   public void onDisable() {
+    drivetrainSubsystem.onDisable();
+  }
 
+  public void onTestInit(){
+    test.schedule();
   }
 
   public void updateGyroAngle(){

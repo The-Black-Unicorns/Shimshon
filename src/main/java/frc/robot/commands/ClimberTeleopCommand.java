@@ -39,22 +39,21 @@ public class ClimberTeleopCommand extends CommandBase {
         boolean resetInsideArm = secondController.getShareButton();
         if (!resetInsideArm)
         {
-            if (!mainController.getRawButton(5)) {
-                climberSubsystem.moveOutsideArm(deadband(mainController.getRawAxis(2), 0.2));
-            } else {
-                climberSubsystem.moveOutsideArm(0);
-            }
+            climberSubsystem.moveInsideArm(-deadband(secondController.getLeftY(), 0.2));
         }
         if (secondController.getShareButtonPressed())
         climberSubsystem.startResetInsideArmsLength();
         if (secondController.getShareButtonReleased())
         climberSubsystem.stopResetInsideArm(false);
 
-        boolean resetOutsideArm = secondController.getRawButton(PS4Controller.Button.kOptions.value);
+        boolean resetOutsideArm = secondController.getOptionsButton();
         if (!resetOutsideArm)
         {
-            climberSubsystem.moveInsideArm(-deadband(secondController.getLeftY(), 0.2));
-           
+            if (!mainController.getRawButton(5)) {
+                climberSubsystem.moveOutsideArm(deadband(mainController.getRawAxis(2), 0.2));
+            } else {
+                climberSubsystem.moveOutsideArm(0);
+            }
         }
         if (secondController.getOptionsButtonPressed())
         climberSubsystem.startResetOutsideArmsLength();

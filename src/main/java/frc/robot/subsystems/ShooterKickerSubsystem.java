@@ -27,7 +27,7 @@ public class ShooterKickerSubsystem extends SubsystemBase {
     kickerWheel775 = new TalonSRX(Constants.KICKER_WHEEL_TALONSRX_MOTOR);
 
     DrivetrainSubsystem.updateFalconPID(Constants.SHOOTER_TALONFX_MOTOR, 0, 0, 0, 0.05, NeutralMode.Coast);
-    setShooterSpeed(Constants.SHOOTER_FLYWHEEL_RPM);
+    setShooterSpeed(Constants.SHOOTER_FLYWHEEL_RPM_LOW_GOAL);
   }
 
   @Override

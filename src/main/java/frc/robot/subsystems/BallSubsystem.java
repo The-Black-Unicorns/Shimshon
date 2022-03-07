@@ -46,7 +46,7 @@ public class BallSubsystem extends SubsystemBase {
     pdp = new PowerDistribution(0, ModuleType.kCTRE);
 
     // DrivetrainSubsystem.updateFalconPID(Constants.SHOOTER_TALONFX_MOTOR, 0, 0, 0, 0.05, NeutralMode.Coast);
-    setShooterSpeed(Constants.SHOOTER_FLYWHEEL_RPM);
+    setShooterSpeed(Constants.SHOOTER_FLYWHEEL_RPM_LOW_GOAL);
     closeIntake(true);
     stopShooter();
   }
@@ -61,6 +61,18 @@ public class BallSubsystem extends SubsystemBase {
   }
 
   public void closeIntake(boolean stopConveyor){
+    intake775.set(ControlMode.PercentOutput, 0);
+    intakeSolenoid.set(Value.kReverse);
+    framesSinceIntakeOpen = Integer.MIN_VALUE;
+    framesSinceIntakeClosed = 0;
+    intakeOpen = false;
+    if (stopConveyor){
+      conveyor775.set(ControlMode.PercentOutput, 0);
+    } 
+  }
+
+  public void closeIntake(){
+    boolean stopConveyor = true;
     intake775.set(ControlMode.PercentOutput, 0);
     intakeSolenoid.set(Value.kReverse);
     framesSinceIntakeOpen = Integer.MIN_VALUE;
@@ -105,8 +117,20 @@ public class BallSubsystem extends SubsystemBase {
 
   public void startSpittingShooter(){
     stopShooter();
-    conveyor775.set(ControlMode.PercentOutput, Constants.CONVEYOR_SPEED_PERCENT_INTAKING);
-    shooterFalcon.set(ControlMode.PercentOutput, 500 * 2048 / 600);
+    conveyor775.set(ControlMode.PercentOutput, -1);
+    shooterFalcon.set(ControlMode.PercentOutput, 0.2);
+    
+    framesSinceIntakeClosed = Integer.MIN_VALUE;
+    framesSinceIntakeOpen = Integer.MIN_VALUE;
+  }
+
+  public void stopSpittingShooter(){
+    stopShooter();
+    if (intakeOpen){
+      framesSinceIntakeOpen = 200;
+    } else {
+      framesSinceIntakeClosed = 200;
+    }
   }
 
   @Override
@@ -127,7 +151,7 @@ public class BallSubsystem extends SubsystemBase {
       intake775.set(ControlMode.PercentOutput, Constants.INTAKE_SPEED_PERCENT);
     }
     
-    if (framesSinceIntakeClosed == 100){
+    if (framesSinceIntakeClosed == 50){
       conveyor775.set(ControlMode.PercentOutput, 0);
     }
 
@@ -135,19 +159,23 @@ public class BallSubsystem extends SubsystemBase {
 
     if (framesSinceIntakeOpen == 15){
       intakeSolenoid.set(Value.kReverse);
-    } else if (framesSinceIntakeOpen == 20){
+    } else if (framesSinceIntakeOpen == 22){
       intakeSolenoid.set(Value.kForward);
     } 
 
-    if (framesSinceIntakeClosed ==12){
+    if (framesSinceIntakeClosed ==18){
       intakeSolenoid.set(Value.kForward);
-    } else if (framesSinceIntakeClosed == 20){
+    } else if (framesSinceIntakeClosed == 26){
       intakeSolenoid.set(Value.kReverse);
     }
 
     //Close intake when ball stuck
-    if (framesSinceIntakeOpen >= 50 && pdp.getCurrent(7) > 22 && conveyorReverseTimer < 0 && intakeOpen){
-      closeIntake(true);
+    if (framesSinceIntakeOpen >= 50 && pdp.getCurrent(7) > 22 && conveyorReverseTimer < 0){
+      if (intakeOpen){
+        closeIntake(true);
+      } else if (framesSinceIntakeClosed < 50){
+        closeIntake(true);
+      }
     }
 
     //Stop warming up when finished warming up
