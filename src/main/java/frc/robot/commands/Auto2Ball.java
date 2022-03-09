@@ -15,15 +15,18 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class Auto2Ball extends ParallelCommandGroup {
-  /** Creates a new Auto1Ball. */
-  public Auto2Ball(BallSubsystem ballSubsystem, DrivetrainSubsystem drivetrainSubsystem, String bluePathName, String redPathName, double speedMultiplier) {
-    addCommands(new Auto2BallSystems(ballSubsystem));
-    if (DriverStation.getAlliance() == Alliance.Blue){
-      addCommands(sequence(new WaitCommand(2), new TrajectoryFollowingCommand(drivetrainSubsystem, bluePathName, speedMultiplier)));
-    } else {
-      addCommands(sequence(new WaitCommand(2), new TrajectoryFollowingCommand(drivetrainSubsystem, redPathName, speedMultiplier)));
-    }
-    
-    addRequirements(ballSubsystem, drivetrainSubsystem);
-  }
+	/** Creates a new Auto1Ball. */
+	public Auto2Ball(BallSubsystem ballSubsystem, DrivetrainSubsystem drivetrainSubsystem, String bluePathName,
+			String redPathName, double speedMultiplier) {
+		addCommands(new Auto2BallSystems(ballSubsystem));
+		if (DriverStation.getAlliance() == Alliance.Blue) {
+			addCommands(sequence(new WaitCommand(2),
+					new TrajectoryFollowingCommand(drivetrainSubsystem, bluePathName, speedMultiplier)));
+		} else {
+			addCommands(sequence(new WaitCommand(2),
+					new TrajectoryFollowingCommand(drivetrainSubsystem, redPathName, speedMultiplier)));
+		}
+
+		addRequirements(ballSubsystem, drivetrainSubsystem);
+	}
 }

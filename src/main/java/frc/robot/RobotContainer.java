@@ -13,8 +13,6 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.Auto1BallLeft;
 import frc.robot.commands.Auto2Ball;
@@ -22,7 +20,6 @@ import frc.robot.commands.Auto3Ball;
 import frc.robot.commands.BallTeleopCommand;
 import frc.robot.commands.ClimberTeleopCommand;
 import frc.robot.commands.DefaultDriveCommand;
-import frc.robot.commands.TrajectoryFollowingCommand;
 import frc.robot.commands.PitTest.TestCommand;
 import frc.robot.subsystems.BallSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
@@ -43,24 +40,29 @@ public class RobotContainer {
   private final DrivetrainSubsystem drivetrainSubsystem = new DrivetrainSubsystem();
   private final BallSubsystem ballSubsystem = new BallSubsystem();
   private final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
-  //Controllers
+  // Controllers
   private final Joystick controller = new Joystick(0);
   private final PS4Controller secondDriverController = new PS4Controller(1);
-  //Commands
+  // Commands
   private final DefaultDriveCommand driveCommand = new DefaultDriveCommand(drivetrainSubsystem, controller);
   private final BallTeleopCommand ballTeleopCommand = new BallTeleopCommand(ballSubsystem, secondDriverController);
-  private final ClimberTeleopCommand climberCommand = new ClimberTeleopCommand(climberSubsystem, controller, secondDriverController);
+  private final ClimberTeleopCommand climberCommand = new ClimberTeleopCommand(climberSubsystem, controller,
+      secondDriverController);
 
-  //Autonomus Commands
-  private final Auto1BallLeft auto1BallLeft = new Auto1BallLeft(ballSubsystem, drivetrainSubsystem, "1 Ball Auto Blue Left", "1 Ball Auto Red Left", 0.5);
-  private final Auto3Ball auto3Ball = new Auto3Ball(ballSubsystem, drivetrainSubsystem, "3 Ball Auto Red", "3 Ball Auto Red", 0.3);
-  private final Auto2Ball auto2Ball = new Auto2Ball(ballSubsystem, drivetrainSubsystem, "2 Ball Auto Red", "2 Ball Auto Red", 0.2);
- 
-  //Test commands
-  private final TestCommand test = new TestCommand(drivetrainSubsystem, ballSubsystem, climberSubsystem, secondDriverController);
+  // Autonomus Commands
+  private final Auto1BallLeft auto1BallLeft = new Auto1BallLeft(ballSubsystem, drivetrainSubsystem,
+      "1 Ball Auto Blue Left", "1 Ball Auto Red Left", 0.5);
+  private final Auto3Ball auto3Ball = new Auto3Ball(ballSubsystem, drivetrainSubsystem, "3 Ball Auto Red",
+      "3 Ball Auto Red", 0.3);
+  private final Auto2Ball auto2Ball = new Auto2Ball(ballSubsystem, drivetrainSubsystem, "2 Ball Auto Red",
+      "2 Ball Auto Red", 0.2);
 
-  SendableChooser<Command> autoChooser =  new SendableChooser<>();
- 
+  // Test commands
+  private final TestCommand test = new TestCommand(drivetrainSubsystem, ballSubsystem, climberSubsystem,
+      secondDriverController);
+
+  SendableChooser<Command> autoChooser = new SendableChooser<>();
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -70,24 +72,25 @@ public class RobotContainer {
     ballSubsystem.setDefaultCommand(ballTeleopCommand);
     climberSubsystem.setDefaultCommand(climberCommand);
 
-    //Enable or disable compressor
+    // Enable or disable compressor
     Compressor phCompressor = new Compressor(1, PneumaticsModuleType.REVPH);
     phCompressor.enableDigital();
     // phCompressor.disable();
+    phCompressor.close();
 
-    //Autonomus Chooser
-    autoChooser.setDefaultOption("1 Ball Left", auto1BallLeft);
-    autoChooser.addOption("2 Ball", auto2Ball);
+    // Autonomus Chooser
+    autoChooser.addOption("1 Ball Left", auto1BallLeft);
+    autoChooser.setDefaultOption("2 Ball", auto2Ball);
     autoChooser.addOption("3 Ball", auto3Ball);
 
     SmartDashboard.putData(autoChooser);
-    
 
     // Configure the button bindings
     configureButtonBindings();
   }
 
   /**
+   * 
    * Use this method to define your button->command mappings. Buttons can be
    * created by
    * instantiating a {@link GenericHID} or one of its subclasses ({@link
@@ -100,29 +103,27 @@ public class RobotContainer {
     new JoystickButton(controller, 1)
         // No requirements because we don't need to interrupt anything
         .whenPressed(() -> drivetrainSubsystem.zeroPosition());
-  
-    
+
     new JoystickButton(controller, 4)
         .whenPressed(() -> drivetrainSubsystem.matchEncoders());
 
     new JoystickButton(secondDriverController, PS4Controller.Button.kCross.value)
         .whenPressed(() -> ballTeleopCommand.openIntake());
-    
+
     new JoystickButton(secondDriverController, PS4Controller.Button.kCircle.value)
         .whenPressed(() -> ballTeleopCommand.closeIntake());
 
     new JoystickButton(secondDriverController, PS4Controller.Button.kL1.value)
         .whenPressed(() -> climberSubsystem.toggleOutsideSolenoid());
-    
+
     new JoystickButton(secondDriverController, PS4Controller.Button.kR1.value)
         .whenPressed(() -> climberSubsystem.toggleInsideSolenoid());
 
     new JoystickButton(secondDriverController, PS4Controller.Button.kTouchpad.value)
         .whenPressed(() -> ballSubsystem.startSpittingShooter())
-        .whenReleased(()-> ballSubsystem.stopSpittingShooter());
+        .whenReleased(() -> ballSubsystem.stopSpittingShooter());
 
-      }
-
+  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -159,7 +160,7 @@ public class RobotContainer {
    */
 
   public void onEnable() {
-    drivetrainSubsystem.onEnable();    
+    drivetrainSubsystem.onEnable();
     ballSubsystem.onEnable();
   }
 
@@ -168,11 +169,11 @@ public class RobotContainer {
     ballSubsystem.onDisable();
   }
 
-  public void onTestInit(){
+  public void onTestInit() {
     test.schedule();
   }
 
-  public void updateGyroAngle(){
+  public void updateGyroAngle() {
     drivetrainSubsystem.updateGyroAngle();
   }
 }

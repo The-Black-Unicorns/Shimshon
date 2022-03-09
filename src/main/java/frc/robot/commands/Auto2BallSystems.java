@@ -9,45 +9,48 @@ import frc.robot.subsystems.BallSubsystem;
 
 public class Auto2BallSystems extends CommandBase {
 
-  BallSubsystem ballSubsystem;
+    BallSubsystem ballSubsystem;
 
-  int counter = 0;
+    int counter = 0;
 
-  public Auto2BallSystems(BallSubsystem subsystem) {
+    public Auto2BallSystems(BallSubsystem subsystem) {
 
-    ballSubsystem = subsystem;
-    addRequirements(subsystem);
+        ballSubsystem = subsystem;
+        addRequirements(subsystem);
 
-  }
-
-  @Override
-  public void initialize() {}
-
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {
-    
-    if (counter < 100){
-      ballSubsystem.shoot();
-    } else if (counter == 100){
-      ballSubsystem.stopShooter();
-      ballSubsystem.openIntake();
-    } else if (counter == 400){
-      ballSubsystem.closeIntake(false);
-      ballSubsystem.prepareForShootingInit();
-    } else if (counter > 450){
-      ballSubsystem.shoot();
     }
-    counter++;
-  }
 
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {}
+    @Override
+    public void initialize() {
+    }
 
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return counter == 750;
-  }
+    // Called every time the scheduler runs while the command is scheduled.
+    @Override
+    public void execute() {
+
+        if (counter < 100) {
+            ballSubsystem.shoot();
+        } else if (counter == 100) {
+            ballSubsystem.stopShooter();
+            ballSubsystem.openIntake();
+        } else if (counter == 400) {
+            ballSubsystem.closeIntake(false);
+            ballSubsystem.prepareForShootingInit();
+        } else if (counter > 450) {
+            ballSubsystem.shoot();
+        }
+        counter++;
+    }
+
+    // Called once the command ends or is interrupted.
+    @Override
+    public void end(boolean interrupted) {
+        ballSubsystem.stopShooter();
+    }
+
+    // Returns true when the command should end.
+    @Override
+    public boolean isFinished() {
+        return counter == 750;
+    }
 }

@@ -70,7 +70,7 @@ public final class Constants {
     public static final int CONVEYER_REVERSE_DURATION_FRAMES = 30;
     public static final double INTAKE_SPEED_PERCENT = -1;
     public static final int SHOOTER_FLYWHEEL_RPM_LOW_GOAL = 1800;
-    public static final int SHOOTER_FLYWHEEL_RPM_HIGH_GOAL = 3700;
+    public static final int SHOOTER_FLYWHEEL_RPM_HIGH_GOAL = 2100;
     public static final int SHOOTER_FLYWHEEL_RPM_ERROR = 500;
 
     public static final boolean CARPET_COMPENSATION = true;
