@@ -160,10 +160,12 @@ public class RobotContainer {
 
   public void onEnable() {
     drivetrainSubsystem.onEnable();    
+    ballSubsystem.onEnable();
   }
 
   public void onDisable() {
     drivetrainSubsystem.onDisable();
+    ballSubsystem.onDisable();
   }
 
   public void onTestInit(){

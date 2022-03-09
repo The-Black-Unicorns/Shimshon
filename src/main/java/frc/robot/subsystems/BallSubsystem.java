@@ -8,12 +8,17 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.wpilibj.AddressableLED;
+import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -24,6 +29,12 @@ public class BallSubsystem extends SubsystemBase {
   TalonSRX intake775;
   DoubleSolenoid intakeSolenoid;
   PowerDistribution pdp;
+  AddressableLED led;
+  AddressableLEDBuffer ledBuffer;
+  Color ledColor;
+  static final Color disableColor = new Color(1.0f * 0.3, 0.27058825f * 0.3, 0.0f);
+  static final Color blueColor = Color.kBlue;
+  static final Color redColor = Color.kRed;
 
   int falconUnitsTargetVelocity;
   boolean shooterReachedSpeed;
@@ -33,11 +44,15 @@ public class BallSubsystem extends SubsystemBase {
   int framesSinceIntakeOpen = 0;
   int framesSinceIntakeClosed = 0;
   boolean shooterWarming = false;
+  int ledSpeed = 3;
+  int ledCoaunter = 3;
+  int locationInStrip = 0;
+
 
   public BallSubsystem() 
   {
+   
     shooterFalcon = new TalonFX(Constants.SHOOTER_TALONFX_MOTOR);
-    
     conveyor775 = new TalonSRX(Constants.CONVEYOR_TALONSRX_MOTOR);
     intake775 = new TalonSRX(Constants.INTAKE_TALONSRX_MOTOR);
     
@@ -45,6 +60,17 @@ public class BallSubsystem extends SubsystemBase {
     intakeSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 6, 7);
     pdp = new PowerDistribution(0, ModuleType.kCTRE);
 
+    led = new AddressableLED(5);
+    ledBuffer = new AddressableLEDBuffer(60);
+    led.setLength(ledBuffer.getLength());
+    led.setData(ledBuffer);
+    led.start();
+
+    for (int i = 0; i < ledBuffer.getLength(); i++)
+    {
+      ledBuffer.setRGB(i, 0, 0, 0);
+    }
+    led.setData(ledBuffer);
     // DrivetrainSubsystem.updateFalconPID(Constants.SHOOTER_TALONFX_MOTOR, 0, 0, 0, 0.05, NeutralMode.Coast);
     setShooterSpeed(Constants.SHOOTER_FLYWHEEL_RPM_LOW_GOAL);
     closeIntake(true);
@@ -93,8 +119,23 @@ public class BallSubsystem extends SubsystemBase {
     shooterFalcon.set(ControlMode.PercentOutput, -0.4);
   }
 
+  public void onEnable(){
+    if (DriverStation.getAlliance() == Alliance.Red){
+      ledColor = redColor;
+    } else {
+      ledColor = blueColor;
+    }
+  }
+
+  public void onDisable(){
+    ledColor = disableColor;
+  }
+
   public void setShooterSpeed(int rpmTarget){
     falconUnitsTargetVelocity = rpmTarget * 2048 / 600;    
+    if (shooterWarming){
+        shooterFalcon.set(ControlMode.Velocity, falconUnitsTargetVelocity);
+    }
   }
 
   public void shoot(){
@@ -133,6 +174,32 @@ public class BallSubsystem extends SubsystemBase {
     }
   }
 
+  private void setLED(){
+    if (ledColor == disableColor){
+        for (int i = 0; i < ledBuffer.getLength(); i++)
+        {
+          ledBuffer.setLED(i, ledColor);
+        }
+    } else {
+        for (int i = 0; i < ledBuffer.getLength(); i++)
+        {
+        ledBuffer.setLED(i, Color.kBlack);
+        }
+        ledBuffer.setLED(locationInStrip, ledColor);
+        if (locationInStrip == 0){
+            ledBuffer.setLED(ledBuffer.getLength() - 1, Color.kBlack);
+        } else{
+            ledBuffer.setLED(locationInStrip - 1, Color.kBlack);
+        }
+        locationInStrip++;
+        if (locationInStrip == ledBuffer.getLength()){
+            locationInStrip = 0;
+        }
+
+    }
+    led.setData(ledBuffer);
+  }
+
   @Override
   public void periodic() {
 
@@ -147,7 +214,7 @@ public class BallSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("RPM", shooterFalcon.getSelectedSensorVelocity() * 600 /2048);
 
     //Waiting to spin the intake
-    if (framesSinceIntakeOpen == 20 ){
+    if (framesSinceIntakeOpen == 20 ){ 
       intake775.set(ControlMode.PercentOutput, Constants.INTAKE_SPEED_PERCENT);
     }
     
@@ -170,7 +237,7 @@ public class BallSubsystem extends SubsystemBase {
     }
 
     //Close intake when ball stuck
-    if (framesSinceIntakeOpen >= 50 && pdp.getCurrent(7) > 22 && conveyorReverseTimer < 0){
+    if (framesSinceIntakeOpen >= 50 && pdp.getCurrent(7) > 20 && conveyorReverseTimer < 0){
       if (intakeOpen){
         closeIntake(true);
       } else if (framesSinceIntakeClosed < 50){
@@ -185,11 +252,14 @@ public class BallSubsystem extends SubsystemBase {
       ballAtBarrel = false;
     }
 
+    setLED();
+
     framesSinceIntakeOpen++;
     framesSinceIntakeClosed++;
     conveyorReverseTimer--;
     
   }
 
+  
   
 }
