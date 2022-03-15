@@ -4,9 +4,6 @@
 
 package frc.robot.subsystems;
 
-import javax.print.attribute.IntegerSyntax;
-import javax.swing.event.InternalFrameAdapter;
-
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
