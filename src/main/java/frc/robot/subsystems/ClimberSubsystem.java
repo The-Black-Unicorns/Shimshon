@@ -32,7 +32,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
     double sensorToMeterCoefficient = 1 * 0.05 * 0.03 * Math.PI;
     // Units are meters!!
-    double outsideWinchMaxHeight = 0.54;
+    double outsideWinchMaxHeight = 0.57;
     double insideWinchMaxHeight = 0.55;
     double outsideWinchMaxHeightClosed = 0.4;
     double insideWinchMaxHeightClosed = 0.4;
@@ -47,12 +47,12 @@ public class ClimberSubsystem extends SubsystemBase {
     private boolean isResetingOutsideArm = false;
     private boolean isResetingInsideArm = false;
 
-    private int frameSinceOutsideOpen;
-    private int frameSinceOutsideClose;
-    private int frameSinceInsideOpen;
-    private int frameSinceInsideClose;
+    private int frameSinceOutsideOpen = 500;
+    private int frameSinceOutsideClose = 500;
+    private int frameSinceInsideOpen = 500;
+    private int frameSinceInsideClose = 500;
     
-
+    private boolean beenEnabled = false;
     /** Creates a new ClimberSubsystem. */
     public ClimberSubsystem() {
         outsideWinch = new CANSparkMax(5, MotorType.kBrushless);
@@ -69,14 +69,21 @@ public class ClimberSubsystem extends SubsystemBase {
         insideSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 5, 8);
         insideBrake = new DoubleSolenoid(PneumaticsModuleType.REVPH, 3, 4);
         
-        // setOutsideSolenoid(false);
-        // setInsideSolenoid(false);
+
         outsideMaxHeight = outsideWinchMaxHeightClosed;
         insideMaxHeight = insideWinchMaxHeightClosed;
 
         outsideWinch.setIdleMode(IdleMode.kBrake);
         insideWinch.setIdleMode(IdleMode.kBrake); 
         
+    }
+
+    public void onEnable(){
+        if (!beenEnabled){
+            setOutsideSolenoid(true);
+            setInsideSolenoid(false);
+        }
+        beenEnabled = true;
     }
 
     public void setOutsideSolenoid(boolean open) {
@@ -224,19 +231,19 @@ public class ClimberSubsystem extends SubsystemBase {
             stopResetInsideArm(true);
         }
 
-        if (frameSinceOutsideOpen == 8){
+        if (frameSinceOutsideOpen == 15){
             outsideSolenoid.set(Value.kReverse);
-        } else if (frameSinceOutsideOpen == 15){
+        } else if (frameSinceOutsideOpen == 19){
             outsideSolenoid.set(Value.kForward);
         }
-        if (frameSinceOutsideClose == 12){
+        if (frameSinceOutsideClose == 8){
             outsideSolenoid.set(Value.kForward);
-        } else if (frameSinceOutsideClose == 18){
+        } else if (frameSinceOutsideClose == 16){
             outsideSolenoid.set(Value.kReverse);
         }
-        if (frameSinceInsideOpen == 10){
+        if (frameSinceInsideOpen == 7){
             insideSolenoid.set(Value.kReverse);
-        } else if (frameSinceInsideOpen == 15){
+        } else if (frameSinceInsideOpen == 13){
             insideSolenoid.set(Value.kForward);
         }
         if (frameSinceInsideClose == 12){

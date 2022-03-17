@@ -51,7 +51,7 @@ public class RobotContainer {
 
   // Autonomus Commands
   private final Auto1BallLeft auto1BallLeft = new Auto1BallLeft(ballSubsystem, drivetrainSubsystem,
-      "1 Ball Auto Blue Left", "1 Ball Auto Red Left", 0.5);
+      "1 Ball Auto Blue Left", "1 Ball Auto Red Left", 0.2);
   private final Auto3Ball auto3Ball = new Auto3Ball(ballSubsystem, drivetrainSubsystem, "3 Ball Auto Red",
       "3 Ball Auto Red", 0.3);
   private final Auto2Ball auto2Ball = new Auto2Ball(ballSubsystem, drivetrainSubsystem, "2 Ball Auto Red",
@@ -162,6 +162,7 @@ public class RobotContainer {
   public void onEnable() {
     drivetrainSubsystem.onEnable();
     ballSubsystem.onEnable();
+    climberSubsystem.onEnable();
   }
 
   public void onDisable() {

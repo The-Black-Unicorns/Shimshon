@@ -211,8 +211,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     public void zeroPosition(Pose2d newPose) {
         System.out.println("Zero!");
-        m_pigeon.setFusedHeading(newPose.getRotation().getDegrees());
-        // m_pigeon.setFusedHeading(160);
+        System.out.println(m_pigeon.setFusedHeading(newPose.getRotation().getDegrees()));
         // System.out.println(newPose.getRotation());
         // updateGyroAngle();
         // System.out.println(getGyroscopeRotation());

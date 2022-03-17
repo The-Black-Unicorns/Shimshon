@@ -44,9 +44,8 @@ public class BallSubsystem extends SubsystemBase {
     int framesSinceIntakeOpen = 0;
     int framesSinceIntakeClosed = 0;
     boolean shooterWarming = false;
-    int ledSpeed = 3;
-    int ledCoaunter = 3;
     int locationInStrip = 0;
+    int ledBlinkCounter = 0;
 
     public BallSubsystem() {
         shooterFalcon = new TalonFX(Constants.SHOOTER_TALONFX_MOTOR);
@@ -57,7 +56,7 @@ public class BallSubsystem extends SubsystemBase {
         pdp = new PowerDistribution(0, ModuleType.kCTRE);
 
         led = new AddressableLED(5);
-        ledBuffer = new AddressableLEDBuffer(60);
+        ledBuffer = new AddressableLEDBuffer(22);
         led.setLength(ledBuffer.getLength());
         led.setData(ledBuffer);
         led.start();
@@ -184,28 +183,64 @@ public class BallSubsystem extends SubsystemBase {
     }
 
     private void setLED() {
-        if (!shooterWarming) {
+        if (shooterWarming) {
             for (int i = 0; i < ledBuffer.getLength(); i++) {
-                ledBuffer.setLED(i, ledColor);
+
+                if (i == locationInStrip % ledBuffer.getLength()){
+                    ledBuffer.setLED(i, ledColor);
+                } else if (i == (locationInStrip + 1) % ledBuffer.getLength() ){
+                    ledBuffer.setLED(i, ledColor);
+                } else if (i == (locationInStrip + 2) % ledBuffer.getLength()){
+                    ledBuffer.setLED(i, ledColor);
+                } else if (i == (locationInStrip + 3) % ledBuffer.getLength()){
+                    ledBuffer.setLED(i, ledColor);
+                } else if (i == (locationInStrip + 4) % ledBuffer.getLength()){
+                    ledBuffer.setLED(i, ledColor);
+                } else if (i == (locationInStrip + 5) % ledBuffer.getLength()){
+                    ledBuffer.setLED(i, ledColor);
+                } 
+                
+                else{
+                    ledBuffer.setLED(i, Color.kBlack);
+                }
+
+            }
+            locationInStrip += 2;
+
+
+            // ledBuffer.setLED(locationInStrip, ledColor);
+            // if (locationInStrip == 0) {
+            //     ledBuffer.setLED(ledBuffer.getLength() - 3, Color.kBlack);
+            // } else if (locationInStrip == 1){
+            //     ledBuffer.setLED(ledBuffer.getLength() - 2, Color.kBlack);
+            // } else if (locationInStrip == 2){
+            //     ledBuffer.setLED(ledBuffer.getLength() - 1, Color.kBlack);
+            // } else {
+            //     ledBuffer.setLED(locationInStrip - 3, Color.kBlack);
+            // }
+            // locationInStrip++;
+            // if (locationInStrip == ledBuffer.getLength()) {
+            //     locationInStrip = 0;
+            // }        
+        }
+        else if (intakeOpen){
+            if (ledBlinkCounter < 15){
+                for (int i = 0; i < ledBuffer.getLength(); i++) {
+                    ledBuffer.setLED(i, ledColor);
+                }
+            } else {
+                for (int i = 0; i < ledBuffer.getLength(); i++) {
+                    ledBuffer.setLED(i, Color.kBlack);
+                }
+            }
+            ledBlinkCounter++;
+            if (ledBlinkCounter == 30){
+                ledBlinkCounter = 0;
             }
         } else {
             for (int i = 0; i < ledBuffer.getLength(); i++) {
-                ledBuffer.setLED(i, Color.kBlack);
+                ledBuffer.setLED(i, ledColor);
             }
-            ledBuffer.setLED(locationInStrip, ledColor);
-            if (locationInStrip == 0) {
-                ledBuffer.setLED(ledBuffer.getLength() - 1, Color.kBlack);
-            } else {
-                ledBuffer.setLED(locationInStrip - 1, Color.kBlack);
-            }
-            locationInStrip++;
-            if (locationInStrip == ledBuffer.getLength()) {
-                locationInStrip = 0;
-            }
-            // ledBuffer.setLED(i,);
-            // if (i % 3 == 0) {
-            // ledBuffer.setLED(i, ledColor);
-            // }
         }
         led.setData(ledBuffer);
     }
@@ -267,7 +302,7 @@ public class BallSubsystem extends SubsystemBase {
         }
 
         setLED();
-
+        SmartDashboard.putBoolean("Warming", shooterWarming);
         framesSinceIntakeOpen++;
         framesSinceIntakeClosed++;
         conveyorReverseTimer--;
