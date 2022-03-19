@@ -80,7 +80,7 @@ public class BallSubsystem extends SubsystemBase {
         intakeSolenoid.set(Value.kForward);
         framesSinceIntakeOpen = 0;
         framesSinceIntakeClosed = Integer.MIN_VALUE;
-        shooterFalcon.set(ControlMode.PercentOutput, -0.2);
+        shooterFalcon.set(ControlMode.PercentOutput, -0.4);
     }
 
     public void closeIntake(boolean stopConveyor) {
@@ -273,15 +273,15 @@ public class BallSubsystem extends SubsystemBase {
 
         // Soften intake open and close
 
-        if (framesSinceIntakeOpen == 15) {
-            intakeSolenoid.set(Value.kReverse);
-        } else if (framesSinceIntakeOpen == 22) {
-            intakeSolenoid.set(Value.kForward);
-        }
+        // if (framesSinceIntakeOpen == 15) {
+        //     intakeSolenoid.set(Value.kReverse);
+        // } else if (framesSinceIntakeOpen == 22) {
+        //     intakeSolenoid.set(Value.kForward);
+        // }
 
-        if (framesSinceIntakeClosed == 18) {
+        if (framesSinceIntakeClosed == 22) {
             intakeSolenoid.set(Value.kForward);
-        } else if (framesSinceIntakeClosed == 26) {
+        } else if (framesSinceIntakeClosed == 28) {
             intakeSolenoid.set(Value.kReverse);
         }
 

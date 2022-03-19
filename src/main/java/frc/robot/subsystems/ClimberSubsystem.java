@@ -77,7 +77,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
     public void onEnable(){
         if (!beenEnabled){
-            setOutsideSolenoid(true);
+            setOutsideSolenoid(false);
             setInsideSolenoid(false);
         }
         beenEnabled = true;
@@ -217,6 +217,14 @@ public class ClimberSubsystem extends SubsystemBase {
         insideWinch.set(0);
         if (finished)
         insideEncoder.setPosition(0);
+    }
+
+    public void checkForExtensionOutside (){
+        if (outsideEncoder.getPosition() * sensorToMeterCoefficient > 0.03  && !isResetingOutsideArm){
+            startResetOutsideArmsLength();
+        } else if (!isResetingOutsideArm){
+            moveOutsideArm(0);
+        }
     }
 
     @Override

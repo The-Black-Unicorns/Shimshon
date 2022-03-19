@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
@@ -13,10 +15,12 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.Auto1BallLeft;
 import frc.robot.commands.Auto2Ball;
 import frc.robot.commands.Auto3Ball;
+import frc.robot.commands.Auto4Ball;
 import frc.robot.commands.BallTeleopCommand;
 import frc.robot.commands.ClimberTeleopCommand;
 import frc.robot.commands.DefaultDriveCommand;
@@ -56,6 +60,9 @@ public class RobotContainer {
       "3 Ball Auto Red", 0.3);
   private final Auto2Ball auto2Ball = new Auto2Ball(ballSubsystem, drivetrainSubsystem, "2 Ball Auto Red",
       "2 Ball Auto Red", 0.2);
+  private final Auto4Ball auto4Ball = new Auto4Ball(ballSubsystem, drivetrainSubsystem,  "4 Ball Auto Red Part 1", "4 Ball Auto Red Part 2", "4 Ball Auto Red Part 1", "4 Ball Auto Red Part 2", 0.6);
+  
+  private final InstantCommand noAuto = new InstantCommand();
 
   // Test commands
   private final TestCommand test = new TestCommand(drivetrainSubsystem, ballSubsystem, climberSubsystem,
@@ -82,6 +89,8 @@ public class RobotContainer {
     autoChooser.addOption("1 Ball Left", auto1BallLeft);
     autoChooser.setDefaultOption("2 Ball", auto2Ball);
     autoChooser.addOption("3 Ball", auto3Ball);
+    autoChooser.addOption("4 Ball", auto4Ball);
+    autoChooser.addOption("No Auto", noAuto);
 
     SmartDashboard.putData(autoChooser);
 
@@ -102,7 +111,7 @@ public class RobotContainer {
     // Back button zeros the gyroscope
     new JoystickButton(controller, 1)
         // No requirements because we don't need to interrupt anything
-        .whenPressed(() -> drivetrainSubsystem.zeroPosition());
+        .whenPressed(() -> drivetrainSubsystem.zeroPosition(new Pose2d(0, 0, Rotation2d.fromDegrees(0))));
 
     new JoystickButton(controller, 4)
         .whenPressed(() -> drivetrainSubsystem.matchEncoders());

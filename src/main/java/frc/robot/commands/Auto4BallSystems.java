@@ -7,13 +7,13 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.BallSubsystem;
 
-public class Auto3BallSystems extends CommandBase {
+public class Auto4BallSystems extends CommandBase {
 
   BallSubsystem ballSubsystem;
 
   int counter = 0;
 
-  public Auto3BallSystems(BallSubsystem subsystem) {
+  public Auto4BallSystems(BallSubsystem subsystem) {
 
     ballSubsystem = subsystem;
     addRequirements(subsystem);
@@ -21,28 +21,22 @@ public class Auto3BallSystems extends CommandBase {
   }
 
   @Override
-  public void initialize() {}
+  public void initialize() {
+    ballSubsystem.openIntake();
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     
-    if (counter < 100){
+    if (counter == 75){
+      ballSubsystem.closeIntake();
+      ballSubsystem.prepareForShootingInit();
+    } else if (counter > 130 && counter < 180){
       ballSubsystem.shoot();
-    } else if (counter == 100){
+    } else if (counter == 180){
       ballSubsystem.stopShooter();
-      ballSubsystem.openIntake();
-    } else if (counter == 280){
-      ballSubsystem.startReversingIntake();
-    } else if (counter == 330){
-      ballSubsystem.stopReversingIntake();
-    } else if (counter == 450){
-      ballSubsystem.startReversingIntake();
-    } else if (counter == 475){
-      ballSubsystem.stopReversingIntake();
-    } else if (counter > 550){
-      ballSubsystem.shoot();
-    }
+    } 
     counter++;
   }
 

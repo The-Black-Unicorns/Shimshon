@@ -63,7 +63,7 @@ public class TrajectoryFollowingCommand extends CommandBase {
     System.out.println("Called! Length: " + trajectoryLength);
     counter = 0;
 
-    PathPlannerState headingGoal = (PathPlannerState) trajectory.sample(0);
+    PathPlannerState headingGoal = (PathPlannerState) trajectory.getInitialState();
     Pose2d startingPose = new Pose2d(headingGoal.poseMeters.getX(), headingGoal.poseMeters.getY(), headingGoal.holonomicRotation);
     
     driveTrain.zeroPosition(startingPose);

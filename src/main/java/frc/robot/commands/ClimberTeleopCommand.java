@@ -52,7 +52,7 @@ public class ClimberTeleopCommand extends CommandBase {
             if (!mainController.getRawButton(5)) {
                 climberSubsystem.moveOutsideArm(deadband(mainController.getRawAxis(2), 0.2));
             } else {
-                climberSubsystem.moveOutsideArm(0);
+                climberSubsystem.checkForExtensionOutside();
             }
         }
         if (secondController.getOptionsButtonPressed())
