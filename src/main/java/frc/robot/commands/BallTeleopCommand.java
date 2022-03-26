@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
@@ -13,6 +14,8 @@ public class BallTeleopCommand extends CommandBase {
 
   BallSubsystem ballSubsystem;
   PS4Controller controller;
+  Joystick mainController;
+
 
   double triggerThreashold = 0.3;
 
@@ -20,11 +23,11 @@ public class BallTeleopCommand extends CommandBase {
   private double previousLeftTrigger;
   private int previousPov;
 
-  public BallTeleopCommand(BallSubsystem subsystem, PS4Controller secondDriverController) {
+  public BallTeleopCommand(BallSubsystem subsystem, PS4Controller secondDriverController, Joystick mainController) {
 
     ballSubsystem = subsystem;
     controller = secondDriverController;
-
+    this.mainController = mainController;
     addRequirements(subsystem);
   }
 
@@ -37,6 +40,7 @@ public class BallTeleopCommand extends CommandBase {
   public void execute() 
   {
 
+    ballSubsystem.setShooterSpeed(Constants.SHOOTER_FLYWHEEL_RPM_HIGH_GOAL + (int)(mainController.getRawAxis(5) * 100));
 
     //Triggers detection
     double rightTrigger = controller.getR2Axis();
@@ -64,15 +68,25 @@ public class BallTeleopCommand extends CommandBase {
     previousLeftTrigger = leftTrigger;
 
     int pov = controller.getPOV();
-    if (pov ==  0 && previousPov != 0){
+    if ((pov == 0 || pov == 45 || pov == 315) && (previousPov != 0 && previousPov != 45 && previousPov != 315)){
       upPressed();
-    } else if (pov != 0 & previousPov == 0){
+    } else if ((pov != 0 && pov != 45 && pov != 315) && (previousPov == 0 || previousPov == 45 || previousPov == 315)){
       upReleased();
-    } else if (pov == 180 & previousPov != 180){
+    } else if ((pov == 180 || pov == 135 || pov == 225) && (previousPov != 180 && previousPov != 135 && previousPov != 225)){
       ballSubsystem.startReversingIntake();
-    } else if (pov != 180 && previousPov == 180){
+    } else if ((pov != 180 && pov != 135 && pov != 225) && (previousPov == 180 || previousPov == 135 || previousPov == 225)){
       ballSubsystem.stopReversingIntake();
     }
+
+    // if (pov ==  0 && previousPov != 0){
+    //   upPressed();
+    // } else if (pov != 0 & previousPov == 0){
+    //   upReleased();
+    // } else if (pov == 180 & previousPov != 180){
+    //   ballSubsystem.startReversingIntake();
+    // } else if (pov != 180 && previousPov == 180){
+    //   ballSubsystem.stopReversingIntake();
+    // }
 
     previousPov = pov;
   }

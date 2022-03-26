@@ -14,18 +14,14 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class Auto4Ball extends ParallelCommandGroup {
+public class Auto3BallHigh extends ParallelCommandGroup {
   /** Creates a new Auto1Ball. */
-  public Auto4Ball(BallSubsystem ballSubsystem, DrivetrainSubsystem drivetrainSubsystem, String bluePath1Name, String bluePath2Name, String redPath1Name, String redPath2Name, double speedMultiplier) {
-    addCommands(new Auto4BallSystems(ballSubsystem));
+  public Auto3BallHigh(BallSubsystem ballSubsystem, DrivetrainSubsystem drivetrainSubsystem, String bluePathName, String redPathName, double speedMultiplier) {
+    addCommands(new Auto3BallHighSystems(ballSubsystem));
     if (DriverStation.getAlliance() == Alliance.Blue){
-      addCommands(sequence(new WaitCommand(0.5), new TrajectoryFollowingCommand(drivetrainSubsystem, bluePath1Name, 0.3), 
-                            new WaitCommand(1), 
-                            new TrajectoryFollowingCommand(drivetrainSubsystem, bluePath2Name, speedMultiplier)));
+      addCommands(sequence(new WaitCommand(2), new TrajectoryFollowingCommand(drivetrainSubsystem, bluePathName, speedMultiplier)));
     } else {
-      addCommands(sequence(new WaitCommand(0.5), new TrajectoryFollowingCommand(drivetrainSubsystem, redPath1Name, 0.3), 
-                            new WaitCommand(1), 
-                            new TrajectoryFollowingCommand(drivetrainSubsystem, redPath2Name, speedMultiplier)));
+      addCommands(sequence(new WaitCommand(2), new TrajectoryFollowingCommand(drivetrainSubsystem, redPathName, speedMultiplier)));
     }
     
     addRequirements(ballSubsystem, drivetrainSubsystem);

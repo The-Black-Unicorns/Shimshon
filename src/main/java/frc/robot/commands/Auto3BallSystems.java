@@ -32,14 +32,14 @@ public class Auto3BallSystems extends CommandBase {
     } else if (counter == 100){
       ballSubsystem.stopShooter();
       ballSubsystem.openIntake();
-    } else if (counter == 280){
-      ballSubsystem.startReversingIntake();
-    } else if (counter == 330){
-      ballSubsystem.stopReversingIntake();
-    } else if (counter == 450){
-      ballSubsystem.startReversingIntake();
-    } else if (counter == 475){
-      ballSubsystem.stopReversingIntake();
+    // } else if (counter == 280){
+    //   ballSubsystem.startReversingIntake();
+    // } else if (counter == 330){
+    //   ballSubsystem.stopReversingIntake();
+    // } else if (counter == 450){
+    //   ballSubsystem.startReversingIntake();
+    // } else if (counter == 475){
+    //   ballSubsystem.stopReversingIntake();
     } else if (counter > 550){
       ballSubsystem.shoot();
     }

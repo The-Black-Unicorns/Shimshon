@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
@@ -39,6 +40,7 @@ public class BallSubsystem extends SubsystemBase {
     int falconUnitsTargetVelocity;
     boolean shooterReachedSpeed;
     int conveyorReverseTimer;
+    public final static double falconToRPMCoefficient = 1 * 600.0 / 2048.0 * 24.0 / 34.0;
     boolean ballAtBarrel = false;
     boolean intakeOpen = false;
     int framesSinceIntakeOpen = 0;
@@ -66,8 +68,8 @@ public class BallSubsystem extends SubsystemBase {
         }
 
         led.setData(ledBuffer);
-        // DrivetrainSubsystem.updateFalconPID(Constants.SHOOTER_TALONFX_MOTOR, 0, 0, 0,
-        // 0.05, NeutralMode.Coast);
+        DrivetrainSubsystem.updateFalconPID(Constants.SHOOTER_TALONFX_MOTOR, 0.07, 0, 0,
+        0.053 , NeutralMode.Coast);
         setShooterSpeed(Constants.SHOOTER_FLYWHEEL_RPM_LOW_GOAL);
         closeIntake();
         stopShooter();
@@ -80,7 +82,7 @@ public class BallSubsystem extends SubsystemBase {
         intakeSolenoid.set(Value.kForward);
         framesSinceIntakeOpen = 0;
         framesSinceIntakeClosed = Integer.MIN_VALUE;
-        shooterFalcon.set(ControlMode.PercentOutput, -0.4);
+        shooterFalcon.set(ControlMode.PercentOutput, -0.2);
     }
 
     public void closeIntake(boolean stopConveyor) {
@@ -129,7 +131,7 @@ public class BallSubsystem extends SubsystemBase {
     }
 
     public void setShooterSpeed(int rpmTarget) {
-        falconUnitsTargetVelocity = rpmTarget * 2048 / 600;
+        falconUnitsTargetVelocity = (int)(rpmTarget / falconToRPMCoefficient);
         if (shooterWarming) {
             shooterFalcon.set(ControlMode.Velocity, falconUnitsTargetVelocity);
         }
@@ -250,14 +252,14 @@ public class BallSubsystem extends SubsystemBase {
 
         // Checking if reached speed
         if (Math.abs(shooterFalcon.getSelectedSensorVelocity()
-                - falconUnitsTargetVelocity) < Constants.SHOOTER_FLYWHEEL_RPM_ERROR * 2048 / 600) {
+                - falconUnitsTargetVelocity) < Constants.SHOOTER_FLYWHEEL_RPM_ERROR / falconToRPMCoefficient) {
             shooterReachedSpeed = true;
         } else {
             shooterReachedSpeed = false;
         }
 
         // RPM on dashboard
-        SmartDashboard.putNumber("RPM", shooterFalcon.getSelectedSensorVelocity() * 600 / 2048);
+        SmartDashboard.putNumber("RPM", shooterFalcon.getSelectedSensorVelocity() * falconToRPMCoefficient);
 
         // Waiting to spin the intake
         if (framesSinceIntakeOpen == 20) {
@@ -273,15 +275,15 @@ public class BallSubsystem extends SubsystemBase {
 
         // Soften intake open and close
 
-        // if (framesSinceIntakeOpen == 15) {
-        //     intakeSolenoid.set(Value.kReverse);
-        // } else if (framesSinceIntakeOpen == 22) {
-        //     intakeSolenoid.set(Value.kForward);
-        // }
-
-        if (framesSinceIntakeClosed == 22) {
+        if (framesSinceIntakeOpen == 14) {
+            intakeSolenoid.set(Value.kReverse);
+        } else if (framesSinceIntakeOpen == 20) {
             intakeSolenoid.set(Value.kForward);
-        } else if (framesSinceIntakeClosed == 28) {
+        }
+
+        if (framesSinceIntakeClosed == 17) {
+            intakeSolenoid.set(Value.kForward);
+        } else if (framesSinceIntakeClosed == 23) {
             intakeSolenoid.set(Value.kReverse);
         }
 

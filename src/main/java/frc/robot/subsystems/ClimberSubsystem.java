@@ -27,7 +27,8 @@ public class ClimberSubsystem extends SubsystemBase {
     DoubleSolenoid insideSolenoid;
     DoubleSolenoid insideBrake;
 
-    double sensorToMeterCoefficient = 1 * 0.05 * 0.03 * Math.PI;
+    double sensorToMeterCoefficientInside = 1 * 0.05 * 0.03 * Math.PI;
+    double sensorToMeterCoefficientOutside = 1 * 0.05 * 0.027 * Math.PI;
     // Units are meters!!
     double outsideWinchMaxHeight = 0.57;
     double insideWinchMaxHeight = 0.55;
@@ -70,15 +71,19 @@ public class ClimberSubsystem extends SubsystemBase {
         outsideMaxHeight = outsideWinchMaxHeightClosed;
         insideMaxHeight = insideWinchMaxHeightClosed;
 
-        outsideWinch.setIdleMode(IdleMode.kBrake);
+        outsideWinch.setIdleMode(IdleMode.kBrake
+        );
         insideWinch.setIdleMode(IdleMode.kBrake); 
+
+        setOutsideSolenoid(false);
+        setInsideSolenoid(false);
         
     }
 
     public void onEnable(){
         if (!beenEnabled){
-            setOutsideSolenoid(false);
-            setInsideSolenoid(false);
+            // setOutsideSolenoid(false);
+            // setInsideSolenoid(false);
         }
         beenEnabled = true;
     }
@@ -142,7 +147,7 @@ public class ClimberSubsystem extends SubsystemBase {
     }
 
     public void moveOutsideArm(double value) {
-        double armExtension = outsideEncoder.getPosition() * sensorToMeterCoefficient;
+        double armExtension = outsideEncoder.getPosition() * sensorToMeterCoefficientOutside;
         if (!useLimits) {
             if (armExtension < outsideMaxHeight && armExtension > outsideWinchMinHeight) {
                 outsideWinch.set(value);
@@ -165,7 +170,7 @@ public class ClimberSubsystem extends SubsystemBase {
             insideBrake.set(Value.kReverse);
         }
 
-        double armExtension = insideEncoder.getPosition() * sensorToMeterCoefficient;
+        double armExtension = insideEncoder.getPosition() * sensorToMeterCoefficientInside;
         if (!useLimits) {
             if (armExtension < insideMaxHeight && armExtension > insideWinchMinHeight) {
                 insideWinch.set(value);
@@ -203,7 +208,7 @@ public class ClimberSubsystem extends SubsystemBase {
         }
     }
 
-
+    
 
     public void startResetInsideArmsLength() {
         insideBrake.set(Value.kReverse);
@@ -220,7 +225,7 @@ public class ClimberSubsystem extends SubsystemBase {
     }
 
     public void checkForExtensionOutside (){
-        if (outsideEncoder.getPosition() * sensorToMeterCoefficient > 0.03  && !isResetingOutsideArm){
+        if (outsideEncoder.getPosition() * sensorToMeterCoefficientOutside > 0.03  && !isResetingOutsideArm){
             startResetOutsideArmsLength();
         } else if (!isResetingOutsideArm){
             moveOutsideArm(0);
@@ -258,8 +263,8 @@ public class ClimberSubsystem extends SubsystemBase {
         }
 
 
-        SmartDashboard.putNumber("Outside Arms Extension", outsideEncoder.getPosition() * sensorToMeterCoefficient);
-        SmartDashboard.putNumber("Inside Arms Extension", insideEncoder.getPosition() * sensorToMeterCoefficient);
+        SmartDashboard.putNumber("Outside Arms Extension", outsideEncoder.getPosition() * sensorToMeterCoefficientOutside);
+        SmartDashboard.putNumber("Inside Arms Extension", insideEncoder.getPosition() * sensorToMeterCoefficientInside);
         frameSinceOutsideOpen++;
         frameSinceOutsideClose++;
         frameSinceInsideOpen++;

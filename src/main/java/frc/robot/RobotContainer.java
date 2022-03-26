@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import javax.sound.midi.Sequence;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Compressor;
@@ -15,15 +17,19 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandGroupBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.Auto1BallLeft;
 import frc.robot.commands.Auto2Ball;
+import frc.robot.commands.Auto2BallHigh;
 import frc.robot.commands.Auto3Ball;
+import frc.robot.commands.Auto3BallHigh;
 import frc.robot.commands.Auto4Ball;
 import frc.robot.commands.BallTeleopCommand;
 import frc.robot.commands.ClimberTeleopCommand;
 import frc.robot.commands.DefaultDriveCommand;
+import frc.robot.commands.TrajectoryFollowingCommand;
 import frc.robot.commands.PitTest.TestCommand;
 import frc.robot.subsystems.BallSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
@@ -49,7 +55,7 @@ public class RobotContainer {
   private final PS4Controller secondDriverController = new PS4Controller(1);
   // Commands
   private final DefaultDriveCommand driveCommand = new DefaultDriveCommand(drivetrainSubsystem, controller);
-  private final BallTeleopCommand ballTeleopCommand = new BallTeleopCommand(ballSubsystem, secondDriverController);
+  private final BallTeleopCommand ballTeleopCommand = new BallTeleopCommand(ballSubsystem, secondDriverController, controller);
   private final ClimberTeleopCommand climberCommand = new ClimberTeleopCommand(climberSubsystem, controller,
       secondDriverController);
 
@@ -62,7 +68,12 @@ public class RobotContainer {
       "2 Ball Auto Red", 0.2);
   private final Auto4Ball auto4Ball = new Auto4Ball(ballSubsystem, drivetrainSubsystem,  "4 Ball Auto Red Part 1", "4 Ball Auto Red Part 2", "4 Ball Auto Red Part 1", "4 Ball Auto Red Part 2", 0.6);
   
+  private final Auto2BallHigh auto2BallHigh = new Auto2BallHigh(ballSubsystem, drivetrainSubsystem, "2 Ball Auto High", "2 Ball Auto High", 0.2);
+  private final Auto3BallHigh auto3BallHigh = new Auto3BallHigh(ballSubsystem, drivetrainSubsystem, "3 Ball Auto High", "3 Ball Auto High", 0.3);
+
   private final InstantCommand noAuto = new InstantCommand();
+
+  private final TrajectoryFollowingCommand taxiAuto = new TrajectoryFollowingCommand(drivetrainSubsystem, "Taxi left", 0.2);
 
   // Test commands
   private final TestCommand test = new TestCommand(drivetrainSubsystem, ballSubsystem, climberSubsystem,
@@ -86,11 +97,14 @@ public class RobotContainer {
     phCompressor.close();
 
     // Autonomus Chooser
-    autoChooser.addOption("1 Ball Left", auto1BallLeft);
-    autoChooser.setDefaultOption("2 Ball", auto2Ball);
-    autoChooser.addOption("3 Ball", auto3Ball);
-    autoChooser.addOption("4 Ball", auto4Ball);
+    autoChooser.addOption("1 Ball Low", auto1BallLeft);
+    autoChooser.addOption("2 Ball Low", auto2Ball);
+    autoChooser.addOption("3 Ball Low", auto3Ball);
     autoChooser.addOption("No Auto", noAuto);
+    autoChooser.addOption("Taxi", taxiAuto);
+    autoChooser.setDefaultOption("2 Ball High", auto2BallHigh);
+    autoChooser.addOption("3 Ball High", auto3BallHigh);
+    autoChooser.addOption("4 Ball High", auto4Ball);
 
     SmartDashboard.putData(autoChooser);
 
