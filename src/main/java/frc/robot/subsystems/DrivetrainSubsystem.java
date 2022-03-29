@@ -23,17 +23,13 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 import static frc.robot.Constants.*;
-
-import java.security.Guard;
 
 public class DrivetrainSubsystem extends SubsystemBase {
     /**
@@ -120,7 +116,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private PIDController holdRobotAngleController = new PIDController(Constants.ROBOT_HOLD_ANGLE_KP, 0, 0);
 
     private Rotation2d gyroAngle;
-    private Rotation2d gyroOffset= new Rotation2d();
+    private Rotation2d gyroOffset = new Rotation2d();
     private boolean compensationDirection;
 
     public DrivetrainSubsystem() {
@@ -169,7 +165,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         driveOdometry = new SwerveDriveOdometry(kinematics, getGyroscopeRotation());
 
-
         // SET PID
         double steerkP = 0.4;
         double steerkI = 0;
@@ -204,12 +199,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
         compensationDirection = compensationDirection ^ Constants.INVERT_COMPENSATION;
     }
 
-
     public void zeroPosition(Pose2d newPose) {
         System.out.println("Zero!");
         // double angleDeg = newPose.getRotation().getDegrees();
         // System.out.println(angleDeg);
-        //m_pigeon.setFusedHeading(0);
+        // m_pigeon.setFusedHeading(0);
         // m_pigeon.setFusedHeading(angleDeg);
         // gyroOffset = getGyroRotationRaw().minus(newPose.getRotation());
         gyroOffset = Rotation2d.fromDegrees(getGyroRotationRaw().getDegrees() - newPose.getRotation().getDegrees());
@@ -227,7 +221,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         resetEncoder = true;
     }
 
-    public void resetHoldAngle(){
+    public void resetHoldAngle() {
         holdAngleSetpoint = getGyroscopeRotation().getRadians();
         fromRotationCounter = 0;
     }
@@ -250,8 +244,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
         // return Rotation2d.fromDegrees(360.0 - m_navx.getYaw());
     }
 
-    public Rotation2d getGyroRotationRaw(){
-        return Rotation2d.fromDegrees(m_pigeon.getFusedHeading() * 1.00278552); 
+    public Rotation2d getGyroRotationRaw() {
+        return Rotation2d.fromDegrees(m_pigeon.getFusedHeading() * 1.00278552);
     }
 
     public void drive(ChassisSpeeds chassisSpeeds) {
@@ -259,7 +253,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
             fromRotationCounter++;
             if (chassisSpeeds.vxMetersPerSecond != 0 || chassisSpeeds.vyMetersPerSecond != 0) {
                 if (fromRotationCounter >= 25)
-                chassisSpeeds.omegaRadiansPerSecond = holdRobotAngleController.calculate(getGyroscopeRotation().getRadians(), holdAngleSetpoint);
+                    chassisSpeeds.omegaRadiansPerSecond = holdRobotAngleController
+                            .calculate(getGyroscopeRotation().getRadians(), holdAngleSetpoint);
             } else {
                 // resetHoldAngle();
             }
@@ -278,17 +273,19 @@ public class DrivetrainSubsystem extends SubsystemBase {
         // SwerveDriveKinematics.normalizeWheelSpeeds(states,
         // MAX_VELOCITY_METERS_PER_SECOND);
         driveWithModuleStates(states);
-        
+
         if (framesSinceEnable < 750)
-        updateOdometry();
+            updateOdometry();
         if (enabled)
-        framesSinceEnable++;
+            framesSinceEnable++;
         // SmartDashboard.putNumber("Wheel sent speed", states[0].speedMetersPerSecond);
         // SmartDashboard.putNumber("Wheel sent Voltage", states[0].speedMetersPerSecond
         // / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE);
         // SmartDashboard.putNumber("Wheel measured speed",
         // frontLeftModule.getDriveVelocity());
-        // System.out.println(Math.toDegrees(holdAngleSetpoint)  + ", " + getGyroscopeRotation().getDegrees() + ", " + getGyroRotationRaw().getDegrees());
+        // System.out.println(Math.toDegrees(holdAngleSetpoint) + ", " +
+        // getGyroscopeRotation().getDegrees() + ", " +
+        // getGyroRotationRaw().getDegrees());
         // System.out.println("Pose is: " + robotPose.getX() + ", " + robotPose.getY()
         // +", " + robotPose.getRotation().getDegrees() + ", " +
         // getGyroscopeRotation().getDegrees());
@@ -366,10 +363,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
         framesSinceEnable = 0;
     }
 
-    public void onDisable(){
+    public void onDisable() {
         enabled = false;
     }
-
 
     public void enableExtraBrake() {
         extraBrake = true;

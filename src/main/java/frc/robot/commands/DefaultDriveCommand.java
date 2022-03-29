@@ -26,11 +26,9 @@ public class DefaultDriveCommand extends CommandBase {
 
         // You can use `new ChassisSpeeds(...)` for robot-oriented movement instead of
         // field-oriented movement
-        if (input.getRawButton(5))
-        {
+        if (input.getRawButton(5)) {
             if (!input.getRawButton(3)) {
                 m_drivetrainSubsystem.drive(
-
                         ChassisSpeeds.fromFieldRelativeSpeeds(
                                 deadband(input.getRawAxis(Constants.DRIVER_CONTROLLER_Y_AXIS_ID), 0.05) * sensitivity
                                         * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
@@ -61,13 +59,13 @@ public class DefaultDriveCommand extends CommandBase {
 
     private double deadband(double value, double lowerLimit) {
         // return Math.abs(value) < lowerLimit ? 0 : value;
-        if (Math.abs(value) < lowerLimit){
+        if (Math.abs(value) < lowerLimit) {
             return 0;
-        } else{
-            if (value > 0){
-            return (value - lowerLimit) / (1-lowerLimit);
+        } else {
+            if (value > 0) {
+                return (value - lowerLimit) / (1 - lowerLimit);
             } else {
-                return (value + lowerLimit) / (1-lowerLimit);
+                return (value + lowerLimit) / (1 - lowerLimit);
             }
         }
     }

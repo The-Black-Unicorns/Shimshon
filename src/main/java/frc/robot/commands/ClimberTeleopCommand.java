@@ -15,6 +15,8 @@ public class ClimberTeleopCommand extends CommandBase {
     PS4Controller secondController;
     Joystick mainController;
 
+    boolean keepOutsideClosed = true;
+
     public ClimberTeleopCommand(ClimberSubsystem subsystem, Joystick taranis, PS4Controller controller) {
         climberSubsystem = subsystem;
         mainController = taranis;
@@ -34,34 +36,35 @@ public class ClimberTeleopCommand extends CommandBase {
         climberSubsystem.setLimitsEnabled(mainController.getRawButton(6));
 
         // climberSubsystem.setBrake(secondController.getSquareButton());
-        
 
         boolean resetInsideArm = secondController.getShareButton();
-        if (!resetInsideArm)
-        {
+        if (!resetInsideArm) {
             climberSubsystem.moveInsideArm(-deadband(secondController.getLeftY(), 0.2));
         }
         if (secondController.getShareButtonPressed())
-        climberSubsystem.startResetInsideArmsLength();
+            climberSubsystem.startResetInsideArmsLength();
         if (secondController.getShareButtonReleased())
-        climberSubsystem.stopResetInsideArm(false);
+            climberSubsystem.stopResetInsideArm(false);
 
         boolean resetOutsideArm = secondController.getOptionsButton();
-        if (!resetOutsideArm)
-        {
+        if (!resetOutsideArm && !secondController.getPSButton()) {
+
             if (!mainController.getRawButton(5)) {
                 climberSubsystem.moveOutsideArm(deadband(mainController.getRawAxis(2), 0.2));
-            } else {
+            } else if (keepOutsideClosed) {
                 climberSubsystem.checkForExtensionOutside();
             }
         }
         if (secondController.getOptionsButtonPressed())
-        climberSubsystem.startResetOutsideArmsLength();
+            climberSubsystem.startResetOutsideArmsLength();
         if (secondController.getOptionsButtonReleased())
-        climberSubsystem.stopResetOutsideArm(false);
-    }
+            climberSubsystem.stopResetOutsideArm(false);
 
-    
+        if (secondController.getPSButtonPressed()) {
+            keepOutsideClosed = false;
+            climberSubsystem.startOutsideOpen();
+        }
+    }
 
     // Called once the command ends or is interrupted.
     @Override

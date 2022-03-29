@@ -69,8 +69,8 @@ public class BallSubsystem extends SubsystemBase {
 
         led.setData(ledBuffer);
         DrivetrainSubsystem.updateFalconPID(Constants.SHOOTER_TALONFX_MOTOR, 0.07, 0, 0,
-        0.053 , NeutralMode.Coast);
-        setShooterSpeed(Constants.SHOOTER_FLYWHEEL_RPM_LOW_GOAL);
+                0.053, NeutralMode.Coast);
+        setShooterSpeed(Constants.SHOOTER_FLYWHEEL_RPM_HIGH_GOAL);
         closeIntake();
         stopShooter();
     }
@@ -82,7 +82,7 @@ public class BallSubsystem extends SubsystemBase {
         intakeSolenoid.set(Value.kForward);
         framesSinceIntakeOpen = 0;
         framesSinceIntakeClosed = Integer.MIN_VALUE;
-        shooterFalcon.set(ControlMode.PercentOutput, -0.2);
+        shooterFalcon.set(ControlMode.PercentOutput, -0.4);
     }
 
     public void closeIntake(boolean stopConveyor) {
@@ -131,10 +131,12 @@ public class BallSubsystem extends SubsystemBase {
     }
 
     public void setShooterSpeed(int rpmTarget) {
-        falconUnitsTargetVelocity = (int)(rpmTarget / falconToRPMCoefficient);
-        if (shooterWarming) {
+        falconUnitsTargetVelocity = (int) (rpmTarget / falconToRPMCoefficient);
+        if (shooterWarming && conveyorReverseTimer < 0) {
             shooterFalcon.set(ControlMode.Velocity, falconUnitsTargetVelocity);
         }
+        System.out.println(rpmTarget);
+        SmartDashboard.putNumber("Shooter Target", rpmTarget);
     }
 
     public void shoot() {
@@ -172,12 +174,12 @@ public class BallSubsystem extends SubsystemBase {
         }
     }
 
-    public void startReversingIntake(){
+    public void startReversingIntake() {
         intake775.set(ControlMode.PercentOutput, 0.4);
     }
 
-    public void stopReversingIntake (){
-        if (intakeOpen){
+    public void stopReversingIntake() {
+        if (intakeOpen) {
             intake775.set(ControlMode.PercentOutput, Constants.INTAKE_SPEED_PERCENT);
         } else {
             intake775.set(ControlMode.PercentOutput, 0);
@@ -188,45 +190,41 @@ public class BallSubsystem extends SubsystemBase {
         if (shooterWarming) {
             for (int i = 0; i < ledBuffer.getLength(); i++) {
 
-                if (i == locationInStrip % ledBuffer.getLength()){
+                if (i == locationInStrip % ledBuffer.getLength()) {
                     ledBuffer.setLED(i, ledColor);
-                } else if (i == (locationInStrip + 1) % ledBuffer.getLength() ){
+                } else if (i == (locationInStrip + 1) % ledBuffer.getLength()) {
                     ledBuffer.setLED(i, ledColor);
-                } else if (i == (locationInStrip + 2) % ledBuffer.getLength()){
+                } else if (i == (locationInStrip + 2) % ledBuffer.getLength()) {
                     ledBuffer.setLED(i, ledColor);
-                } else if (i == (locationInStrip + 3) % ledBuffer.getLength()){
+                } else if (i == (locationInStrip + 3) % ledBuffer.getLength()) {
                     ledBuffer.setLED(i, ledColor);
-                } else if (i == (locationInStrip + 4) % ledBuffer.getLength()){
+                } else if (i == (locationInStrip + 4) % ledBuffer.getLength()) {
                     ledBuffer.setLED(i, ledColor);
-                } else if (i == (locationInStrip + 5) % ledBuffer.getLength()){
+                } else if (i == (locationInStrip + 5) % ledBuffer.getLength()) {
                     ledBuffer.setLED(i, ledColor);
-                } 
-                
-                else{
+                } else {
                     ledBuffer.setLED(i, Color.kBlack);
                 }
 
             }
             locationInStrip += 2;
 
-
             // ledBuffer.setLED(locationInStrip, ledColor);
             // if (locationInStrip == 0) {
-            //     ledBuffer.setLED(ledBuffer.getLength() - 3, Color.kBlack);
+            // ledBuffer.setLED(ledBuffer.getLength() - 3, Color.kBlack);
             // } else if (locationInStrip == 1){
-            //     ledBuffer.setLED(ledBuffer.getLength() - 2, Color.kBlack);
+            // ledBuffer.setLED(ledBuffer.getLength() - 2, Color.kBlack);
             // } else if (locationInStrip == 2){
-            //     ledBuffer.setLED(ledBuffer.getLength() - 1, Color.kBlack);
+            // ledBuffer.setLED(ledBuffer.getLength() - 1, Color.kBlack);
             // } else {
-            //     ledBuffer.setLED(locationInStrip - 3, Color.kBlack);
+            // ledBuffer.setLED(locationInStrip - 3, Color.kBlack);
             // }
             // locationInStrip++;
             // if (locationInStrip == ledBuffer.getLength()) {
-            //     locationInStrip = 0;
-            // }        
-        }
-        else if (intakeOpen){
-            if (ledBlinkCounter < 15){
+            // locationInStrip = 0;
+            // }
+        } else if (intakeOpen) {
+            if (ledBlinkCounter < 15) {
                 for (int i = 0; i < ledBuffer.getLength(); i++) {
                     ledBuffer.setLED(i, ledColor);
                 }
@@ -236,7 +234,7 @@ public class BallSubsystem extends SubsystemBase {
                 }
             }
             ledBlinkCounter++;
-            if (ledBlinkCounter == 30){
+            if (ledBlinkCounter == 30) {
                 ledBlinkCounter = 0;
             }
         } else {
@@ -268,16 +266,15 @@ public class BallSubsystem extends SubsystemBase {
 
         if (framesSinceIntakeClosed == 50) {
             conveyor775.set(ControlMode.PercentOutput, 0);
-            if (!shooterWarming){
+            if (!shooterWarming) {
                 shooterFalcon.set(ControlMode.PercentOutput, 0);
             }
         }
 
         // Soften intake open and close
-
-        if (framesSinceIntakeOpen == 14) {
+        if (framesSinceIntakeOpen == 8) {
             intakeSolenoid.set(Value.kReverse);
-        } else if (framesSinceIntakeOpen == 20) {
+        } else if (framesSinceIntakeOpen == 18) {
             intakeSolenoid.set(Value.kForward);
         }
 
@@ -308,7 +305,6 @@ public class BallSubsystem extends SubsystemBase {
         framesSinceIntakeOpen++;
         framesSinceIntakeClosed++;
         conveyorReverseTimer--;
-
     }
 
 }

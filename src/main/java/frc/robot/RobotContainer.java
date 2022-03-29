@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import javax.sound.midi.Sequence;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Compressor;
@@ -17,9 +15,9 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandGroupBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.Auto1BallHigh;
 import frc.robot.commands.Auto1BallLeft;
 import frc.robot.commands.Auto2Ball;
 import frc.robot.commands.Auto2BallHigh;
@@ -68,6 +66,7 @@ public class RobotContainer {
       "2 Ball Auto Red", 0.2);
   private final Auto4Ball auto4Ball = new Auto4Ball(ballSubsystem, drivetrainSubsystem,  "4 Ball Auto Red Part 1", "4 Ball Auto Red Part 2", "4 Ball Auto Red Part 1", "4 Ball Auto Red Part 2", 0.6);
   
+  private final Auto1BallHigh auto1BallHigh = new Auto1BallHigh(ballSubsystem, drivetrainSubsystem, "1 Ball Auto High", "1 Ball Auto High", 0.2);
   private final Auto2BallHigh auto2BallHigh = new Auto2BallHigh(ballSubsystem, drivetrainSubsystem, "2 Ball Auto High", "2 Ball Auto High", 0.2);
   private final Auto3BallHigh auto3BallHigh = new Auto3BallHigh(ballSubsystem, drivetrainSubsystem, "3 Ball Auto High", "3 Ball Auto High", 0.3);
 
@@ -105,6 +104,7 @@ public class RobotContainer {
     autoChooser.setDefaultOption("2 Ball High", auto2BallHigh);
     autoChooser.addOption("3 Ball High", auto3BallHigh);
     autoChooser.addOption("4 Ball High", auto4Ball);
+    autoChooser.addOption("1 Ball High", auto1BallHigh);
 
     SmartDashboard.putData(autoChooser);
 
@@ -146,7 +146,10 @@ public class RobotContainer {
         .whenPressed(() -> ballSubsystem.startSpittingShooter())
         .whenReleased(() -> ballSubsystem.stopSpittingShooter());
 
+    new JoystickButton(secondDriverController, PS4Controller.Button.kPS.value)
+        .whenPressed(() -> climberSubsystem.startOutsideOpen());
   }
+  
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
