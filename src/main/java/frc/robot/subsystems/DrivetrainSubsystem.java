@@ -21,6 +21,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -39,60 +40,34 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * useful during initial testing of the robot.
      */
     public static final double MAX_VOLTAGE = 12.0;
-    // The formula for calculating the theoretical maximum velocity is:
-    // <Motor free speed RPM> / 60 * <Drive reduction> * <Wheel diameter meters> *
-    // pi
-    // By default this value is setup for a Mk3 standard module using Falcon500s to
-    // drive.
-    // An example of this constant for a Mk4 L2 module with NEOs to drive is:
-    // 5880.0 / 60.0 / SdsModuleConfigurations.MK4_L2.getDriveReduction() *
-    // SdsModuleConfigurations.MK4_L2.getWheelDiameter() * Math.PI
-    /**
-     * The maximum velocity of the robot in meters per second.
-     * <p>
-     * This is a measure of how fast the robot should be able to drive in a straight
-     * line.
-     */
+
+    // Max theoretical velocity
     public static final double MAX_VELOCITY_METERS_PER_SECOND = 6380.0 / 60.0
             * SdsModuleConfigurations.MK4_L1.getDriveReduction()
             * SdsModuleConfigurations.MK4_L1.getWheelDiameter()
             * Math.PI;
 
-    /**
-     * The maximum angular velocity of the robot in radians per second.
-     * <p>
-     * This is a measure of how fast the robot can rotate in place.
-     * 
-     * // Here we calculate the theoretical maximum angular velocity. You can also
-     * // replace this with a measured amount.
-     **/
+    // Max theoretical angular velocity
     public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = MAX_VELOCITY_METERS_PER_SECOND
             / Math.hypot(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0);
 
     public SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
             // Front left
-            new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
-                    DRIVETRAIN_WHEELBASE_METERS / 2.0),
+            new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0),
             // Front right
-            new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
-                    -DRIVETRAIN_WHEELBASE_METERS / 2.0),
+            new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0),
             // Back left
-            new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
-                    DRIVETRAIN_WHEELBASE_METERS / 2.0),
+            new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0),
             // Back right
-            new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
-                    -DRIVETRAIN_WHEELBASE_METERS / 2.0));;
+            new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0));
 
-    // By default we use a Pigeon for our gyroscope. But if you use another
-    // gyroscope, like a NavX, you can change this.
-    // The important thing about how you configure your gyroscope is that rotating
+    
+
     // the robot counter-clockwise should
     // cause the angle reading to increase until it wraps back over to zero.
     private final PigeonIMU m_pigeon = new PigeonIMU(DRIVETRAIN_PIGEON_ID);
-    // private final AHRS m_navx = new AHRS(SPI.Port.kMXP, (byte) 200); // NavX
-    // connected over MXP
 
-    // These are our modules. We initialize them in the constructor.
+    //Modules
     private final SwerveModule frontLeftModule;
     private final SwerveModule frontRightModule;
     private final SwerveModule backLeftModule;
@@ -104,16 +79,16 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     public Pose2d robotPose = new Pose2d();
 
-    public boolean extraBrake = false;
+    private boolean extraBrake = false;
 
     public double holdAngleSetpoint = Math.toRadians(0);
     int fromRotationCounter = 0;
     boolean resetEncoder = false;
-
-    boolean enabled = false;
-    int framesSinceEnable = 0;
-
     private PIDController holdRobotAngleController = new PIDController(Constants.ROBOT_HOLD_ANGLE_KP, 0, 0);
+
+    private boolean enabled = false;
+
+    private int framesSinceEnable = 0;
 
     private Rotation2d gyroAngle;
     private Rotation2d gyroOffset = new Rotation2d();
@@ -123,24 +98,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
 
         frontLeftModule = Mk4SwerveModuleHelper.createFalcon500(
-                // This parameter is optional, but will allow you to see the current state of
-                // the module on the dashboard.
-
                 tab.getLayout("Front Left Module", BuiltInLayouts.kList).withSize(2, 4).withPosition(0,
                         0),
-                // This can either be STANDARD or FAST depending on your gear configuration
-                Mk4SwerveModuleHelper.GearRatio.L1,
-                // This is the ID of the drive motor
-                FRONT_LEFT_MODULE_DRIVE_MOTOR,
-                // This is the ID of the steer motor
+                Mk4SwerveModuleHelper.GearRatio.L1, FRONT_LEFT_MODULE_DRIVE_MOTOR,
                 FRONT_LEFT_MODULE_STEER_MOTOR,
-                // This is the ID of the steer encoder
-                FRONT_LEFT_MODULE_STEER_ENCODER,
-                // This is how much the steer encoder is offset from true zero (In our case,
-                // zero is facing straight forward)
-                FRONT_LEFT_MODULE_STEER_OFFSET);
-
-        // We will do the same for the other modules
+                FRONT_LEFT_MODULE_STEER_ENCODER, FRONT_LEFT_MODULE_STEER_OFFSET);
         frontRightModule = Mk4SwerveModuleHelper.createFalcon500(
                 tab.getLayout("Front Right Module", BuiltInLayouts.kList).withSize(2, 4).withPosition(2,
                         0),
@@ -153,7 +115,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 Mk4SwerveModuleHelper.GearRatio.L1, BACK_LEFT_MODULE_DRIVE_MOTOR,
                 BACK_LEFT_MODULE_STEER_MOTOR,
                 BACK_LEFT_MODULE_STEER_ENCODER, BACK_LEFT_MODULE_STEER_OFFSET);
-
         backRightModule = Mk4SwerveModuleHelper.createFalcon500(
                 tab.getLayout("Back Right Module", BuiltInLayouts.kList).withSize(2, 4).withPosition(6,
                         0),
@@ -191,6 +152,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
         holdRobotAngleController.disableContinuousInput();
         holdRobotAngleController.setTolerance(Math.toRadians(2));
 
+
+        //Get carpet compensation direction
         if (DriverStation.getAlliance() == Alliance.Red) {
             compensationDirection = true;
         } else {
@@ -201,19 +164,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     public void zeroPosition(Pose2d newPose) {
         System.out.println("Zero!");
-        // double angleDeg = newPose.getRotation().getDegrees();
-        // System.out.println(angleDeg);
-        // m_pigeon.setFusedHeading(0);
-        // m_pigeon.setFusedHeading(angleDeg);
-        // gyroOffset = getGyroRotationRaw().minus(newPose.getRotation());
-        gyroOffset = Rotation2d.fromDegrees(getGyroRotationRaw().getDegrees() - newPose.getRotation().getDegrees());
-        // System.out.println(newPose.getRotation());
-        // updateGyroAngle();
-        // System.out.println(getGyroscopeRotation());
-        holdAngleSetpoint = newPose.getRotation().getRadians();
-        // m_navx.zeroYaw();
 
-        // Reset odometry angle
+        gyroOffset = Rotation2d.fromDegrees(getGyroRotationRaw().getDegrees() - newPose.getRotation().getDegrees());
+        holdAngleSetpoint = newPose.getRotation().getRadians();
+
         driveOdometry.resetPosition(newPose, newPose.getRotation());
     }
 
@@ -221,7 +175,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         resetEncoder = true;
     }
 
-    public void resetHoldAngle() {
+    private void resetHoldAngle() {
         holdAngleSetpoint = getGyroscopeRotation().getRadians();
         fromRotationCounter = 0;
     }
@@ -244,7 +198,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         // return Rotation2d.fromDegrees(360.0 - m_navx.getYaw());
     }
 
-    public Rotation2d getGyroRotationRaw() {
+    private Rotation2d getGyroRotationRaw() {
         return Rotation2d.fromDegrees(m_pigeon.getFusedHeading() * 1.00278552);
     }
 
@@ -270,22 +224,13 @@ public class DrivetrainSubsystem extends SubsystemBase {
     public void periodic() {
 
         SwerveModuleState[] states = kinematics.toSwerveModuleStates(m_chassisSpeeds, new Translation2d(0, 0));
-        // SwerveDriveKinematics.normalizeWheelSpeeds(states,
-        // MAX_VELOCITY_METERS_PER_SECOND);
         driveWithModuleStates(states);
 
         if (framesSinceEnable < 750)
             updateOdometry();
         if (enabled)
             framesSinceEnable++;
-        // SmartDashboard.putNumber("Wheel sent speed", states[0].speedMetersPerSecond);
-        // SmartDashboard.putNumber("Wheel sent Voltage", states[0].speedMetersPerSecond
-        // / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE);
-        // SmartDashboard.putNumber("Wheel measured speed",
-        // frontLeftModule.getDriveVelocity());
-        // System.out.println(Math.toDegrees(holdAngleSetpoint) + ", " +
-        // getGyroscopeRotation().getDegrees() + ", " +
-        // getGyroRotationRaw().getDegrees());
+
         // System.out.println("Pose is: " + robotPose.getX() + ", " + robotPose.getY()
         // +", " + robotPose.getRotation().getDegrees() + ", " +
         // getGyroscopeRotation().getDegrees());
@@ -389,4 +334,25 @@ public class DrivetrainSubsystem extends SubsystemBase {
         talon.setNeutralMode(neutralMode);
         talon.setStatusFramePeriod(1, 20);
     }
+
+    public Pose2d getVisionPose(){
+        
+        double distance = getDistanceMetersVision();
+
+        
+        return new Pose2d();
+    }
+
+    public double getDistanceMetersVision () {
+
+        //In degrees
+        double cameraAngle = 20;
+        double targetY =  NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0) + cameraAngle;
+        //Between The camera to the target
+        double deltaY = 1.2;
+
+        double distance = deltaY / Math.sin(Math.toRadians(cameraAngle + targetY));
+        return distance;
+    }
+
 }

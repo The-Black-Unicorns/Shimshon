@@ -2,18 +2,18 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands;
+package frc.robot.commands.AutoCommands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.BallSubsystem;
 
-public class Auto3BallHighSystems extends CommandBase {
+public class Auto4BallSystems extends CommandBase {
 
   BallSubsystem ballSubsystem;
 
   int counter = 0;
 
-  public Auto3BallHighSystems(BallSubsystem subsystem) {
+  public Auto4BallSystems(BallSubsystem subsystem) {
 
     ballSubsystem = subsystem;
     addRequirements(subsystem);
@@ -21,29 +21,26 @@ public class Auto3BallHighSystems extends CommandBase {
   }
 
   @Override
-  public void initialize() {}
+  public void initialize() {
+    
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    
-    if (counter < 100){
-      ballSubsystem.shoot();
-    } else if (counter == 120){
-      ballSubsystem.stopShooter();
+    if (counter == 1){
       ballSubsystem.openIntake();
-    // } else if (counter == 280){
-    //   ballSubsystem.startReversingIntake();
-    // } else if (counter == 330){
-    //   ballSubsystem.stopReversingIntake();
-    // } else if (counter == 450){
-    //   ballSubsystem.startReversingIntake();
-    // } else if (counter == 475){
-    //   ballSubsystem.stopReversingIntake();
-    
-    } else if (counter == 475){
+    } else if (counter == 135){
       ballSubsystem.prepareForShootingInit();
-    } else if (counter > 575){
+    } else if (counter > 170 && counter < 250){
+      ballSubsystem.shoot();
+    } else if (counter == 250){
+      ballSubsystem.stopShooter();
+    } else if (counter == 300){
+      ballSubsystem.openIntake();
+    } else if (counter == 575 ){
+      ballSubsystem.prepareForShootingInit();
+    } else if (counter > 660){
       ballSubsystem.shoot();
     }
     counter++;

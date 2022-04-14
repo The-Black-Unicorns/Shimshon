@@ -2,18 +2,18 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands;
+package frc.robot.commands.AutoCommands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.BallSubsystem;
 
-public class Auto2BallSystems extends CommandBase {
+public class Auto2BallHighSystems extends CommandBase {
 
     BallSubsystem ballSubsystem;
 
     int counter = 0;
 
-    public Auto2BallSystems(BallSubsystem subsystem) {
+    public Auto2BallHighSystems(BallSubsystem subsystem) {
 
         ballSubsystem = subsystem;
         addRequirements(subsystem);
@@ -28,16 +28,14 @@ public class Auto2BallSystems extends CommandBase {
     @Override
     public void execute() {
 
-        if (counter < 100) {
-            ballSubsystem.shoot();
-        } else if (counter == 100) {
-            ballSubsystem.stopShooter();
+        if (counter == 1){
             ballSubsystem.openIntake();
-        } else if (counter == 400) {
-            ballSubsystem.closeIntake(false);
+        }else if (counter == 200){
             ballSubsystem.prepareForShootingInit();
-        } else if (counter > 450) {
+        } else if (counter >= 325 && counter < 500){
             ballSubsystem.shoot();
+        } else if (counter == 500){
+            ballSubsystem.stopShooter();
         }
         counter++;
     }
