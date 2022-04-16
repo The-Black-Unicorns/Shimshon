@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Translation2d;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
  * numerical or boolean
@@ -74,8 +76,10 @@ public final class Constants {
     public static final int SHOOTER_FLYWHEEL_RPM_HIGH_GOAL = 3479;
     public static final int SHOOTER_FLYWHEEL_RPM_ERROR = 500;
 
+    //Odometry
     public static final boolean CARPET_COMPENSATION = true;
     public static final boolean INVERT_COMPENSATION = false;
+    public static final Translation2d GOAL_LOCATION = new Translation2d(0, 0);
 
     public static final double SWERVE_ROTATION_KP = 0.2;
     public static final double SWERVE_ROTATION_KD = 0.1;

@@ -110,7 +110,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 FRONT_RIGHT_MODULE_STEER_MOTOR,
                 FRONT_RIGHT_MODULE_STEER_ENCODER, FRONT_RIGHT_MODULE_STEER_OFFSET);
         backLeftModule = Mk4SwerveModuleHelper.createFalcon500(
-                tab.getLayout("Back Left M      odule", BuiltInLayouts.kList).withSize(2, 4)
+                tab.getLayout("Back Left Module", BuiltInLayouts.kList).withSize(2, 4)
                         .withPosition(4, 0),
                 Mk4SwerveModuleHelper.GearRatio.L1, BACK_LEFT_MODULE_DRIVE_MOTOR,
                 BACK_LEFT_MODULE_STEER_MOTOR,
@@ -335,12 +335,17 @@ public class DrivetrainSubsystem extends SubsystemBase {
         talon.setStatusFramePeriod(1, 20);
     }
 
-    public Pose2d getVisionPose(){
+    public Translation2d getVisionPose(){
         
         double distance = getDistanceMetersVision();
+        Rotation2d angle = getGyroscopeRotation().minus(Rotation2d.fromDegrees(NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0)));
 
+        double deltaX = distance * angle.getCos();
+        double deltaY = distance *angle.getSin();
         
-        return new Pose2d();
+        Translation2d pose = Constants.GOAL_LOCATION.plus(new Translation2d(deltaX, deltaY));
+
+        return pose;
     }
 
     public double getDistanceMetersVision () {
