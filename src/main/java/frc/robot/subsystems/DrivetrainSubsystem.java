@@ -7,7 +7,6 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.sensors.PigeonIMU;
 import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.SwerveModule;
@@ -29,6 +28,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 
 import static frc.robot.Constants.*;
 
@@ -51,6 +51,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = MAX_VELOCITY_METERS_PER_SECOND
             / Math.hypot(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0);
 
+
     public SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
             // Front left
             new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0),
@@ -63,9 +64,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     
 
-    // the robot counter-clockwise should
-    // cause the angle reading to increase until it wraps back over to zero.
-    private final PigeonIMU m_pigeon = new PigeonIMU(DRIVETRAIN_PIGEON_ID);
+
 
     //Modules
     private final SwerveModule frontLeftModule;
@@ -90,8 +89,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     private int framesSinceEnable = 0;
 
-    private Rotation2d gyroAngle;
-    private Rotation2d gyroOffset = new Rotation2d();
+    
     private boolean compensationDirection;
 
     public DrivetrainSubsystem() {
@@ -122,9 +120,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 BACK_RIGHT_MODULE_STEER_MOTOR,
                 BACK_RIGHT_MODULE_STEER_ENCODER, BACK_RIGHT_MODULE_STEER_OFFSET);
 
-        updateGyroAngle();
+        RobotContainer.gyroSubsystem.updateGyroAngle();
 
-        driveOdometry = new SwerveDriveOdometry(kinematics, getGyroscopeRotation());
+        driveOdometry = new SwerveDriveOdometry(kinematics, RobotContainer.gyroSubsystem.getGyroscopeRotation());
 
         // SET PID
         double steerkP = 0.4;
@@ -144,12 +142,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
         updateFalconPID(31, drivekP, drivekI, drivekD, drivekF, NeutralMode.Brake);
         updateFalconPID(41, drivekP, drivekI, drivekD, drivekF, NeutralMode.Brake);
 
-        // Pigeon status frames
-        m_pigeon.setStatusFramePeriod(6, 10);
-        m_pigeon.setStatusFramePeriod(11, 10);
-        m_pigeon.setStatusFramePeriod(4, 10);
 
-        holdRobotAngleController.disableContinuousInput();
+
+        holdRobotAngleController.enableContinuousInput(Math.toRadians(-180), Math.toRadians(180));
         holdRobotAngleController.setTolerance(Math.toRadians(2));
 
 
@@ -160,15 +155,19 @@ public class DrivetrainSubsystem extends SubsystemBase {
             compensationDirection = false;
         }
         compensationDirection = compensationDirection ^ Constants.INVERT_COMPENSATION;
+
     }
 
     public void zeroPosition(Pose2d newPose) {
         System.out.println("Zero!");
 
-        gyroOffset = Rotation2d.fromDegrees(getGyroRotationRaw().getDegrees() - newPose.getRotation().getDegrees());
+        RobotContainer.gyroSubsystem.zeroGyro(newPose.getRotation());
         holdAngleSetpoint = newPose.getRotation().getRadians();
 
         driveOdometry.resetPosition(newPose, newPose.getRotation());
+    }
+    public void zeroPosition (){
+        zeroPosition(new Pose2d());
     }
 
     public void matchEncoders() {
@@ -176,30 +175,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     private void resetHoldAngle() {
-        holdAngleSetpoint = getGyroscopeRotation().getRadians();
+        holdAngleSetpoint = RobotContainer.gyroSubsystem.getGyroscopeRotation().getRadians();
         fromRotationCounter = 0;
-    }
-
-    public void updateGyroAngle() {
-        gyroAngle = Rotation2d.fromDegrees(m_pigeon.getFusedHeading() * 1.00278552 - gyroOffset.getDegrees());
-        // System.out.println(gyroAngle.getDegrees() + ", " + gyroOffset.getDegrees());
-        // System.out.println(callsPerLoop);
-        // callsPerLoop = 0;
-    }
-
-    public Rotation2d getGyroscopeRotation() {
-        // return Rotation2d.fromDegrees(0);
-        // return Rotation2d.fromDegrees(m_pigeon.getFusedHeading() * 1.00278552);
-        // callsPerLoop++;
-        return gyroAngle;
-        // if (m_navx.isMagnetometerCalibrated()) {
-        // return Rotation2d.fromDegrees(m_navx.getFusedHeading());
-        // }
-        // return Rotation2d.fromDegrees(360.0 - m_navx.getYaw());
-    }
-
-    private Rotation2d getGyroRotationRaw() {
-        return Rotation2d.fromDegrees(m_pigeon.getFusedHeading() * 1.00278552);
     }
 
     public void drive(ChassisSpeeds chassisSpeeds) {
@@ -208,7 +185,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
             if (chassisSpeeds.vxMetersPerSecond != 0 || chassisSpeeds.vyMetersPerSecond != 0) {
                 if (fromRotationCounter >= 25)
                     chassisSpeeds.omegaRadiansPerSecond = holdRobotAngleController
-                            .calculate(getGyroscopeRotation().getRadians(), holdAngleSetpoint);
+                            .calculate(RobotContainer.gyroSubsystem.getGyroscopeRotation().getRadians(), holdAngleSetpoint);
             } else {
                 // resetHoldAngle();
             }
@@ -269,7 +246,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private void updateOdometry() {
 
         // Updating the odometry
-        Pose2d tempPose = driveOdometry.update(getGyroscopeRotation(),
+        Pose2d tempPose = driveOdometry.update(RobotContainer.gyroSubsystem.getGyroscopeRotation(),
                 new SwerveModuleState(frontLeftModule.getDriveVelocity(),
                         new Rotation2d(frontLeftModule.getSteerAngle())),
                 new SwerveModuleState(frontRightModule.getDriveVelocity(),
@@ -297,13 +274,13 @@ public class DrivetrainSubsystem extends SubsystemBase {
                                 new Rotation2d()));
                 tempPose = tempPose2;
             }
-            driveOdometry.resetPosition(tempPose, getGyroscopeRotation());
+            driveOdometry.resetPosition(tempPose, RobotContainer.gyroSubsystem.getGyroscopeRotation());
         }
         robotPose = tempPose;
     }
 
     public void onEnable() {
-        holdAngleSetpoint = getGyroscopeRotation().getRadians();
+        resetHoldAngle();
         enabled = true;
         framesSinceEnable = 0;
     }
@@ -338,7 +315,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     public Translation2d getVisionPose(){
         
         double distance = getDistanceMetersVision();
-        Rotation2d angle = getGyroscopeRotation().minus(Rotation2d.fromDegrees(NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0)));
+        Rotation2d angle = RobotContainer.gyroSubsystem.getGyroscopeRotation().minus(Rotation2d.fromDegrees(NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0)));
 
         double deltaX = distance * angle.getCos();
         double deltaY = distance *angle.getSin();

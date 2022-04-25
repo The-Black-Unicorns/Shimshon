@@ -36,8 +36,8 @@ public final class Constants {
 
     public static final int DRIVETRAIN_PIGEON_ID = 2; // FIXME Set Pigeon ID
 
-    public static final int DRIVER_CONTROLLER_X_AXIS_ID = 1; // Sideways
-    public static final int DRIVER_CONTROLLER_Y_AXIS_ID = 2; // Forward
+    public static final int DRIVER_CONTROLLER_Y_AXIS_ID = 1; // Sideways
+    public static final int DRIVER_CONTROLLER_X_AXIS_ID = 2; // Forward
     public static final int DRIVER_CONTROLLER_Z_AXIS_ID = 3; // Rotation
 
     public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 31;

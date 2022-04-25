@@ -32,6 +32,7 @@ import frc.robot.commands.PitTest.TestCommand;
 import frc.robot.subsystems.BallSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.GyroSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -45,6 +46,7 @@ import frc.robot.subsystems.DrivetrainSubsystem;
  */
 public class RobotContainer {
   // Subsystems
+  public static final GyroSubsystem gyroSubsystem = new GyroSubsystem();
   private final DrivetrainSubsystem drivetrainSubsystem = new DrivetrainSubsystem();
   private final BallSubsystem ballSubsystem = new BallSubsystem();
   private final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
@@ -201,6 +203,6 @@ public class RobotContainer {
   }
 
   public void updateGyroAngle() {
-    drivetrainSubsystem.updateGyroAngle();
+    gyroSubsystem.updateGyroAngle();
   }
 }
