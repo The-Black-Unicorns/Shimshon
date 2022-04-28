@@ -28,7 +28,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.RobotContainer;
 
 import static frc.robot.Constants.*;
 
@@ -120,9 +119,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 BACK_RIGHT_MODULE_STEER_MOTOR,
                 BACK_RIGHT_MODULE_STEER_ENCODER, BACK_RIGHT_MODULE_STEER_OFFSET);
 
-        RobotContainer.gyroSubsystem.updateGyroAngle();
+        GyroSubsystem.getInstance().updateGyroAngle();
 
-        driveOdometry = new SwerveDriveOdometry(kinematics, RobotContainer.gyroSubsystem.getGyroscopeRotation());
+        driveOdometry = new SwerveDriveOdometry(kinematics, GyroSubsystem.getInstance().getGyroscopeRotation());
 
         // SET PID
         double steerkP = 0.4;
@@ -161,7 +160,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     public void zeroPosition(Pose2d newPose) {
         System.out.println("Zero!");
 
-        RobotContainer.gyroSubsystem.zeroGyro(newPose.getRotation());
+        GyroSubsystem.getInstance().zeroGyro(newPose.getRotation());
         holdAngleSetpoint = newPose.getRotation().getRadians();
 
         driveOdometry.resetPosition(newPose, newPose.getRotation());
@@ -175,7 +174,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     private void resetHoldAngle() {
-        holdAngleSetpoint = RobotContainer.gyroSubsystem.getGyroscopeRotation().getRadians();
+        holdAngleSetpoint = GyroSubsystem.getInstance().getGyroscopeRotation().getRadians();
         fromRotationCounter = 0;
     }
 
@@ -185,7 +184,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
             if (chassisSpeeds.vxMetersPerSecond != 0 || chassisSpeeds.vyMetersPerSecond != 0) {
                 if (fromRotationCounter >= 25)
                     chassisSpeeds.omegaRadiansPerSecond = holdRobotAngleController
-                            .calculate(RobotContainer.gyroSubsystem.getGyroscopeRotation().getRadians(), holdAngleSetpoint);
+                            .calculate(GyroSubsystem.getInstance().getGyroscopeRotation().getRadians(), holdAngleSetpoint);
             } else {
                 // resetHoldAngle();
             }
@@ -246,7 +245,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private void updateOdometry() {
 
         // Updating the odometry
-        Pose2d tempPose = driveOdometry.update(RobotContainer.gyroSubsystem.getGyroscopeRotation(),
+        Pose2d tempPose = driveOdometry.update(GyroSubsystem.getInstance().getGyroscopeRotation(),
                 new SwerveModuleState(frontLeftModule.getDriveVelocity(),
                         new Rotation2d(frontLeftModule.getSteerAngle())),
                 new SwerveModuleState(frontRightModule.getDriveVelocity(),
@@ -274,7 +273,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
                                 new Rotation2d()));
                 tempPose = tempPose2;
             }
-            driveOdometry.resetPosition(tempPose, RobotContainer.gyroSubsystem.getGyroscopeRotation());
+            driveOdometry.resetPosition(tempPose, GyroSubsystem.getInstance().getGyroscopeRotation());
         }
         robotPose = tempPose;
     }
@@ -315,7 +314,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     public Translation2d getVisionPose(){
         
         double distance = getDistanceMetersVision();
-        Rotation2d angle = RobotContainer.gyroSubsystem.getGyroscopeRotation().minus(Rotation2d.fromDegrees(NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0)));
+        Rotation2d angle = GyroSubsystem.getInstance().getGyroscopeRotation().minus(Rotation2d.fromDegrees(NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0)));
 
         double deltaX = distance * angle.getCos();
         double deltaY = distance *angle.getSin();

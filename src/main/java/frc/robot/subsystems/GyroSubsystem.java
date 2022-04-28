@@ -12,41 +12,51 @@ import frc.robot.Constants;
 
 public class GyroSubsystem extends SubsystemBase {
 
-  private final PigeonIMU m_pigeon = new PigeonIMU(Constants.DRIVETRAIN_PIGEON_ID);
+    private static GyroSubsystem gyroSubsystemInstance;
 
-  private Rotation2d gyroAngle;
-  private Rotation2d gyroOffset = new Rotation2d();
+    private final PigeonIMU pigeon = new PigeonIMU(Constants.DRIVETRAIN_PIGEON_ID);
 
-  public GyroSubsystem() {
-    // Pigeon status frames
-    m_pigeon.setStatusFramePeriod(6, 10);
-    m_pigeon.setStatusFramePeriod(11, 10);
-    m_pigeon.setStatusFramePeriod(4, 10);
-  }
+    private Rotation2d gyroAngle;
+    private Rotation2d gyroOffset = new Rotation2d();
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-  }
+    private GyroSubsystem() {
+        // Pigeon status frames
+        pigeon.setStatusFramePeriod(6, 10);
+        pigeon.setStatusFramePeriod(11, 10);
+        pigeon.setStatusFramePeriod(4, 10);
+    }
 
-  private Rotation2d getGyroRotationRaw() {
-    return Rotation2d.fromDegrees(m_pigeon.getFusedHeading() * 1.00278552);
-  }
+    public static GyroSubsystem getInstance() {
 
-  public void updateGyroAngle() {
-    gyroAngle = getGyroRotationRaw().minus(gyroOffset);
-  }
+        if (gyroSubsystemInstance == null)
+            gyroSubsystemInstance = new GyroSubsystem();
+        
+        return gyroSubsystemInstance;
+    }
 
-  public Rotation2d getGyroscopeRotation() {
-    return gyroAngle;
-}
+    @Override
+    public void periodic() {
+        // This method will be called once per scheduler run
+    }
 
-  public void zeroGyro (Rotation2d newRotation){
-    gyroOffset =  getGyroRotationRaw().minus(newRotation);
-  }
+    private Rotation2d getGyroRotationRaw() {
+        return Rotation2d.fromDegrees(pigeon.getFusedHeading() * 1.00278552);
+    }
 
-  public void zeroGyro (){
-    zeroGyro(new Rotation2d());
-  }
+    public void updateGyroAngle() {
+        gyroAngle = getGyroRotationRaw().minus(gyroOffset);
+    }
+
+    public Rotation2d getGyroscopeRotation() {
+        return gyroAngle;
+    }
+
+    public void zeroGyro(Rotation2d newRotation) {
+        gyroOffset = getGyroRotationRaw().minus(newRotation);
+    }
+
+    public void zeroGyro() {
+        zeroGyro(new Rotation2d());
+    }
 
 }

@@ -46,7 +46,6 @@ import frc.robot.subsystems.GyroSubsystem;
  */
 public class RobotContainer {
   // Subsystems
-  public static final GyroSubsystem gyroSubsystem = new GyroSubsystem();
   private final DrivetrainSubsystem drivetrainSubsystem = new DrivetrainSubsystem();
   private final BallSubsystem ballSubsystem = new BallSubsystem();
   private final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
@@ -203,6 +202,6 @@ public class RobotContainer {
   }
 
   public void updateGyroAngle() {
-    gyroSubsystem.updateGyroAngle();
+    GyroSubsystem.getInstance().updateGyroAngle();
   }
 }

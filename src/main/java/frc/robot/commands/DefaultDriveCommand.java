@@ -5,8 +5,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
-import frc.robot.RobotContainer;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.GyroSubsystem;
 
 public class DefaultDriveCommand extends CommandBase {
     private final DrivetrainSubsystem m_drivetrainSubsystem;
@@ -42,7 +42,7 @@ public class DefaultDriveCommand extends CommandBase {
                                         * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND),
                                 deadband(-input.getRawAxis(Constants.DRIVER_CONTROLLER_Z_AXIS_ID), 0.05) * sensitivity
                                         * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
-                                RobotContainer.gyroSubsystem.getGyroscopeRotation()));
+                                GyroSubsystem.getInstance().getGyroscopeRotation()));
             } else {
                 m_drivetrainSubsystem.drive(new ChassisSpeeds(
                         Xfilter.calculate(deadband(input.getRawAxis(Constants.DRIVER_CONTROLLER_X_AXIS_ID), 0.05) * sensitivity
