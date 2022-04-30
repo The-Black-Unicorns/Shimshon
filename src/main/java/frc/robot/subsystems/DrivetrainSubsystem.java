@@ -310,30 +310,4 @@ public class DrivetrainSubsystem extends SubsystemBase {
         talon.setNeutralMode(neutralMode);
         talon.setStatusFramePeriod(1, 20);
     }
-
-    public Translation2d getVisionPose(){
-        
-        double distance = getDistanceMetersVision();
-        Rotation2d angle = GyroSubsystem.getInstance().getGyroscopeRotation().minus(Rotation2d.fromDegrees(NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0)));
-
-        double deltaX = distance * angle.getCos();
-        double deltaY = distance *angle.getSin();
-        
-        Translation2d pose = Constants.GOAL_LOCATION.plus(new Translation2d(deltaX, deltaY));
-
-        return pose;
-    }
-
-    public double getDistanceMetersVision () {
-
-        //In degrees
-        double cameraAngle = 20;
-        double targetY =  NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0) + cameraAngle;
-        //Between The camera to the target
-        double deltaY = 1.2;
-
-        double distance = deltaY / Math.sin(Math.toRadians(cameraAngle + targetY));
-        return distance;
-    }
-
 }

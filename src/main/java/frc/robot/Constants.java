@@ -79,7 +79,6 @@ public final class Constants {
     //Odometry
     public static final boolean CARPET_COMPENSATION = true;
     public static final boolean INVERT_COMPENSATION = false;
-    public static final Translation2d GOAL_LOCATION = new Translation2d(0, 0);
 
     public static final double SWERVE_ROTATION_KP = 0.2;
     public static final double SWERVE_ROTATION_KD = 0.1;
@@ -87,4 +86,9 @@ public final class Constants {
     public static final double MOVEMENT_FOLLOWING_KD = 0;
     public static final double ROTATION_FOLLOWING_KP = 6;
     public static final double ROBOT_HOLD_ANGLE_KP = 3;
+
+    //Limelight
+    public static final double LIMELIGHT_ANGLE_DEG = 20;
+    public static final double LIMELIGHT_TO_GOAL_Y_DELTA_METER = 1.2;
+    public static final Translation2d GOAL_LOCATION = new Translation2d(0, 0);
 }
