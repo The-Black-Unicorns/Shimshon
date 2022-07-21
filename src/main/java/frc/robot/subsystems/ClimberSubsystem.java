@@ -254,21 +254,21 @@ public class ClimberSubsystem extends SubsystemBase {
             stopResetInsideArm(true);
         }
 
-        if (frameSinceOutsideOpen == 15) {
-            outsideSolenoid.set(Value.kReverse);
-        } else if (frameSinceOutsideOpen == 19) {
-            outsideSolenoid.set(Value.kForward);
-        }
-        if (frameSinceOutsideClose == 9) {
-            outsideSolenoid.set(Value.kForward);
-        } else if (frameSinceOutsideClose == 19) {
-            outsideSolenoid.set(Value.kReverse);
-        }
-        if (frameSinceInsideOpen == 7) {
-            insideSolenoid.set(Value.kReverse);
-        } else if (frameSinceInsideOpen == 13) {
-            insideSolenoid.set(Value.kForward);
-        }
+        // if (frameSinceOutsideOpen == 15) {
+        //     outsideSolenoid.set(Value.kReverse);
+        // } else if (frameSinceOutsideOpen == 19) {
+        //     outsideSolenoid.set(Value.kForward);
+        // }
+        // if (frameSinceOutsideClose == 9) {
+        //     outsideSolenoid.set(Value.kForward);
+        // } else if (frameSinceOutsideClose == 19) {
+        //     outsideSolenoid.set(Value.kReverse);
+        // }
+        // if (frameSinceInsideOpen == 7) {
+        //     insideSolenoid.set(Value.kReverse);
+        // } else if (frameSinceInsideOpen == 13) {
+        //     insideSolenoid.set(Value.kForward);
+        // }
         if (frameSinceInsideClose == 12) {
             insideSolenoid.set(Value.kForward);
         } else if (frameSinceInsideClose == 18) {

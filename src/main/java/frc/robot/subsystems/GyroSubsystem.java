@@ -13,7 +13,7 @@ public class GyroSubsystem {
 
     private static GyroSubsystem gyroSubsystemInstance;
 
-    private final PigeonIMU pigeon = new PigeonIMU(Constants.DRIVETRAIN_PIGEON_ID);
+    private final PigeonIMU pigeon = new PigeonIMU(Constants.PIGEON_ID);
 
     private Rotation2d gyroAngle;
     private Rotation2d gyroOffset = new Rotation2d();
