@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.blackunicornsswerve.ModuleInfo;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
@@ -62,8 +63,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
             new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0));
 
     
-
-
 
     //Modules
     private final SwerveModule frontLeftModule;
