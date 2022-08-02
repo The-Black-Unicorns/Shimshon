@@ -4,42 +4,33 @@
 
 package com.blackunicornsswerve;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 /** Add your docs here. */
 public class DriveMotor {
 
-private int id;
-private motorLocation mLocation;
+private TalonFX motor;
+private ModuleInfo moduleInfo;
+private final static double falconToRPMCoefficient = 1 * 600.0 / 2048.0 * 24.0 / 34.0;
 
 
-public enum motorLocation
-{   
-    BottomRight,
-    BottomLeft,
-    UpperRight,
-    UpperLeft;
-
-    private motorLocation mLocation;
-
-    public motorLocation setMotorLocation(motorLocation mLocation){
-        this.mLocation = mLocation;
-        return mLocation;
-    }
-    
-    public motorLocation getLocation(){
-        return mLocation;
-    }
-}
-public DriveMotor(int id,motorLocation mLocation){
-
-    this.id =id;
-    this.mLocation = mLocation.setMotorLocation(mLocation); 
+public DriveMotor(int CANid, ModuleInfo moduleInfo){
+    motor = new TalonFX(CANid); 
+    this.moduleInfo = moduleInfo;
 }
 
-public double getDriveVelocityRpmToMs(double rpm, ModuleInfo module){
-    return rpm*Math.PI*module.wheelDiameter();
-    }
-public void setSpeedRPM(int RPM){}
-public void setSpeedMS(double ms){}
+
+
+public void setSpeed(double speedMs){
+double speedWheelRpm = speedMs*60/(Math.PI*moduleInfo.getWheelDiameter());
+double speedMotorRpm = speedWheelRpm/moduleInfo.getGearRatio();
+double speedFalconUnits = speedMotorRpm/falconToRPMCoefficient;
+motor.set(ControlMode.Velocity,speedFalconUnits);
+}
+
+public double getSpeed(){
+    return ((motor.getSelectedSensorVelocity()*falconToRPMCoefficient)*moduleInfo.getGearRatio())*((Math.PI*moduleInfo.getWheelDiameter())/60);
+}
 
 }
