@@ -9,22 +9,29 @@ package com.blackunicornsswerve;
 public class ModuleInfo {
     private final double wheelDiameter;
     private final double gearRatio;
+    private final double maxSpeed;
 
-    public ModuleInfo (double wheelDiameter, double gearRatio){
+    public ModuleInfo (double wheelDiameter, double gearRatio, double maxSpeed){
         this.wheelDiameter = wheelDiameter;
         this.gearRatio = gearRatio;
+        this.maxSpeed = maxSpeed;
     }
 
     public double getGearRatio(){
         return gearRatio;
     }
 
-    public double wheelDiameter(){
+    public double getWheelDiameter(){
         return wheelDiameter;
     }
 
-    public ModuleInfo Mk4_L1 = new ModuleInfo(0.1016, 1/8.14);
-    public ModuleInfo Mk4_L2 = new ModuleInfo(0.1016, 1/6.75);
-    public ModuleInfo Mk4_L3 = new ModuleInfo(0.1016, 1/6.12);
-    public ModuleInfo Mk4_L4 = new ModuleInfo(0.1016, 1/5.14);
+    public double getMaxSpeed(){
+        return maxSpeed;
+    }
+
+
+    public ModuleInfo Mk4_L1 = new ModuleInfo(0.1016, 1/8.14,4.118);
+    public ModuleInfo Mk4_L2 = new ModuleInfo(0.1016, 1/6.75,4.9682);
+    public ModuleInfo Mk4_L3 = new ModuleInfo(0.1016, 1/6.12,5.486);
+    public ModuleInfo Mk4_L4 = new ModuleInfo(0.1016, 1/5.14,6.522);
 }
