@@ -21,20 +21,12 @@ import edu.wpi.first.math.geometry.Translation2d;
 public final class Constants {
 
     public static final int DEBUG_LEVEL = 1; // 1: last momants prints. 5:inside swerve stuff.
-    /**
-     * The left-to-right distance between the drivetrain wheels
-     *
-     * Should be measured from center to center.
-     */
-    public static final double DRIVETRAIN_TRACKWIDTH_METERS = 0.555; // FIXME Measure and set trackwidth
-    /**
-     * The front-to-back distance between the drivetrain wheels.
-     *
-     * Should be measured from center to center.
-     */
-    public static final double DRIVETRAIN_WHEELBASE_METERS = 0.555; // FIXME Measure and set wheelbase
+    //Left right distance
+    public static final double DRIVETRAIN_TRACKWIDTH_METERS = 0.555;
+    //Front to back distance
+    public static final double DRIVETRAIN_WHEELBASE_METERS = 0.555;
 
-    public static final int DRIVETRAIN_PIGEON_ID = 2; // FIXME Set Pigeon ID
+    public static final int PIGEON_ID = 2;
 
     public static final int DRIVER_CONTROLLER_Y_AXIS_ID = 1; // Sideways
     public static final int DRIVER_CONTROLLER_X_AXIS_ID = 2; // Forward
@@ -59,23 +51,29 @@ public final class Constants {
     public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 22;
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 23;
     public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(56.42578125 + 90);
+//talon
+    //Shooter
+    //ID
+        public static final int SHOOTER_TALONFX_ID = 4;
+        public static final int KICKER_WHEEL_TALONSRX_ID = 7;
+        public static final int CONVEYOR_TALONSRX_ID = 7;
+        public static final int INTAKE_TALONSRX_ID = 8;
+    //Speeds
+        public static final double KICKER_WHEEL_PERCENT = 0.2;
+        public static final double CONVEYOR_SPEED_PERCENT_INTAKING = -1;
+        public static final double CONVEYOR_SPEED_PERCENT_SHOOTING = -1;
+        public static final double CONVEYOR_SPEED_PERCENT_REVERSE = 0.5;
+        public static final double INTAKE_SPEED_PERCENT = -1;
+        public static final int SHOOTER_FLYWHEEL_RPM_LOW_GOAL = 1400;
+        public static final int SHOOTER_FLYWHEEL_RPM_HIGH_GOAL = 5000;
+        public static final int SHOOTER_FLYWHEEL_RPM_ERROR = 500;
+    
+    //Delays
+        public static final int CONVEYER_REVERSE_DURATION_FRAMES = 30;
 
-    // Shooter
-    public static final int SHOOTER_TALONFX_MOTOR = 4;
-    public static final int KICKER_WHEEL_TALONSRX_MOTOR = 7;
-    public static final int CONVEYOR_TALONSRX_MOTOR = 7;
-    public static final int INTAKE_TALONSRX_MOTOR = 8;
-    public static final double KICKER_WHEEL_PERCENT = 0.2;
-    public static final double CONVEYOR_SPEED_PERCENT_INTAKING = -1;
-    public static final double CONVEYOR_SPEED_PERCENT_SHOOTING = -1;
-    public static final double CONVEYOR_SPEED_PERCENT_REVERSE = 0.5;
-    public static final int CONVEYER_REVERSE_DURATION_FRAMES = 30;
-    public static final double INTAKE_SPEED_PERCENT = -1;
-    // public static final int SHOOTER_FLYWHEEL_RPM_LOW_GOAL = 1387;
-    public static final int SHOOTER_FLYWHEEL_RPM_LOW_GOAL = 1400;
-    public static final int SHOOTER_FLYWHEEL_RPM_HIGH_GOAL = 3479;
-    public static final int SHOOTER_FLYWHEEL_RPM_ERROR = 500;
 
+
+        
     //Odometry
     public static final boolean CARPET_COMPENSATION = true;
     public static final boolean INVERT_COMPENSATION = false;

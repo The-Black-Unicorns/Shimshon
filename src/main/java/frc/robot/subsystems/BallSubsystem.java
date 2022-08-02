@@ -50,9 +50,9 @@ public class BallSubsystem extends SubsystemBase {
     int ledBlinkCounter = 0;
 
     public BallSubsystem() {
-        shooterFalcon = new TalonFX(Constants.SHOOTER_TALONFX_MOTOR);
-        conveyor775 = new TalonSRX(Constants.CONVEYOR_TALONSRX_MOTOR);
-        intake775 = new TalonSRX(Constants.INTAKE_TALONSRX_MOTOR);
+        shooterFalcon = new TalonFX(Constants.SHOOTER_TALONFX_ID);
+        conveyor775 = new TalonSRX(Constants.CONVEYOR_TALONSRX_ID);
+        intake775 = new TalonSRX(Constants.INTAKE_TALONSRX_ID);
 
         intakeSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 6, 7);
         pdp = new PowerDistribution(0, ModuleType.kCTRE);
@@ -68,7 +68,7 @@ public class BallSubsystem extends SubsystemBase {
         }
 
         led.setData(ledBuffer);
-        DrivetrainSubsystem.updateFalconPID(Constants.SHOOTER_TALONFX_MOTOR, 0.07, 0, 0,
+        DrivetrainSubsystem.updateFalconPID(Constants.SHOOTER_TALONFX_ID, 0.07, 0, 0,
                 0.053, NeutralMode.Coast);
         setShooterSpeed(Constants.SHOOTER_FLYWHEEL_RPM_HIGH_GOAL);
         closeIntake();
@@ -272,17 +272,17 @@ public class BallSubsystem extends SubsystemBase {
         }
 
         // Soften intake open and close
-        if (framesSinceIntakeOpen == 8) {
-            intakeSolenoid.set(Value.kReverse);
-        } else if (framesSinceIntakeOpen == 18) {
-            intakeSolenoid.set(Value.kForward);
-        }
+        // if (framesSinceIntakeOpen == 8) {
+        //     intakeSolenoid.set(Value.kReverse);
+        // } else if (framesSinceIntakeOpen == 18) {
+        //     intakeSolenoid.set(Value.kForward);
+        // }
 
-        if (framesSinceIntakeClosed == 17) {
-            intakeSolenoid.set(Value.kForward);
-        } else if (framesSinceIntakeClosed == 23) {
-            intakeSolenoid.set(Value.kReverse);
-        }
+        // if (framesSinceIntakeClosed == 17) {
+        //     intakeSolenoid.set(Value.kForward);
+        // } else if (framesSinceIntakeClosed == 23) {
+        //     intakeSolenoid.set(Value.kReverse);
+        // }
 
         // Close intake when ball stuck
         if (framesSinceIntakeOpen >= 50 && pdp.getCurrent(7) > 19 && conveyorReverseTimer < 0) {
