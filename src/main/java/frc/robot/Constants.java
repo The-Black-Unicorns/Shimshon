@@ -30,7 +30,7 @@ public final class Constants {
 
     public static final int DRIVER_CONTROLLER_Y_AXIS_ID = 1; // Sideways
     public static final int DRIVER_CONTROLLER_X_AXIS_ID = 2; // Forward
-    public static final int DRIVER_CONTROLLER_Z_AXIS_ID = 3; // Rotation
+    public static final int DRIVER_CONTROLLER_Z_AXIS_ID = 6; // Rotation
 
     public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 31;
     public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 32;
@@ -45,7 +45,7 @@ public final class Constants {
     public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 11;
     public static final int BACK_LEFT_MODULE_STEER_MOTOR = 12;
     public static final int BACK_LEFT_MODULE_STEER_ENCODER = 13;
-    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(271.7578125 + 90);
+    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(261.7218017578125);
 
     public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 21;
     public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 22;
@@ -64,8 +64,8 @@ public final class Constants {
         public static final double CONVEYOR_SPEED_PERCENT_SHOOTING = -1;
         public static final double CONVEYOR_SPEED_PERCENT_REVERSE = 0.5;
         public static final double INTAKE_SPEED_PERCENT = -1;
-        public static final int SHOOTER_FLYWHEEL_RPM_LOW_GOAL = 1400;
-        public static final int SHOOTER_FLYWHEEL_RPM_HIGH_GOAL = 5000;
+        public static final int SHOOTER_FLYWHEEL_RPM_LOW_GOAL = 2600;
+        public static final int SHOOTER_FLYWHEEL_RPM_HIGH_GOAL = 1400;
         public static final int SHOOTER_FLYWHEEL_RPM_ERROR = 500;
     
     //Delays

@@ -68,7 +68,7 @@ public class BallSubsystem extends SubsystemBase {
         }
 
         led.setData(ledBuffer);
-        DrivetrainSubsystem.updateFalconPID(Constants.SHOOTER_TALONFX_ID, 0.07, 0, 0,
+        DrivetrainSubsystem.updateFalconPID(Constants.SHOOTER_TALONFX_ID, 0.1, 0, 0,
                 0.053, NeutralMode.Coast);
         setShooterSpeed(Constants.SHOOTER_FLYWHEEL_RPM_HIGH_GOAL);
         closeIntake();
@@ -82,7 +82,7 @@ public class BallSubsystem extends SubsystemBase {
         intakeSolenoid.set(Value.kForward);
         framesSinceIntakeOpen = 0;
         framesSinceIntakeClosed = Integer.MIN_VALUE;
-        shooterFalcon.set(ControlMode.PercentOutput, -0.4);
+        shooterFalcon.set(ControlMode.PercentOutput, 0);
     }
 
     public void closeIntake(boolean stopConveyor) {
@@ -135,7 +135,6 @@ public class BallSubsystem extends SubsystemBase {
         if (shooterWarming && conveyorReverseTimer < 0) {
             shooterFalcon.set(ControlMode.Velocity, falconUnitsTargetVelocity);
         }
-        System.out.println(rpmTarget);
         SmartDashboard.putNumber("Shooter Target", rpmTarget);
     }
 
@@ -285,7 +284,7 @@ public class BallSubsystem extends SubsystemBase {
         // }
 
         // Close intake when ball stuck
-        if (framesSinceIntakeOpen >= 50 && pdp.getCurrent(7) > 19 && conveyorReverseTimer < 0) {
+        if (framesSinceIntakeOpen >= 50 && pdp.getCurrent(7) > 11.5 && conveyorReverseTimer < 0) {
             if (intakeOpen) {
                 closeIntake(true);
             } else if (framesSinceIntakeClosed < 50) {

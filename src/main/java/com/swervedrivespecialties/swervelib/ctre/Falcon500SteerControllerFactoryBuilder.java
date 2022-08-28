@@ -85,7 +85,7 @@ public final class Falcon500SteerControllerFactoryBuilder {
         @Override
         public void addDashboardEntries(ShuffleboardContainer container, ControllerImplementation controller) {
             SteerControllerFactory.super.addDashboardEntries(container, controller);
-            // container.addNumber("Absolute Encoder Angle", () -> Math.toDegrees(controller.absoluteEncoder.getAbsoluteAngle()));
+            container.addNumber("Absolute Encoder Angle", () -> Math.toDegrees(controller.absoluteEncoder.getAbsoluteAngle()));
         }
 
         @Override
@@ -151,7 +151,7 @@ public final class Falcon500SteerControllerFactoryBuilder {
     }
 
     private static class ControllerImplementation implements SteerController {
-        private static final int ENCODER_RESET_ITERATIONS = 50000;
+        private static final int ENCODER_RESET_ITERATIONS = 50;
         private static final double ENCODER_RESET_MAX_ANGULAR_VELOCITY = Math.toRadians(0.5);
 
         private final TalonFX motor;
@@ -188,24 +188,26 @@ public final class Falcon500SteerControllerFactoryBuilder {
             // Reset the NEO's encoder periodically when the module is not rotating.
             // Sometimes (~5% of the time) when we initialize, the absolute encoder isn't fully set up, and we don't
             // end up getting a good reading. If we reset periodically this won't matter anymore.
-            // if (motor.getSelectedSensorVelocity() * motorEncoderVelocityCoefficient < ENCODER_RESET_MAX_ANGULAR_VELOCITY) {
-            //     double absoluteAngle = absoluteEncoder.getAbsoluteAngle();
-            //     if (++resetIteration >= ENCODER_RESET_ITERATIONS /*Math.abs(currentAngleRadians - absoluteAngle) > Math.toRadians(3.0)*/) {
-            //         resetIteration = 0;
-                    
-            //         motor.setSelectedSensorPosition(absoluteAngle / motorEncoderPositionCoefficient);
-            //         currentAngleRadians = absoluteAngle;
-            //         if(Constants.DEBUG_LEVEL == 5)System.out.println((System.currentTimeMillis()) + " Updated!");
-            //     }
-            // } else {
-            //     resetIteration = 0;
-            // }
-            resetIteration++;
-            if (resetIteration == 25 || matchEncoders){
-                double absoluteAngle = absoluteEncoder.getAbsoluteAngle();
-                motor.setSelectedSensorPosition(absoluteAngle / motorEncoderPositionCoefficient);
-                currentAngleRadians = absoluteAngle;
+            if (Math.abs(motor.getSelectedSensorVelocity() * motorEncoderVelocityCoefficient) < ENCODER_RESET_MAX_ANGULAR_VELOCITY) {
+                if (++resetIteration >= ENCODER_RESET_ITERATIONS /*Math.abs(currentAngleRadians - absoluteAngle) > Math.toRadians(3.0)*/) {
+                    resetIteration = 0;
+                    double absoluteAngle = absoluteEncoder.getAbsoluteAngle();
+                    motor.setSelectedSensorPosition(absoluteAngle / motorEncoderPositionCoefficient);
+                    currentAngleRadians = absoluteAngle;
+                }
+            } else {
+                resetIteration = 0;
             }
+
+             
+            System.out.println(resetIteration);
+
+            // resetIteration++;
+            // if (resetIteration == 25 || matchEncoders){
+            //     double absoluteAngle = absoluteEncoder.getAbsoluteAngle();
+            //     motor.setSelectedSensorPosition(absoluteAngle / motorEncoderPositionCoefficient);
+            //     currentAngleRadians = absoluteAngle;
+            // }
         
 
             double currentAngleRadiansMod = currentAngleRadians % (2.0 * Math.PI);

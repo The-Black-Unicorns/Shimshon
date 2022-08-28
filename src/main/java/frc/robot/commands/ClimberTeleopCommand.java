@@ -33,7 +33,7 @@ public class ClimberTeleopCommand extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        climberSubsystem.setLimitsEnabled(mainController.getRawButton(6));
+        climberSubsystem.setLimitsEnabled(!mainController.getRawButton(6));
 
         // climberSubsystem.setBrake(secondController.getSquareButton());
 
@@ -49,7 +49,7 @@ public class ClimberTeleopCommand extends CommandBase {
         boolean resetOutsideArm = secondController.getOptionsButton();
         if (!resetOutsideArm && !secondController.getPSButton()) {
 
-            if (!mainController.getRawButton(5)) {
+            if (mainController.getRawButton(5)) {
                 climberSubsystem.moveOutsideArm(deadband(mainController.getRawAxis(2), 0.2));
             } else if (keepOutsideClosed) {
                 climberSubsystem.checkForExtensionOutside();

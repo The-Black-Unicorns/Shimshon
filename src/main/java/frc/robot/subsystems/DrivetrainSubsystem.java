@@ -209,8 +209,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         // System.out.println("Pose is: " + robotPose.getX() + ", " + robotPose.getY()
         // +", " + robotPose.getRotation().getDegrees() + ", " +
         // getGyroscopeRotation().getDegrees());
-
-        resetEncoder = false;
+        resetEncoder = false;   
     }
 
     private void driveWithModuleStates(SwerveModuleState[] states) {

@@ -124,7 +124,7 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     // Back button zeros the gyroscope
-    new JoystickButton(controller, 1)
+    new JoystickButton(controller, 3)
         // No requirements because we don't need to interrupt anything
         .whenPressed(() -> drivetrainSubsystem.zeroPosition(new Pose2d(0, 0, Rotation2d.fromDegrees(0))));
 

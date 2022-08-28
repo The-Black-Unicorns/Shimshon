@@ -13,8 +13,8 @@ public class DefaultDriveCommand extends CommandBase {
     private final Joystick input;
 
     //Max acceleration m/s^2
-    SlewRateLimiter Xfilter = new SlewRateLimiter(1);
-    SlewRateLimiter Yfilter = new SlewRateLimiter(1);
+    SlewRateLimiter Xfilter = new SlewRateLimiter(1000);
+    SlewRateLimiter Yfilter = new SlewRateLimiter(1000);
 
     public DefaultDriveCommand(DrivetrainSubsystem drivetrainSubsystem, Joystick controller) {
         this.m_drivetrainSubsystem = drivetrainSubsystem;
@@ -32,8 +32,8 @@ public class DefaultDriveCommand extends CommandBase {
 
         // You can use `new ChassisSpeeds(...)` for robot-oriented movement instead of
         // field-oriented movement
-        if (input.getRawButton(5)) {
-            if (!input.getRawButton(3)) {
+        if (!input.getRawButton(5)) {
+            if (!input.getRawButton(1)) {
                 m_drivetrainSubsystem.drive(
                         ChassisSpeeds.fromFieldRelativeSpeeds(
                                 Xfilter.calculate(deadband(input.getRawAxis(Constants.DRIVER_CONTROLLER_X_AXIS_ID), 0.05) * sensitivity
@@ -60,7 +60,7 @@ public class DefaultDriveCommand extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        m_drivetrainSubsystem.drive(new ChassisSpeeds(0.0, 0.0, 0.0));
+        m_drivetrainSubsystem.drive(new ChassisSpeeds(.0, 0.0, 0.0));
     }
 
     private double deadband(double value, double lowerLimit) {
