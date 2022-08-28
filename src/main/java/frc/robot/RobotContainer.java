@@ -21,13 +21,13 @@ import frc.robot.commands.BallTeleopCommand;
 import frc.robot.commands.ClimberTeleopCommand;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.TrajectoryFollowingCommand;
-import frc.robot.commands.AutoCommands.Auto1BallHigh;
 import frc.robot.commands.AutoCommands.Auto1BallLeft;
 import frc.robot.commands.AutoCommands.Auto2Ball;
-import frc.robot.commands.AutoCommands.Auto2BallHigh;
 import frc.robot.commands.AutoCommands.Auto3Ball;
-import frc.robot.commands.AutoCommands.Auto3BallHigh;
-import frc.robot.commands.AutoCommands.Auto4Ball;
+import frc.robot.commands.AutoCommands.OldAutos.Auto1BallHigh;
+import frc.robot.commands.AutoCommands.OldAutos.Auto2BallHigh;
+import frc.robot.commands.AutoCommands.OldAutos.Auto3BallHigh;
+import frc.robot.commands.AutoCommands.OldAutos.Auto4BallHigh;
 import frc.robot.commands.PitTest.TestCommand;
 import frc.robot.subsystems.BallSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
@@ -59,17 +59,15 @@ public class RobotContainer {
       secondDriverController);
 
   // Autonomus Commands
-  private final Auto1BallLeft auto1BallLeft = new Auto1BallLeft(ballSubsystem, drivetrainSubsystem,
-      "1 Ball Auto Blue Left", "1 Ball Auto Red Left", 0.2);
-  private final Auto3Ball auto3Ball = new Auto3Ball(ballSubsystem, drivetrainSubsystem, "3 Ball Auto Red",
-      "3 Ball Auto Red", 0.3);
-  private final Auto2Ball auto2Ball = new Auto2Ball(ballSubsystem, drivetrainSubsystem, "2 Ball Auto Red",
-      "2 Ball Auto Red", 0.2);
-  private final Auto4Ball auto4Ball = new Auto4Ball(ballSubsystem, drivetrainSubsystem,  "4 Ball Auto Red Part 1", "4 Ball Auto Red Part 2", "4 Ball Auto Red Part 1", "4 Ball Auto Red Part 2", 0.6);
-  
-  private final Auto1BallHigh auto1BallHigh = new Auto1BallHigh(ballSubsystem, drivetrainSubsystem, "1 Ball Auto High", "1 Ball Auto High", 0.2);
-  private final Auto2BallHigh auto2BallHigh = new Auto2BallHigh(ballSubsystem, drivetrainSubsystem, "2 Ball Auto High", "2 Ball Auto High", 0.2);
-  private final Auto3BallHigh auto3BallHigh = new Auto3BallHigh(ballSubsystem, drivetrainSubsystem, "3 Ball Auto High", "3 Ball Auto High", 0.3);
+  private final Auto1BallLeft auto1BallLeft = new Auto1BallLeft(ballSubsystem, drivetrainSubsystem, "1 Ball Auto Red Left", "1 Ball Auto Red Left", 0.2);
+  private final Auto2Ball auto2Ball = new Auto2Ball(ballSubsystem, drivetrainSubsystem, "2 Ball Auto Red", "2 Ball Auto Red", 0.2);
+  private final Auto3Ball auto3Ball = new Auto3Ball(ballSubsystem, drivetrainSubsystem, "3 Ball Auto Red", "3 Ball Auto Red", 0.3);
+
+  // private final Auto1BallHigh auto1BallHigh = new Auto1BallHigh(ballSubsystem, drivetrainSubsystem, "1 Ball Auto High", "1 Ball Auto High", 0.2);
+  // private final Auto2BallHigh auto2BallHigh = new Auto2BallHigh(ballSubsystem, drivetrainSubsystem, "2 Ball Auto High", "2 Ball Auto High", 0.2);
+  // private final Auto3BallHigh auto3BallHigh = new Auto3BallHigh(ballSubsystem, drivetrainSubsystem, "3 Ball Auto High", "3 Ball Auto High", 0.3);
+  // private final Auto4BallHigh auto4Ball = new Auto4BallHigh(ballSubsystem, drivetrainSubsystem,  "4 Ball Auto Red Part 1", "4 Ball Auto Red Part 2", "4 Ball Auto Red Part 1", "4 Ball Auto Red Part 2", 0.6);
+
 
   private final InstantCommand noAuto = new InstantCommand();
 
@@ -97,15 +95,11 @@ public class RobotContainer {
     phCompressor.close();
 
     // Autonomus Chooser
-    autoChooser.addOption("1 Ball Low", auto1BallLeft);
-    autoChooser.addOption("2 Ball Low", auto2Ball);
-    autoChooser.addOption("3 Ball Low", auto3Ball);
+    autoChooser.addOption("1 Ball Left", auto1BallLeft);
+    autoChooser.addOption("2 Ball", auto2Ball);
+    autoChooser.addOption("3 Ball", auto3Ball);
     autoChooser.addOption("No Auto", noAuto);
     autoChooser.addOption("Taxi", taxiAuto);
-    autoChooser.setDefaultOption("2 Ball High", auto2BallHigh);
-    autoChooser.addOption("3 Ball High", auto3BallHigh);
-    autoChooser.addOption("4 Ball High", auto4Ball);
-    autoChooser.addOption("1 Ball High", auto1BallHigh);
 
     SmartDashboard.putData(autoChooser);
 
