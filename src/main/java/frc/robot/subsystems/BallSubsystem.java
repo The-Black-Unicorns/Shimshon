@@ -68,8 +68,7 @@ public class BallSubsystem extends SubsystemBase {
         }
 
         led.setData(ledBuffer);
-        DrivetrainSubsystem.updateFalconPID(Constants.SHOOTER_TALONFX_ID, 0.1, 0, 0,
-                0.053, NeutralMode.Coast);
+        DrivetrainSubsystem.updateFalconPID(Constants.SHOOTER_TALONFX_ID, 0.1, 0, 0, 0.053, NeutralMode.Coast, 0);
         setShooterSpeed(Constants.SHOOTER_FLYWHEEL_RPM_HIGH_GOAL);
         closeIntake();
         stopShooter();
