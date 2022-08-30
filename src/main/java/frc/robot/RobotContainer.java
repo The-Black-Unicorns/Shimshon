@@ -51,9 +51,12 @@ public class RobotContainer {
   private final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
   // Controllers
   private final Joystick controller = new Joystick(0);
+
   private final PS4Controller secondDriverController = new PS4Controller(1);
+  private final PS4Controller alternateDriveController = new PS4Controller(2);
+
   // Commands
-  private final DefaultDriveCommand driveCommand = new DefaultDriveCommand(drivetrainSubsystem, controller);
+  private final DefaultDriveCommand driveCommand = new DefaultDriveCommand(drivetrainSubsystem, controller,alternateDriveController);
   private final BallTeleopCommand ballTeleopCommand = new BallTeleopCommand(ballSubsystem, secondDriverController, controller);
   private final ClimberTeleopCommand climberCommand = new ClimberTeleopCommand(climberSubsystem, controller,
       secondDriverController);
