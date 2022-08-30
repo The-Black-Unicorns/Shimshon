@@ -62,14 +62,14 @@ public final class Constants {
         public static final double KICKER_WHEEL_PERCENT = 0.2;
         public static final double CONVEYOR_SPEED_PERCENT_INTAKING = -1;
         public static final double CONVEYOR_SPEED_PERCENT_SHOOTING = -1;
-        public static final double CONVEYOR_SPEED_PERCENT_REVERSE = 0.5;
+        public static final double CONVEYOR_SPEED_PERCENT_REVERSE = 1;
         public static final double INTAKE_SPEED_PERCENT = -1;
         public static final int SHOOTER_FLYWHEEL_RPM_LOW_GOAL = 2600;
         public static final int SHOOTER_FLYWHEEL_RPM_HIGH_GOAL = 1400;
         public static final int SHOOTER_FLYWHEEL_RPM_ERROR = 500;
     
     //Delays
-        public static final int CONVEYER_REVERSE_DURATION_FRAMES = 30;
+        public static final int CONVEYER_REVERSE_DURATION_FRAMES = 15;
 
 
 

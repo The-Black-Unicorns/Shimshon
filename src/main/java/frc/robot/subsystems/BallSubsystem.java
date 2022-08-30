@@ -283,7 +283,7 @@ public class BallSubsystem extends SubsystemBase {
         // }
 
         // Close intake when ball stuck
-        if (framesSinceIntakeOpen >= 50 && pdp.getCurrent(7) > 11.5 && conveyorReverseTimer < 0) {
+        if (framesSinceIntakeOpen >= 50 && pdp.getCurrent(7) > 100 && conveyorReverseTimer < 0) {
             if (intakeOpen) {
                 closeIntake(true);
             } else if (framesSinceIntakeClosed < 50) {
