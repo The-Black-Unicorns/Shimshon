@@ -123,8 +123,11 @@ public class RobotContainer {
     // Back button zeros the gyroscope
     new JoystickButton(controller, 3)
         // No requirements because we don't need to interrupt anything
-        .whenPressed(() -> drivetrainSubsystem.zeroPosition(new Pose2d(0, 0, Rotation2d.fromDegrees(0))));
+        .whenPressed(() -> drivetrainSubsystem.zeroPosition());
 
+    new JoystickButton(alternateDriveController, PS4Controller.Button.kCross.value)
+        .whenPressed(() -> drivetrainSubsystem.zeroPosition());
+    
     new JoystickButton(controller, 4)
         .whenPressed(() -> drivetrainSubsystem.matchEncoders());
 

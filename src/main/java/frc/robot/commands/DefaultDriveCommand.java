@@ -41,7 +41,8 @@ public class DefaultDriveCommand extends CommandBase {
         }
         else{
             double angle = Math.atan2(deadband(alternateDriveController.getLeftY(), 0.05),deadband(alternateDriveController.getLeftX(), 0.05));
-            double speed = (((alternateDriveController.getR2Axis()+1)/2)*DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND);
+            double speed = ((alternateDriveController.getR2Axis()+1)/2)* DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND;
+            System.out.println(speed);
             double rotation = deadband(alternateDriveController.getRightX(),0.05)*DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND;
             double xSpeed = Math.cos(angle)*speed;
             double ySpeed = Math.sin(angle)*speed;

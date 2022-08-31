@@ -200,7 +200,7 @@ public final class Falcon500SteerControllerFactoryBuilder {
             }
 
              
-            System.out.println(resetIteration);
+            // System.out.println(resetIteration);
 
             // resetIteration++;
             // if (resetIteration == 25 || matchEncoders){
