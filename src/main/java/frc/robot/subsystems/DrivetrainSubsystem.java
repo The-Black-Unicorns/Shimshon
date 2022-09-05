@@ -50,7 +50,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     // Max theoretical angular velocity
     public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = MAX_VELOCITY_METERS_PER_SECOND
-            / Math.hypot(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0);
+            / Math.hypot(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0) / 3;
 
 
     public SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
@@ -136,10 +136,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
         double drivekI = 0;
         double drivekD = 0.05;
         double drivekF = 0.05;
-        updateFalconPID(11, drivekP, drivekI, drivekD, drivekF, NeutralMode.Brake, 30);
-        updateFalconPID(21, drivekP, drivekI, drivekD, drivekF, NeutralMode.Brake, 30);
-        updateFalconPID(31, drivekP, drivekI, drivekD, drivekF, NeutralMode.Brake, 30);
-        updateFalconPID(41, drivekP, drivekI, drivekD, drivekF, NeutralMode.Brake, 30);
+        updateFalconPID(11, drivekP, drivekI, drivekD, drivekF, NeutralMode.Brake, 40);
+        updateFalconPID(21, drivekP, drivekI, drivekD, drivekF, NeutralMode.Brake, 40);
+        updateFalconPID(31, drivekP, drivekI, drivekD, drivekF, NeutralMode.Brake, 40);
+        updateFalconPID(41, drivekP, drivekI, drivekD, drivekF, NeutralMode.Brake, 40);
 
 
 
@@ -310,7 +310,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         talon.setNeutralMode(neutralMode);
         talon.setStatusFramePeriod(1, 20);
         if (maxCurrent != 0){
-            talon.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, maxCurrent, maxCurrent + 10, 0.1));
+            talon.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, maxCurrent, maxCurrent, 0.1));
         }
     }
 }

@@ -28,7 +28,7 @@ public final class Constants {
 
     public static final int PIGEON_ID = 2;
 
-    public static final boolean DRIVER_MODE = true;//True = new False = old
+    public static final boolean DRIVER_MODE = false;//True = new False = old
 
     public static final int DRIVER_CONTROLLER_Y_AXIS_ID = 1; // Sideways
     public static final int DRIVER_CONTROLLER_X_AXIS_ID = 2; // Forward
@@ -66,8 +66,8 @@ public final class Constants {
         public static final double CONVEYOR_SPEED_PERCENT_SHOOTING = -1;
         public static final double CONVEYOR_SPEED_PERCENT_REVERSE = 1;
         public static final double INTAKE_SPEED_PERCENT = -1;
-        public static final int SHOOTER_FLYWHEEL_RPM_LOW_GOAL = 2600;
-        public static final int SHOOTER_FLYWHEEL_RPM_HIGH_GOAL = 1400;
+        public static final int SHOOTER_FLYWHEEL_RPM_LOW_GOAL = 1400;
+        public static final int SHOOTER_FLYWHEEL_RPM_HIGH_GOAL = 2500;
         public static final int SHOOTER_FLYWHEEL_RPM_ERROR = 500;
     
     //Delays

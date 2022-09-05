@@ -15,8 +15,9 @@ public class DefaultDriveCommand extends CommandBase {
     private final PS4Controller alternateDriveController;
 
     //Max acceleration m/s^2
-    SlewRateLimiter Xfilter = new SlewRateLimiter(1000);
-    SlewRateLimiter Yfilter = new SlewRateLimiter(1000);
+    SlewRateLimiter Xfilter = new SlewRateLimiter(6);
+    SlewRateLimiter Yfilter = new SlewRateLimiter(6);
+    SlewRateLimiter speedLimiter = new SlewRateLimiter(1000);
 
     public DefaultDriveCommand(DrivetrainSubsystem drivetrainSubsystem, Joystick controller, PS4Controller alternateController) {
         this.m_drivetrainSubsystem = drivetrainSubsystem;
@@ -40,12 +41,17 @@ public class DefaultDriveCommand extends CommandBase {
     
         }
         else{
-            double angle = Math.atan2(deadband(alternateDriveController.getLeftY(), 0.05),deadband(alternateDriveController.getLeftX(), 0.05));
-            double speed = ((alternateDriveController.getR2Axis()+1)/2)* DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND;
+            double xInput = deadband(alternateDriveController.getRightX(), 0.05);
+            double yInput = deadband(alternateDriveController.getRightY(), 0.05);
+            double angle = Math.atan2(yInput, xInput);
+            double speed = speedLimiter.calculate(Math.pow(((alternateDriveController.getR2Axis()+1)/2)* DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND, 1))  ;
+            if (xInput == 0 && yInput == 0){
+                speed = 0;
+            }
             System.out.println(speed);
-            double rotation = deadband(alternateDriveController.getRightX(),0.05)*DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND;
-            double xSpeed = Math.cos(angle)*speed;
-            double ySpeed = Math.sin(angle)*speed;
+            double rotation = deadband(-alternateDriveController.getLeftX(),0.001)*DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND;
+            double xSpeed = Xfilter.calculate(-Math.cos(angle)*speed);
+            double ySpeed = Yfilter.calculate(-Math.sin(angle)*speed);
             inputSpeed = new ChassisSpeeds(ySpeed,xSpeed,rotation);
         }
 
