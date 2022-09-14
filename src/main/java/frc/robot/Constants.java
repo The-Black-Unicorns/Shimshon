@@ -20,6 +20,8 @@ import edu.wpi.first.math.geometry.Translation2d;
  */
 public final class Constants {
 
+    public static final String MAIN_DASHBOARD_TAB_NAME = "Robot";
+
     public static final int DEBUG_LEVEL = 1; // 1: last momants prints. 5:inside swerve stuff.
     //Left right distance
     public static final double DRIVETRAIN_TRACKWIDTH_METERS = 0.555;
@@ -28,7 +30,6 @@ public final class Constants {
 
     public static final int PIGEON_ID = 2;
 
-    public static final boolean DRIVER_MODE = false;//True = new False = old
 
     public static final int DRIVER_CONTROLLER_Y_AXIS_ID = 1; // Sideways
     public static final int DRIVER_CONTROLLER_X_AXIS_ID = 2; // Forward

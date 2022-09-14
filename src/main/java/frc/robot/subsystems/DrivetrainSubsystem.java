@@ -30,10 +30,13 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Config;
+import io.github.oblarg.oblog.annotations.Log;
 
 import static frc.robot.Constants.*;
 
-public class DrivetrainSubsystem extends SubsystemBase {
+public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
     /**
      * The maximum voltage that will be delivered to the drive motors.
      * <p>
@@ -78,6 +81,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     public Pose2d robotPose = new Pose2d();
 
     private boolean extraBrake = false;
+    private boolean holdAngle = true;
 
     public double holdAngleSetpoint = Math.toRadians(0);
     int fromRotationCounter = 0;
@@ -86,7 +90,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     private boolean enabled = false;
 
-    private int framesSinceEnable = 0;
+    public int framesSinceEnable = 0;
 
     
     private boolean compensationDirection;
@@ -179,18 +183,20 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     public void drive(ChassisSpeeds chassisSpeeds) {
-        if (chassisSpeeds.omegaRadiansPerSecond == 0) {
-            fromRotationCounter++;
-            if (chassisSpeeds.vxMetersPerSecond != 0 || chassisSpeeds.vyMetersPerSecond != 0) {
-                if (fromRotationCounter >= 25)
-                    chassisSpeeds.omegaRadiansPerSecond = holdRobotAngleController
-                            .calculate(GyroSubsystem.getInstance().getGyroscopeRotation().getRadians(), holdAngleSetpoint);
-            } else {
-                // resetHoldAngle();
-            }
+        if (holdAngle){
+            if (chassisSpeeds.omegaRadiansPerSecond == 0) {
+                fromRotationCounter++;
+                if (chassisSpeeds.vxMetersPerSecond != 0 || chassisSpeeds.vyMetersPerSecond != 0) {
+                    if (fromRotationCounter >= 25)
+                        chassisSpeeds.omegaRadiansPerSecond = holdRobotAngleController
+                                .calculate(GyroSubsystem.getInstance().getGyroscopeRotation().getRadians(), holdAngleSetpoint);
+                } else {
+                    // resetHoldAngle();
+                }
 
-        } else {
-            resetHoldAngle();
+            } else {
+                resetHoldAngle();
+            }
         }
 
         m_chassisSpeeds = chassisSpeeds;
@@ -287,12 +293,17 @@ public class DrivetrainSubsystem extends SubsystemBase {
         enabled = false;
     }
 
-    public void enableExtraBrake() {
-        extraBrake = true;
+    @Config (tabName = Constants.MAIN_DASHBOARD_TAB_NAME, name = "Extra Break", defaultValueBoolean = true)
+    public void setExtraBrake(boolean value) {
+        extraBrake = value;
     }
 
-    public void disableExtraBrake() {
-        extraBrake = false;
+    @Config (tabName = Constants.MAIN_DASHBOARD_TAB_NAME, name = "Hold Angle", defaultValueBoolean = true)
+    public void setHoldAngleMode (boolean value){
+        if (!holdAngle && value){
+            resetHoldAngle();
+        }
+        holdAngle = value;
     }
 
     public static void updateFalconPID(int talonCanID, double kP, double kI, double kD, double kF,
@@ -310,7 +321,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         talon.setNeutralMode(neutralMode);
         talon.setStatusFramePeriod(1, 20);
         if (maxCurrent != 0){
-            talon.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, maxCurrent, maxCurrent, 0.1));
+            talon.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(false, maxCurrent, maxCurrent, 0.1));
         }
     }
 }

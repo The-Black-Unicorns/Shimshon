@@ -22,8 +22,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 
-public class BallSubsystem extends SubsystemBase {
+public class BallSubsystem extends SubsystemBase implements Loggable {
 
     TalonFX shooterFalcon;
     TalonSRX conveyor775;
@@ -243,6 +245,11 @@ public class BallSubsystem extends SubsystemBase {
         led.setData(ledBuffer);
     }
 
+    @Log (tabName = Constants.MAIN_DASHBOARD_TAB_NAME, name = "Shooter RPM")
+    public double getShooterRPM(){
+        return shooterFalcon.getSelectedSensorVelocity() * falconToRPMCoefficient;
+    }
+
     @Override
     public void periodic() {
 
@@ -254,8 +261,6 @@ public class BallSubsystem extends SubsystemBase {
             shooterReachedSpeed = false;
         }
 
-        // RPM on dashboard
-        SmartDashboard.putNumber("RPM", shooterFalcon.getSelectedSensorVelocity() * falconToRPMCoefficient);
 
         // Waiting to spin the intake
         if (framesSinceIntakeOpen == 20) {

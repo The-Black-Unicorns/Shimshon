@@ -8,11 +8,17 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.GyroSubsystem;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Config;
 
-public class DefaultDriveCommand extends CommandBase {
+public class DefaultDriveCommand extends CommandBase implements Loggable {
+
     private final DrivetrainSubsystem m_drivetrainSubsystem;
     private final Joystick input;
     private final PS4Controller alternateDriveController;
+
+    private boolean isFieldOriented;
+    private boolean isAlternateDriveControl;
 
     //Max acceleration m/s^2
     SlewRateLimiter Xfilter = new SlewRateLimiter(6);
@@ -27,11 +33,21 @@ public class DefaultDriveCommand extends CommandBase {
 
         changePID();
     }
+    @Config (tabName = Constants.MAIN_DASHBOARD_TAB_NAME, name = "Field Oriented", defaultValueBoolean = true)
+    public void setFieldOriented(boolean value){
+        isFieldOriented = value;
+    }
 
+    @Config (tabName = Constants.MAIN_DASHBOARD_TAB_NAME, name = "Alternate Drive", defaultValueBoolean = false)
+    public void setAlternateDrive(boolean value){
+        isAlternateDriveControl = value;
+    }
+
+    
     @Override
     public void execute() {
         ChassisSpeeds inputSpeed;
-        if(!Constants.DRIVER_MODE){
+        if(isAlternateDriveControl){
             double sensitivity = input.getRawAxis(4) / 2 + 0.5;
             // sensitivity = 0.25;
              inputSpeed = new ChassisSpeeds(
@@ -56,7 +72,7 @@ public class DefaultDriveCommand extends CommandBase {
         }
 
         if (!input.getRawButton(5)) {
-            if (!input.getRawButton(1)) {
+            if (isFieldOriented) {
                 m_drivetrainSubsystem.drive(
                         ChassisSpeeds.fromFieldRelativeSpeeds(inputSpeed.vxMetersPerSecond, inputSpeed.vyMetersPerSecond, inputSpeed.omegaRadiansPerSecond, GyroSubsystem.getInstance().getGyroscopeRotation()));
             } else {
@@ -79,6 +95,7 @@ public class DefaultDriveCommand extends CommandBase {
         if (Math.abs(value) < lowerLimit) {
             return 0;
         } else {
+            
             if (value > 0) {
                 return (value - lowerLimit) / (1 - lowerLimit);
             } else {

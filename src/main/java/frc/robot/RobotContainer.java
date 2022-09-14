@@ -33,6 +33,8 @@ import frc.robot.subsystems.BallSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.GyroSubsystem;
+import io.github.oblarg.oblog.Logger;
+import io.github.oblarg.oblog.annotations.Log;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -56,25 +58,35 @@ public class RobotContainer {
   private final PS4Controller alternateDriveController = new PS4Controller(2);
 
   // Commands
-  private final DefaultDriveCommand driveCommand = new DefaultDriveCommand(drivetrainSubsystem, controller,alternateDriveController);
-  private final BallTeleopCommand ballTeleopCommand = new BallTeleopCommand(ballSubsystem, secondDriverController, controller);
+  private final DefaultDriveCommand driveCommand = new DefaultDriveCommand(drivetrainSubsystem, controller,
+      alternateDriveController);
+  private final BallTeleopCommand ballTeleopCommand = new BallTeleopCommand(ballSubsystem, secondDriverController,
+      controller);
   private final ClimberTeleopCommand climberCommand = new ClimberTeleopCommand(climberSubsystem, controller,
       secondDriverController);
 
   // Autonomus Commands
-  private final Auto1BallLeft auto1BallLeft = new Auto1BallLeft(ballSubsystem, drivetrainSubsystem, "1 Ball Auto Red Left", "1 Ball Auto Red Left", 0.2);
-  private final Auto2Ball auto2Ball = new Auto2Ball(ballSubsystem, drivetrainSubsystem, "2 Ball Auto Red", "2 Ball Auto Red", 0.2);
-  private final Auto3Ball auto3Ball = new Auto3Ball(ballSubsystem, drivetrainSubsystem, "3 Ball Auto Red", "3 Ball Auto Red", 0.3);
+  private final Auto1BallLeft auto1BallLeft = new Auto1BallLeft(ballSubsystem, drivetrainSubsystem,
+      "1 Ball Auto Red Left", "1 Ball Auto Red Left", 0.2);
+  private final Auto2Ball auto2Ball = new Auto2Ball(ballSubsystem, drivetrainSubsystem, "2 Ball Auto Red",
+      "2 Ball Auto Red", 0.2);
+  private final Auto3Ball auto3Ball = new Auto3Ball(ballSubsystem, drivetrainSubsystem, "3 Ball Auto Red",
+      "3 Ball Auto Red", 0.3);
 
-  // private final Auto1BallHigh auto1BallHigh = new Auto1BallHigh(ballSubsystem, drivetrainSubsystem, "1 Ball Auto High", "1 Ball Auto High", 0.2);
-  // private final Auto2BallHigh auto2BallHigh = new Auto2BallHigh(ballSubsystem, drivetrainSubsystem, "2 Ball Auto High", "2 Ball Auto High", 0.2);
-  // private final Auto3BallHigh auto3BallHigh = new Auto3BallHigh(ballSubsystem, drivetrainSubsystem, "3 Ball Auto High", "3 Ball Auto High", 0.3);
-  // private final Auto4BallHigh auto4Ball = new Auto4BallHigh(ballSubsystem, drivetrainSubsystem,  "4 Ball Auto Red Part 1", "4 Ball Auto Red Part 2", "4 Ball Auto Red Part 1", "4 Ball Auto Red Part 2", 0.6);
-
+  // private final Auto1BallHigh auto1BallHigh = new Auto1BallHigh(ballSubsystem,
+  // drivetrainSubsystem, "1 Ball Auto High", "1 Ball Auto High", 0.2);
+  // private final Auto2BallHigh auto2BallHigh = new Auto2BallHigh(ballSubsystem,
+  // drivetrainSubsystem, "2 Ball Auto High", "2 Ball Auto High", 0.2);
+  // private final Auto3BallHigh auto3BallHigh = new Auto3BallHigh(ballSubsystem,
+  // drivetrainSubsystem, "3 Ball Auto High", "3 Ball Auto High", 0.3);
+  // private final Auto4BallHigh auto4Ball = new Auto4BallHigh(ballSubsystem,
+  // drivetrainSubsystem, "4 Ball Auto Red Part 1", "4 Ball Auto Red Part 2", "4
+  // Ball Auto Red Part 1", "4 Ball Auto Red Part 2", 0.6);
 
   private final InstantCommand noAuto = new InstantCommand();
 
-  private final TrajectoryFollowingCommand taxiAuto = new TrajectoryFollowingCommand(drivetrainSubsystem, "Taxi left", 0.2);
+  private final TrajectoryFollowingCommand taxiAuto = new TrajectoryFollowingCommand(drivetrainSubsystem, "Taxi left",
+      0.2);
 
   // Test commands
   private final TestCommand test = new TestCommand(drivetrainSubsystem, ballSubsystem, climberSubsystem,
@@ -82,10 +94,13 @@ public class RobotContainer {
 
   SendableChooser<Command> autoChooser = new SendableChooser<>();
 
+ 
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
+    Logger.configureLoggingAndConfig(this, false);
 
     drivetrainSubsystem.setDefaultCommand(driveCommand);
     ballSubsystem.setDefaultCommand(ballTeleopCommand);
@@ -127,7 +142,7 @@ public class RobotContainer {
 
     new JoystickButton(alternateDriveController, PS4Controller.Button.kCross.value)
         .whenPressed(() -> drivetrainSubsystem.zeroPosition());
-    
+
     new JoystickButton(controller, 4)
         .whenPressed(() -> drivetrainSubsystem.matchEncoders());
 
@@ -150,7 +165,6 @@ public class RobotContainer {
     new JoystickButton(secondDriverController, PS4Controller.Button.kPS.value)
         .whenPressed(() -> climberSubsystem.startOutsideOpen());
   }
-  
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -201,7 +215,8 @@ public class RobotContainer {
     test.schedule();
   }
 
-  public void updateGyroAngle() {
+  public void robotPeriodic() {
+    Logger.updateEntries();
     GyroSubsystem.getInstance().updateGyroAngle();
   }
 }
