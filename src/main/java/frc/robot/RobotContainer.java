@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
@@ -24,17 +22,12 @@ import frc.robot.commands.TrajectoryFollowingCommand;
 import frc.robot.commands.AutoCommands.Auto1BallLeft;
 import frc.robot.commands.AutoCommands.Auto2Ball;
 import frc.robot.commands.AutoCommands.Auto3Ball;
-import frc.robot.commands.AutoCommands.OldAutos.Auto1BallHigh;
-import frc.robot.commands.AutoCommands.OldAutos.Auto2BallHigh;
-import frc.robot.commands.AutoCommands.OldAutos.Auto3BallHigh;
-import frc.robot.commands.AutoCommands.OldAutos.Auto4BallHigh;
 import frc.robot.commands.PitTest.TestCommand;
 import frc.robot.subsystems.BallSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.GyroSubsystem;
 import io.github.oblarg.oblog.Logger;
-import io.github.oblarg.oblog.annotations.Log;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
