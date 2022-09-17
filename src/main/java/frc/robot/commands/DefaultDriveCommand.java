@@ -47,13 +47,14 @@ public class DefaultDriveCommand extends CommandBase implements Loggable {
     @Override
     public void execute() {
         ChassisSpeeds inputSpeed;
-        if(isAlternateDriveControl){
+        if(true){
             double sensitivity = input.getRawAxis(4) / 2 + 0.5;
             // sensitivity = 0.25;
              inputSpeed = new ChassisSpeeds(
                 Xfilter.calculate(deadband(input.getRawAxis(Constants.DRIVER_CONTROLLER_X_AXIS_ID), 0.05) * sensitivity * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND),
                 Yfilter.calculate(deadband(-input.getRawAxis(Constants.DRIVER_CONTROLLER_Y_AXIS_ID), 0.05) * sensitivity * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND),
                 deadband(-input.getRawAxis(Constants.DRIVER_CONTROLLER_Z_AXIS_ID), 0.05) * sensitivity * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND);
+            System.out.println(inputSpeed.toString());
     
         }
         else{
@@ -64,7 +65,7 @@ public class DefaultDriveCommand extends CommandBase implements Loggable {
             if (xInput == 0 && yInput == 0){
                 speed = 0;
             }
-            System.out.println(speed);
+            System.out.println("Test " + speed);
             double rotation = deadband(-alternateDriveController.getLeftX(),0.001)*DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND;
             double xSpeed = Xfilter.calculate(-Math.cos(angle)*speed);
             double ySpeed = Yfilter.calculate(-Math.sin(angle)*speed);

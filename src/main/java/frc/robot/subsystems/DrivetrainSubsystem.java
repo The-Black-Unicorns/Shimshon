@@ -293,12 +293,12 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
         enabled = false;
     }
 
-    @Config (tabName = Constants.MAIN_DASHBOARD_TAB_NAME, name = "Extra Break", defaultValueBoolean = true)
+    // @Config (tabName = Constants.MAIN_DASHBOARD_TAB_NAME, name = "Extra Break", defaultValueBoolean = true)
     public void setExtraBrake(boolean value) {
         extraBrake = value;
     }
 
-    @Config (tabName = Constants.MAIN_DASHBOARD_TAB_NAME, name = "Hold Angle", defaultValueBoolean = true)
+    // @Config (tabName = Constants.MAIN_DASHBOARD_TAB_NAME, name = "Hold Angle", defaultValueBoolean = true)
     public void setHoldAngleMode (boolean value){
         if (!holdAngle && value){
             resetHoldAngle();
