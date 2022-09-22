@@ -67,8 +67,8 @@ public final class Constants {
         public static final double CONVEYOR_SPEED_PERCENT_SHOOTING = -1;
         public static final double CONVEYOR_SPEED_PERCENT_REVERSE = 1;
         public static final double INTAKE_SPEED_PERCENT = -1;
-        public static final int SHOOTER_FLYWHEEL_RPM_LOW_GOAL = 1400;
-        public static final int SHOOTER_FLYWHEEL_RPM_HIGH_GOAL = 2500;
+        public static final int SHOOTER_FLYWHEEL_RPM_LOW_GOAL = 2500;
+        public static final int SHOOTER_FLYWHEEL_RPM_HIGH_GOAL = 1400;
         public static final int SHOOTER_FLYWHEEL_RPM_ERROR = 500;
     
     //Delays

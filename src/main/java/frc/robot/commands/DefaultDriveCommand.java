@@ -11,7 +11,7 @@ import frc.robot.subsystems.GyroSubsystem;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Config;
 
-public class DefaultDriveCommand extends CommandBase implements Loggable {
+public class DefaultDriveCommand extends CommandBase {
 
     private final DrivetrainSubsystem m_drivetrainSubsystem;
     private final Joystick input;
@@ -33,12 +33,12 @@ public class DefaultDriveCommand extends CommandBase implements Loggable {
 
         changePID();
     }
-    @Config (tabName = Constants.MAIN_DASHBOARD_TAB_NAME, name = "Field Oriented", defaultValueBoolean = true)
+    // @Config (tabName = Constants.MAIN_DASHBOARD_TAB_NAME, name = "Field Oriented", defaultValueBoolean = true)
     public void setFieldOriented(boolean value){
         isFieldOriented = value;
     }
 
-    @Config (tabName = Constants.MAIN_DASHBOARD_TAB_NAME, name = "Alternate Drive", defaultValueBoolean = false)
+    // @Config (tabName = Constants.MAIN_DASHBOARD_TAB_NAME, name = "Alternate Drive", defaultValueBoolean = false)
     public void setAlternateDrive(boolean value){
         isAlternateDriveControl = value;
     }
@@ -47,14 +47,14 @@ public class DefaultDriveCommand extends CommandBase implements Loggable {
     @Override
     public void execute() {
         ChassisSpeeds inputSpeed;
-        if(true){
+        if(!isAlternateDriveControl){
             double sensitivity = input.getRawAxis(4) / 2 + 0.5;
             // sensitivity = 0.25;
              inputSpeed = new ChassisSpeeds(
                 Xfilter.calculate(deadband(input.getRawAxis(Constants.DRIVER_CONTROLLER_X_AXIS_ID), 0.05) * sensitivity * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND),
                 Yfilter.calculate(deadband(-input.getRawAxis(Constants.DRIVER_CONTROLLER_Y_AXIS_ID), 0.05) * sensitivity * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND),
                 deadband(-input.getRawAxis(Constants.DRIVER_CONTROLLER_Z_AXIS_ID), 0.05) * sensitivity * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND);
-            System.out.println(inputSpeed.toString());
+            // System.out.println(inputSpeed.toString());
     
         }
         else{

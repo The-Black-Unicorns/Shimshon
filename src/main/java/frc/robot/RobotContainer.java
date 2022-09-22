@@ -27,6 +27,7 @@ import frc.robot.subsystems.BallSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.GyroSubsystem;
+import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.Logger;
 
 /**

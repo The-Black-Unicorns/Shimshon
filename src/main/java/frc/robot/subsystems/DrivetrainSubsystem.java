@@ -204,7 +204,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
 
     @Override
     public void periodic() {
-
+        System.out.println(extraBrake);
         SwerveModuleState[] states = kinematics.toSwerveModuleStates(m_chassisSpeeds, new Translation2d(0, 0));
         driveWithModuleStates(states);
 
@@ -293,12 +293,12 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
         enabled = false;
     }
 
-    // @Config (tabName = Constants.MAIN_DASHBOARD_TAB_NAME, name = "Extra Break", defaultValueBoolean = true)
+    @Config (tabName = Constants.MAIN_DASHBOARD_TAB_NAME, name = "Extra stop", defaultValueBoolean = true)
     public void setExtraBrake(boolean value) {
         extraBrake = value;
     }
 
-    // @Config (tabName = Constants.MAIN_DASHBOARD_TAB_NAME, name = "Hold Angle", defaultValueBoolean = true)
+    @Config (tabName = Constants.MAIN_DASHBOARD_TAB_NAME, name = "Hold Angle", defaultValueBoolean = true)
     public void setHoldAngleMode (boolean value){
         if (!holdAngle && value){
             resetHoldAngle();

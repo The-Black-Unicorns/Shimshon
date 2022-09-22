@@ -8,8 +8,8 @@ public interface SteerControllerFactory<Controller extends SteerController, Stee
             ShuffleboardContainer container,
             Controller controller
     ) {
-        // container.addNumber("Current Angle", () -> Math.toDegrees(controller.getStateAngle()));
-        // container.addNumber("Target Angle", () -> Math.toDegrees(controller.getReferenceAngle()));
+        container.addNumber("Current Angle", () -> Math.toDegrees(controller.getStateAngle()));
+        container.addNumber("Target Angle", () -> Math.toDegrees(controller.getReferenceAngle()));
     }
 
     default Controller create(
