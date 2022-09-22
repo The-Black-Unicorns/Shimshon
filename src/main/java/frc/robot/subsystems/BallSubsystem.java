@@ -25,7 +25,7 @@ import frc.robot.Constants;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 
-public class BallSubsystem extends SubsystemBase implements Loggable {
+public class BallSubsystem extends SubsystemBase{
 
     TalonFX shooterFalcon;
     TalonSRX conveyor775;
@@ -245,7 +245,6 @@ public class BallSubsystem extends SubsystemBase implements Loggable {
         led.setData(ledBuffer);
     }
 
-    @Log (tabName = Constants.MAIN_DASHBOARD_TAB_NAME, name = "Shooter RPM")
     public double getShooterRPM(){
         return shooterFalcon.getSelectedSensorVelocity() * falconToRPMCoefficient;
     }

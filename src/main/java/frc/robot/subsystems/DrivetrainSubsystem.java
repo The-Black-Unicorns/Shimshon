@@ -36,7 +36,7 @@ import io.github.oblarg.oblog.annotations.Log;
 
 import static frc.robot.Constants.*;
 
-public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
+public class DrivetrainSubsystem extends SubsystemBase {
     /**
      * The maximum voltage that will be delivered to the drive motors.
      * <p>
@@ -293,12 +293,10 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
         enabled = false;
     }
 
-    @Config (tabName = Constants.MAIN_DASHBOARD_TAB_NAME, name = "Extra stop", defaultValueBoolean = true)
     public void setExtraBrake(boolean value) {
         extraBrake = value;
     }
 
-    @Config (tabName = Constants.MAIN_DASHBOARD_TAB_NAME, name = "Hold Angle", defaultValueBoolean = true)
     public void setHoldAngleMode (boolean value){
         if (!holdAngle && value){
             resetHoldAngle();
