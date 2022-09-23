@@ -8,8 +8,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.GyroSubsystem;
-import io.github.oblarg.oblog.Loggable;
-import io.github.oblarg.oblog.annotations.Config;
+
 
 public class DefaultDriveCommand extends CommandBase {
 
@@ -47,7 +46,7 @@ public class DefaultDriveCommand extends CommandBase {
     @Override
     public void execute() {
         ChassisSpeeds inputSpeed;
-        if(!isAlternateDriveControl){
+        if(!Constants.ALTERNATE_DRIVE){
             double sensitivity = input.getRawAxis(4) / 2 + 0.5;
             // sensitivity = 0.25;
              inputSpeed = new ChassisSpeeds(
@@ -58,27 +57,26 @@ public class DefaultDriveCommand extends CommandBase {
     
         }
         else{
-            double xInput = deadband(alternateDriveController.getRightX(), 0.05);
-            double yInput = deadband(alternateDriveController.getRightY(), 0.05);
+            double xInput = deadband(alternateDriveController.getRightX(), 0.1);
+            double yInput = deadband(alternateDriveController.getRightY(), 0.1);
             double angle = Math.atan2(yInput, xInput);
             double speed = speedLimiter.calculate(Math.pow(((alternateDriveController.getR2Axis()+1)/2)* DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND, 1))  ;
             if (xInput == 0 && yInput == 0){
                 speed = 0;
             }
-            System.out.println("Test " + speed);
-            double rotation = deadband(-alternateDriveController.getLeftX(),0.001)*DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND;
+            // System.out.println("Test " + speed);
+            double rotation = deadband(-alternateDriveController.getLeftX(),0.1)*DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND;
             double xSpeed = Xfilter.calculate(-Math.cos(angle)*speed);
             double ySpeed = Yfilter.calculate(-Math.sin(angle)*speed);
             inputSpeed = new ChassisSpeeds(ySpeed,xSpeed,rotation);
         }
 
         if (!input.getRawButton(5)) {
-            if (isFieldOriented) {
+            if (!input.getRawButton(1)) {
                 m_drivetrainSubsystem.drive(
                         ChassisSpeeds.fromFieldRelativeSpeeds(inputSpeed.vxMetersPerSecond, inputSpeed.vyMetersPerSecond, inputSpeed.omegaRadiansPerSecond, GyroSubsystem.getInstance().getGyroscopeRotation()));
             } else {
                 m_drivetrainSubsystem.drive(inputSpeed);
-                        
             }
         } else {
             m_drivetrainSubsystem.drive(new ChassisSpeeds(0.0, 0.0, 0.0));

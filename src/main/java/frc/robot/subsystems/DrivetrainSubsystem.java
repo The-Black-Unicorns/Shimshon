@@ -30,9 +30,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import io.github.oblarg.oblog.Loggable;
-import io.github.oblarg.oblog.annotations.Config;
-import io.github.oblarg.oblog.annotations.Log;
+
 
 import static frc.robot.Constants.*;
 
@@ -183,7 +181,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     public void drive(ChassisSpeeds chassisSpeeds) {
-        if (holdAngle){
+        if (Constants.HOLD_ANGLE){
             if (chassisSpeeds.omegaRadiansPerSecond == 0) {
                 fromRotationCounter++;
                 if (chassisSpeeds.vxMetersPerSecond != 0 || chassisSpeeds.vyMetersPerSecond != 0) {
@@ -204,7 +202,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        System.out.println(extraBrake);
+        // System.out.println(extraBrake);
         SwerveModuleState[] states = kinematics.toSwerveModuleStates(m_chassisSpeeds, new Translation2d(0, 0));
         driveWithModuleStates(states);
 
@@ -234,7 +232,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
             backRightModule.set(
                     states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
                     states[3].angle.getRadians(), resetEncoder);
-        } else if (extraBrake) {
+        } else if (Constants.EXTRA_BRAKE) {
             frontLeftModule.set(0, Math.toRadians(45), resetEncoder);
             frontRightModule.set(0, Math.toRadians(135), resetEncoder);
             backLeftModule.set(0, Math.toRadians(135), resetEncoder);

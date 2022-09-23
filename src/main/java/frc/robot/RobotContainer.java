@@ -27,7 +27,6 @@ import frc.robot.subsystems.BallSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.GyroSubsystem;
-import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.Logger;
 import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
@@ -88,7 +87,7 @@ public class RobotContainer {
     private final TestCommand test = new TestCommand(drivetrainSubsystem, ballSubsystem, climberSubsystem,
             secondDriverController);
 
-    @Log
+
     SendableChooser<Command> autoChooser = new SendableChooser<>();
 
     /**
@@ -114,7 +113,7 @@ public class RobotContainer {
         autoChooser.addOption("No Auto", noAuto);
         autoChooser.addOption("Taxi", taxiAuto);
 
-        // SmartDashboard.putData(autoChooser);
+        SmartDashboard.putData(autoChooser);
 
         // Configure the button bindings
         configureButtonBindings();
@@ -227,9 +226,9 @@ public class RobotContainer {
     public void setHoldAngleMode(boolean value) {
         drivetrainSubsystem.setHoldAngleMode(value);
     }
-    @Config (tabName = Constants.MAIN_DASHBOARD_TAB_NAME, name = "Extra stop", defaultValueBoolean = true)
+    @Config (tabName = Constants.MAIN_DASHBOARD_TAB_NAME, name = "Extra stop", defaultValueBoolean = false)
     public void setExtraBrake(boolean value) {
-        setExtraBrake(value);;
+        drivetrainSubsystem.setExtraBrake(value);
     }
     @Log (tabName = Constants.MAIN_DASHBOARD_TAB_NAME, name = "Shooter RPM")
     public double getShooterRPM(){

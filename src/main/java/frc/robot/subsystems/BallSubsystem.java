@@ -22,8 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import io.github.oblarg.oblog.Loggable;
-import io.github.oblarg.oblog.annotations.Log;
+
 
 public class BallSubsystem extends SubsystemBase{
 
@@ -83,7 +82,7 @@ public class BallSubsystem extends SubsystemBase{
         intakeSolenoid.set(Value.kForward);
         framesSinceIntakeOpen = 0;
         framesSinceIntakeClosed = Integer.MIN_VALUE;
-        shooterFalcon.set(ControlMode.PercentOutput, 0);
+        shooterFalcon.set(ControlMode.PercentOutput, Constants.REVERSE_FALCON_SPEED);
     }
 
     public void closeIntake(boolean stopConveyor) {
@@ -251,6 +250,9 @@ public class BallSubsystem extends SubsystemBase{
 
     @Override
     public void periodic() {
+
+        // RPM on dashboard
+        SmartDashboard.putNumber("RPM", shooterFalcon.getSelectedSensorVelocity() * falconToRPMCoefficient);
 
         // Checking if reached speed
         if (Math.abs(shooterFalcon.getSelectedSensorVelocity()

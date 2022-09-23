@@ -54,6 +54,15 @@ public final class Constants {
     public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 22;
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 23;
     public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(56.42578125 + 90);
+
+
+    //Wheels at 45 degrees while stationary
+    public static final boolean EXTRA_BRAKE = false;
+    //Use PS4 controller on port 2 instead of QX7 on port 0
+    public static final boolean ALTERNATE_DRIVE = true;
+    //Use PID to keep the robot straight while not rotating (Works great, cancel only with premission from Ido or Yonatan)
+    public static final boolean HOLD_ANGLE = true;
+
 //talon
     //Shooter
     //ID
@@ -67,6 +76,9 @@ public final class Constants {
         public static final double CONVEYOR_SPEED_PERCENT_SHOOTING = -1;
         public static final double CONVEYOR_SPEED_PERCENT_REVERSE = 1;
         public static final double INTAKE_SPEED_PERCENT = -1;
+        //Change to -0.2 - -0.3 if balls escape from shooter
+        public static final double REVERSE_FALCON_SPEED = 0;
+        //RPM - replace the two options to switch between High and Low 
         public static final int SHOOTER_FLYWHEEL_RPM_LOW_GOAL = 2500;
         public static final int SHOOTER_FLYWHEEL_RPM_HIGH_GOAL = 1400;
         public static final int SHOOTER_FLYWHEEL_RPM_ERROR = 500;
