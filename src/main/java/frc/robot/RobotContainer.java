@@ -70,7 +70,7 @@ public class RobotContainer {
     private final Auto3Ball auto3Ball = new Auto3Ball(ballSubsystem, drivetrainSubsystem, "3 Ball Auto Red",
             "3 Ball Auto Red", 0.3);
     private final TestPath2 testPath2 = new TestPath2(ballSubsystem, drivetrainSubsystem, "TestPath2 Red",
-            "TestPath2 Red", 0.3);
+            "TestPath2 Red", 0.15);
 
     // private final Auto1BallHigh auto1BallHigh = new Auto1BallHigh(ballSubsystem,
     // drivetrainSubsystem, "1 Ball Auto High", "1 Ball Auto High", 0.2);

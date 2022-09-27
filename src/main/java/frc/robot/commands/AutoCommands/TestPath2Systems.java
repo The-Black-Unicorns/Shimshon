@@ -19,15 +19,25 @@ public class TestPath2Systems extends CommandBase {
 
   @Override
   public void initialize() {
+    counter = 0;
+    ballSubsystem.openIntake();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (counter < 250) {
-      ballSubsystem.openIntake();
-    } else if (counter > 250) {
+    System.out.println(counter);
+    if (counter == 550) {
       ballSubsystem.closeIntake();
+    }
+    if (counter == 550) {
+      ballSubsystem.prepareForShootingInit();
+    }
+    if (counter == 600) {
+      ballSubsystem.shoot();
+    }
+    if (counter == 700) {
+      ballSubsystem.stopShooter();
     }
     counter++;
   }
