@@ -27,9 +27,9 @@ public class Auto1BallSystems extends CommandBase {
   @Override
   public void execute() {
     
-    if (counter < 100){
+    if (counter < 200){
       ballSubsystem.shoot();
-    } else if (counter == 100){
+    } else if (counter == 200){
       ballSubsystem.stopShooter();
     } 
     counter++;

@@ -111,7 +111,7 @@ public class RobotContainer {
         phCompressor.close();
 
         // Autonomus Chooser
-        autoChooser.addOption("1 Ball Left", auto1BallLeft);
+        autoChooser.addOption("1 Ball", auto1BallLeft);
         autoChooser.addOption("2 Ball", auto2Ball);
         autoChooser.addOption("3 Ball", auto3Ball);
         autoChooser.addOption("No Auto", noAuto);

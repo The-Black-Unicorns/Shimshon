@@ -20,9 +20,9 @@ public class Auto3Ball extends ParallelCommandGroup {
   public Auto3Ball(BallSubsystem ballSubsystem, DrivetrainSubsystem drivetrainSubsystem, String bluePathName, String redPathName, double speedMultiplier) {
     addCommands(new Auto3BallSystems(ballSubsystem));
     if (DriverStation.getAlliance() == Alliance.Blue){
-      addCommands(sequence(new WaitCommand(2), new TrajectoryFollowingCommand(drivetrainSubsystem, bluePathName, speedMultiplier)));
+      addCommands(sequence(new WaitCommand(4), new TrajectoryFollowingCommand(drivetrainSubsystem, bluePathName, speedMultiplier)));
     } else {
-      addCommands(sequence(new WaitCommand(2), new TrajectoryFollowingCommand(drivetrainSubsystem, redPathName, speedMultiplier)));
+      addCommands(sequence(new WaitCommand(4), new TrajectoryFollowingCommand(drivetrainSubsystem, redPathName, speedMultiplier)));
     }
     
     addRequirements(ballSubsystem, drivetrainSubsystem);
