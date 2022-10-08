@@ -5,13 +5,13 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -29,11 +29,12 @@ public class ClimberSubsystem extends SubsystemBase {
 
     double sensorToMeterCoefficientInside = 1 * 0.05 * 0.03 * Math.PI;
     double sensorToMeterCoefficientOutside = 1 * 0.05 * 0.027 * Math.PI;
+
     // Units are meters!!
-    double outsideWinchMaxHeight = 0.57;
-    double insideWinchMaxHeight = 0.55;
-    double outsideWinchMaxHeightClosed = 0.4;
-    double insideWinchMaxHeightClosed = 0.4;
+    double outsideWinchMaxHeight = 0.57; // Limits when the arms are in the opened (/) position
+    double insideWinchMaxHeight = 0.55; // Limits when the arms are in the opened (/) position
+    double outsideWinchMaxHeightClosed = 0.4; // Limits when the arms are in the closed (|) position
+    double insideWinchMaxHeightClosed = 0.4; // Limits when the arms are in the closed (|) position
     double outsideWinchMinHeight = 0.005;
     double insideWinchMinHeight = 0.005;
 
