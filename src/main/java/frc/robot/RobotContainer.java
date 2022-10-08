@@ -233,7 +233,7 @@ public class RobotContainer {
     }
     @Config (tabName = Constants.MAIN_DASHBOARD_TAB_NAME, name = "Extra stop", defaultValueBoolean = true)
     public void setExtraBrake(boolean value) {
-        setExtraBrake(value);;
+        // setExtraBrake(value);;
     }
     @Log (tabName = Constants.MAIN_DASHBOARD_TAB_NAME, name = "Shooter RPM")
     public double getShooterRPM(){
