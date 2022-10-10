@@ -73,15 +73,15 @@ public final class Constants {
     //Speeds
         public static final double KICKER_WHEEL_PERCENT = 0.2;
         public static final double CONVEYOR_SPEED_PERCENT_INTAKING = -1;
-        public static final double CONVEYOR_SPEED_PERCENT_SHOOTING = -1;
+        public static final double CONVEYOR_SPEED_PERCENT_SHOOTING = -0.8;
         public static final double CONVEYOR_SPEED_PERCENT_REVERSE = 1;
         public static final double INTAKE_SPEED_PERCENT = -1;
         //Change to -0.2 - -0.3 if balls escape from shooter
         public static final double REVERSE_FALCON_SPEED = -0.2;
         //RPM - replace the two options to switch between High and Low 
         public static final int SHOOTER_FLYWHEEL_RPM_LOW_GOAL = 1400;
-        public static final int SHOOTER_FLYWHEEL_RPM_HIGH_GOAL = 2700;
-        public static final int SHOOTER_FLYWHEEL_RPM_ERROR = 500;
+        public static final int SHOOTER_FLYWHEEL_RPM_HIGH_GOAL = 2550;
+        public static final int SHOOTER_FLYWHEEL_RPM_TOLERANCE = 500;
     
     //Delays
         public static final int CONVEYER_REVERSE_DURATION_FRAMES = 15;
