@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PS4Controller;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.BallSubsystem;
@@ -55,12 +56,14 @@ public class BallTeleopCommand extends CommandBase {
         double leftTrigger = controller.getL2Axis();
         if (leftTrigger >= triggerThreashold && previousLeftTrigger < triggerThreashold) {
             leftTriggerPressed();
+            SmartDashboard.putBoolean("Shooting", true);
         }
         if (leftTrigger >= triggerThreashold && previousLeftTrigger >= triggerThreashold) {
             leftTrigger();
         }
         if (leftTrigger < triggerThreashold && previousLeftTrigger >= triggerThreashold) {
             leftTriggerReleased();
+            SmartDashboard.putBoolean("Shooting", false);
         }
         previousLeftTrigger = leftTrigger;
 

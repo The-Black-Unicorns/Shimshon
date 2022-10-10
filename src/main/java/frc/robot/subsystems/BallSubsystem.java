@@ -141,7 +141,6 @@ public class BallSubsystem extends SubsystemBase{
     }
 
     public void shoot() {
-        SmartDashboard.putBoolean("Shooting", true);
         if (shooterReachedSpeed && !ballAtBarrel) {
             conveyor775.set(ControlMode.PercentOutput, Constants.CONVEYOR_SPEED_PERCENT_SHOOTING);
         } else if (!shooterWarming) {
@@ -150,7 +149,6 @@ public class BallSubsystem extends SubsystemBase{
     }
 
     public void stopShooter() {
-        SmartDashboard.putBoolean("Shooting", false);
         if (!intakeOpen)
             conveyor775.set(ControlMode.PercentOutput, 0);
 
