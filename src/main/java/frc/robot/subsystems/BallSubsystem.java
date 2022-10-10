@@ -121,8 +121,10 @@ public class BallSubsystem extends SubsystemBase{
     public void onEnable() {
         if (DriverStation.getAlliance() == Alliance.Red) {
             ledColor = redColor;
+            SmartDashboard.putBoolean("Alliance", false);
         } else {
             ledColor = blueColor;
+            SmartDashboard.putBoolean("Alliance", true);
         }
     }
 
