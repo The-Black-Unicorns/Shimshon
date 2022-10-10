@@ -39,31 +39,30 @@ public class BallTeleopCommand extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-
         // Triggers detection
         double rightTrigger = controller.getR2Axis();
         if (rightTrigger >= triggerThreashold && previousRightTrigger < triggerThreashold) {
             rightTriggerPressed();
+            SmartDashboard.putBoolean("Shooting", true);
         }
         if (rightTrigger >= triggerThreashold && previousRightTrigger >= triggerThreashold) {
             rightTrigger();
         }
         if (rightTrigger < triggerThreashold && previousRightTrigger >= triggerThreashold) {
             rightTriggerReleased();
+            SmartDashboard.putBoolean("Shooting", false);
         }
         previousRightTrigger = rightTrigger;
 
         double leftTrigger = controller.getL2Axis();
         if (leftTrigger >= triggerThreashold && previousLeftTrigger < triggerThreashold) {
             leftTriggerPressed();
-            SmartDashboard.putBoolean("Shooting", true);
         }
         if (leftTrigger >= triggerThreashold && previousLeftTrigger >= triggerThreashold) {
             leftTrigger();
         }
         if (leftTrigger < triggerThreashold && previousLeftTrigger >= triggerThreashold) {
             leftTriggerReleased();
-            SmartDashboard.putBoolean("Shooting", false);
         }
         previousLeftTrigger = leftTrigger;
 
