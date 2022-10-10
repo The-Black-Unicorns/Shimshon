@@ -149,7 +149,6 @@ public class ClimberSubsystem extends SubsystemBase {
 
     public void moveOutsideArm(double value) {
         double armExtension = outsideEncoder.getPosition() * sensorToMeterCoefficientOutside;
-        System.out.println("Outside: " + armExtension);
         if (!useLimits) {
             if (armExtension < outsideMaxHeight && armExtension > outsideWinchMinHeight) {
                 outsideWinch.set(value);
@@ -173,7 +172,6 @@ public class ClimberSubsystem extends SubsystemBase {
         }
 
         double armExtension = insideEncoder.getPosition() * sensorToMeterCoefficientInside;
-        System.out.println("Inside: " + armExtension);
         if (!useLimits) {
             if (armExtension < insideMaxHeight && armExtension > insideWinchMinHeight) {
                 insideWinch.set(value);
