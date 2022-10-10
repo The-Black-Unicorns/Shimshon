@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PS4Controller;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ClimberSubsystem;
 
@@ -51,8 +52,10 @@ public class ClimberTeleopCommand extends CommandBase {
 
             if (mainController.getRawButton(5)) {
                 climberSubsystem.moveOutsideArm(deadband(mainController.getRawAxis(2), 0.2));
+                SmartDashboard.putString("Climb Mode", "Climb");
             } else if (keepOutsideClosed) {
                 climberSubsystem.checkForExtensionOutside();
+                SmartDashboard.putString("Climb Mode", "Drive");
             }
         }
         if (secondController.getOptionsButtonPressed())
