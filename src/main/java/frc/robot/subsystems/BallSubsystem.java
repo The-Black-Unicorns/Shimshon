@@ -23,8 +23,7 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-
-public class BallSubsystem extends SubsystemBase{
+public class BallSubsystem extends SubsystemBase {
 
     TalonFX shooterFalcon;
     TalonSRX conveyor775;
@@ -69,7 +68,7 @@ public class BallSubsystem extends SubsystemBase{
         }
 
         led.setData(ledBuffer);
-        DrivetrainSubsystem.updateFalconPID(Constants.SHOOTER_TALONFX_ID, 0.1, 0, 0, 0.053, NeutralMode.Coast, 0);
+        DrivetrainSubsystem.updateFalconPID(Constants.SHOOTER_TALONFX_ID, 0.12, 0, 0, 0.053, NeutralMode.Coast, 0);
         setShooterSpeed(Constants.SHOOTER_FLYWHEEL_RPM_HIGH_GOAL);
         closeIntake();
         stopShooter();
@@ -246,7 +245,7 @@ public class BallSubsystem extends SubsystemBase{
         led.setData(ledBuffer);
     }
 
-    public double getShooterRPM(){
+    public double getShooterRPM() {
         return shooterFalcon.getSelectedSensorVelocity() * falconToRPMCoefficient;
     }
 
@@ -258,12 +257,11 @@ public class BallSubsystem extends SubsystemBase{
 
         // Checking if reached speed
         if (Math.abs(shooterFalcon.getSelectedSensorVelocity()
-                - falconUnitsTargetVelocity) < Constants.SHOOTER_FLYWHEEL_RPM_ERROR / falconToRPMCoefficient) {
+                - falconUnitsTargetVelocity) < Constants.SHOOTER_FLYWHEEL_RPM_TOLERANCE / falconToRPMCoefficient) {
             shooterReachedSpeed = true;
         } else {
             shooterReachedSpeed = false;
         }
-
 
         // Waiting to spin the intake
         if (framesSinceIntakeOpen == 20) {
@@ -279,15 +277,15 @@ public class BallSubsystem extends SubsystemBase{
 
         // Soften intake open and close
         // if (framesSinceIntakeOpen == 8) {
-        //     intakeSolenoid.set(Value.kReverse);
+        // intakeSolenoid.set(Value.kReverse);
         // } else if (framesSinceIntakeOpen == 18) {
-        //     intakeSolenoid.set(Value.kForward);
+        // intakeSolenoid.set(Value.kForward);
         // }
 
         // if (framesSinceIntakeClosed == 17) {
-        //     intakeSolenoid.set(Value.kForward);
+        // intakeSolenoid.set(Value.kForward);
         // } else if (framesSinceIntakeClosed == 23) {
-        //     intakeSolenoid.set(Value.kReverse);
+        // intakeSolenoid.set(Value.kReverse);
         // }
 
         // Close intake when ball stuck
