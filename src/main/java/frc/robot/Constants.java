@@ -77,7 +77,7 @@ public final class Constants {
         public static final double CONVEYOR_SPEED_PERCENT_REVERSE = 1;
         public static final double INTAKE_SPEED_PERCENT = -1;
         //Change to -0.2 - -0.3 if balls escape from shooter
-        public static final double REVERSE_FALCON_SPEED = 0;
+        public static final double REVERSE_FALCON_SPEED = -0.2;
         //RPM - replace the two options to switch between High and Low 
         public static final int SHOOTER_FLYWHEEL_RPM_LOW_GOAL = 1400;
         public static final int SHOOTER_FLYWHEEL_RPM_HIGH_GOAL = 2700;
