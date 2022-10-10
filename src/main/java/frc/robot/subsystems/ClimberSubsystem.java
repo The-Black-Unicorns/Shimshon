@@ -281,6 +281,7 @@ public class ClimberSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Outside Arms Extension",
                 outsideEncoder.getPosition() * sensorToMeterCoefficientOutside);
         SmartDashboard.putNumber("Inside Arms Extension", insideEncoder.getPosition() * sensorToMeterCoefficientInside);
+        SmartDashboard.putBoolean("Limits", !useLimits);
         frameSinceOutsideOpen++;
         frameSinceOutsideClose++;
         frameSinceInsideOpen++;
