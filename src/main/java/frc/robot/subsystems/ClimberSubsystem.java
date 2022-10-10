@@ -278,9 +278,9 @@ public class ClimberSubsystem extends SubsystemBase {
             insideSolenoid.set(Value.kReverse);
         }
 
-        SmartDashboard.putNumber("Outside Arms Extension",
-                outsideEncoder.getPosition() * sensorToMeterCoefficientOutside);
-        SmartDashboard.putNumber("Inside Arms Extension", insideEncoder.getPosition() * sensorToMeterCoefficientInside);
+        SmartDashboard.putString("Outside Arms Extension",
+                String.format("%2.3f", outsideEncoder.getPosition() * sensorToMeterCoefficientOutside));
+        SmartDashboard.putString("Inside Arms Extension", String.format("%2.3f", insideEncoder.getPosition() * sensorToMeterCoefficientInside));
         SmartDashboard.putBoolean("Limits", !useLimits);
         frameSinceOutsideOpen++;
         frameSinceOutsideClose++;
