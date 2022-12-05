@@ -20,8 +20,8 @@ public class DefaultDriveCommand extends CommandBase {
     private boolean isAlternateDriveControl;
 
     //Max acceleration m/s^2
-    SlewRateLimiter Xfilter = new SlewRateLimiter(6);
-    SlewRateLimiter Yfilter = new SlewRateLimiter(6);
+    SlewRateLimiter Xfilter = new SlewRateLimiter(5);
+    SlewRateLimiter Yfilter = new SlewRateLimiter(5);
     SlewRateLimiter speedLimiter = new SlewRateLimiter(1000);
 
     public DefaultDriveCommand(DrivetrainSubsystem drivetrainSubsystem, Joystick controller, PS4Controller alternateController) {

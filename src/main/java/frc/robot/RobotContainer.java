@@ -23,6 +23,7 @@ import frc.robot.commands.AutoCommands.Auto1BallLeft;
 import frc.robot.commands.AutoCommands.Auto2Ball;
 import frc.robot.commands.AutoCommands.Auto3Ball;
 import frc.robot.commands.PitTest.TestCommand;
+import frc.robot.subsystems.AprilTagSubsystem;
 import frc.robot.subsystems.BallSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -212,6 +213,7 @@ public class RobotContainer {
     public void robotPeriodic() {
         Logger.updateEntries();
         GyroSubsystem.getInstance().updateGyroAngle();
+        AprilTagSubsystem.getInstance().periodic();
     }
 
     @Config(tabName = Constants.MAIN_DASHBOARD_TAB_NAME, name = "Alternate Drive", defaultValueBoolean = false)

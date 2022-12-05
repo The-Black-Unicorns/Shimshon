@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 
 /**
@@ -104,4 +106,6 @@ public final class Constants {
     public static final double LIMELIGHT_ANGLE_DEG = 20;
     public static final double LIMELIGHT_TO_GOAL_Y_DELTA_METER = 1.2;
     public static final Translation2d GOAL_LOCATION = new Translation2d(0, 0);
+    //April Tags
+    public static final Pose3d[] TAGS_POSES = {new Pose3d(), new Pose3d(1, 0, 1, new Rotation3d(0, 0, 0))};
 }
