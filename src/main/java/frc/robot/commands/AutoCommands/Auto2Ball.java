@@ -21,10 +21,10 @@ public class Auto2Ball extends ParallelCommandGroup {
 			String redPathName, double speedMultiplier) {
 		addCommands(new Auto2BallSystems(ballSubsystem));
 		if (DriverStation.getAlliance() == Alliance.Blue) {
-			addCommands(sequence(new WaitCommand(2),
+			addCommands(sequence(new WaitCommand(4),
 					new TrajectoryFollowingCommand(drivetrainSubsystem, bluePathName, speedMultiplier)));
 		} else {
-			addCommands(sequence(new WaitCommand(2),
+			addCommands(sequence(new WaitCommand(4),
 					new TrajectoryFollowingCommand(drivetrainSubsystem, redPathName, speedMultiplier)));
 		}
 

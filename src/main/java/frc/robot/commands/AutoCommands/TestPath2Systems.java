@@ -1,19 +1,16 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.commands.AutoCommands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.BallSubsystem;
 
-public class Auto1BallSystems extends CommandBase {
+public class TestPath2Systems extends CommandBase {
 
   BallSubsystem ballSubsystem;
 
   int counter = 0;
 
-  public Auto1BallSystems(BallSubsystem subsystem) {
+  public TestPath2Systems(BallSubsystem subsystem) {
 
     ballSubsystem = subsystem;
     addRequirements(subsystem);
@@ -21,23 +18,35 @@ public class Auto1BallSystems extends CommandBase {
   }
 
   @Override
-  public void initialize() {}
+  public void initialize() {
+    counter = 0;
+    ballSubsystem.openIntake();
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    
-    if (counter < 200){
+    if (counter == 550) {
+      ballSubsystem.closeIntake();
+    }
+    if (counter == 550) {
+      ballSubsystem.prepareForShootingInit();
+    }
+    if (counter == 600) {
       ballSubsystem.shoot();
-    } else if (counter == 200){
+    }
+    if (counter == 700) {
       ballSubsystem.stopShooter();
-    } 
+    }
     counter++;
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    ballSubsystem.stopShooter();
+    ballSubsystem.closeIntake();
+  }
 
   // Returns true when the command should end.
   @Override

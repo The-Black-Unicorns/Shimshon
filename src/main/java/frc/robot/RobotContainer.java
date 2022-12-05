@@ -22,12 +22,14 @@ import frc.robot.commands.TrajectoryFollowingCommand;
 import frc.robot.commands.AutoCommands.Auto1BallLeft;
 import frc.robot.commands.AutoCommands.Auto2Ball;
 import frc.robot.commands.AutoCommands.Auto3Ball;
+import frc.robot.commands.AutoCommands.TestPath2;
 import frc.robot.commands.PitTest.TestCommand;
 import frc.robot.subsystems.AprilTagSubsystem;
 import frc.robot.subsystems.BallSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.GyroSubsystem;
+import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.Logger;
 import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
@@ -68,6 +70,8 @@ public class RobotContainer {
             "2 Ball Auto Red", 0.2);
     private final Auto3Ball auto3Ball = new Auto3Ball(ballSubsystem, drivetrainSubsystem, "3 Ball Auto Red",
             "3 Ball Auto Red", 0.3);
+    private final TestPath2 testPath2 = new TestPath2(ballSubsystem, drivetrainSubsystem, "TestPath2 Red",
+            "TestPath2 Red", 0.15);
 
     // private final Auto1BallHigh auto1BallHigh = new Auto1BallHigh(ballSubsystem,
     // drivetrainSubsystem, "1 Ball Auto High", "1 Ball Auto High", 0.2);
@@ -88,7 +92,7 @@ public class RobotContainer {
     private final TestCommand test = new TestCommand(drivetrainSubsystem, ballSubsystem, climberSubsystem,
             secondDriverController);
 
-
+    @Log
     SendableChooser<Command> autoChooser = new SendableChooser<>();
 
     /**
@@ -108,12 +112,13 @@ public class RobotContainer {
         phCompressor.close();
 
         // Autonomus Chooser
-        autoChooser.addOption("1 Ball Left", auto1BallLeft);
+        autoChooser.addOption("1 Ball", auto1BallLeft);
         autoChooser.addOption("2 Ball", auto2Ball);
         autoChooser.addOption("3 Ball", auto3Ball);
         autoChooser.addOption("No Auto", noAuto);
         autoChooser.addOption("Taxi", taxiAuto);
-
+        autoChooser.addOption("TestPath", testPath2);
+        
         SmartDashboard.putData(autoChooser);
 
         // Configure the button bindings
@@ -228,9 +233,9 @@ public class RobotContainer {
     public void setHoldAngleMode(boolean value) {
         drivetrainSubsystem.setHoldAngleMode(value);
     }
-    @Config (tabName = Constants.MAIN_DASHBOARD_TAB_NAME, name = "Extra stop", defaultValueBoolean = false)
+    @Config (tabName = Constants.MAIN_DASHBOARD_TAB_NAME, name = "Extra stop", defaultValueBoolean = true)
     public void setExtraBrake(boolean value) {
-        drivetrainSubsystem.setExtraBrake(value);
+        // setExtraBrake(value);;
     }
     @Log (tabName = Constants.MAIN_DASHBOARD_TAB_NAME, name = "Shooter RPM")
     public double getShooterRPM(){

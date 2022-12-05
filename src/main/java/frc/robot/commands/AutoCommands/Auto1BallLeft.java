@@ -20,9 +20,9 @@ public class Auto1BallLeft extends ParallelCommandGroup {
   public Auto1BallLeft(BallSubsystem ballSubsystem, DrivetrainSubsystem drivetrainSubsystem, String bluePathName, String redPathName, double speedMultiplier) {
     addCommands(new Auto1BallSystems(ballSubsystem));
     if (DriverStation.getAlliance() == Alliance.Blue){
-      addCommands(sequence(new WaitCommand(2), new TrajectoryFollowingCommand(drivetrainSubsystem, bluePathName, speedMultiplier)));
+      addCommands(sequence(new WaitCommand(4), new TrajectoryFollowingCommand(drivetrainSubsystem, bluePathName, speedMultiplier)));
     } else {
-      addCommands(sequence(new WaitCommand(2), new TrajectoryFollowingCommand(drivetrainSubsystem, redPathName, speedMultiplier)));
+      addCommands(sequence(new WaitCommand(4), new TrajectoryFollowingCommand(drivetrainSubsystem, redPathName, speedMultiplier)));
     }
     
     addRequirements(ballSubsystem, drivetrainSubsystem);

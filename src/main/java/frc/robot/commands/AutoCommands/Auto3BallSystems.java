@@ -27,9 +27,9 @@ public class Auto3BallSystems extends CommandBase {
   @Override
   public void execute() {
     
-    if (counter < 100){
+    if (counter < 200){
       ballSubsystem.shoot();
-    } else if (counter == 100){
+    } else if (counter == 200){
       ballSubsystem.stopShooter();
       ballSubsystem.openIntake();
     // } else if (counter == 280){
@@ -40,7 +40,7 @@ public class Auto3BallSystems extends CommandBase {
     //   ballSubsystem.startReversingIntake();
     // } else if (counter == 475){
     //   ballSubsystem.stopReversingIntake();
-    } else if (counter > 550){
+    } else if (counter > 650){
       ballSubsystem.shoot();
     }
     counter++;
