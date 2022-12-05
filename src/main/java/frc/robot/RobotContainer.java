@@ -218,7 +218,6 @@ public class RobotContainer {
     public void robotPeriodic() {
         Logger.updateEntries();
         GyroSubsystem.getInstance().updateGyroAngle();
-        AprilTagSubsystem.getInstance().periodic();
     }
 
     @Config(tabName = Constants.MAIN_DASHBOARD_TAB_NAME, name = "Alternate Drive", defaultValueBoolean = false)
