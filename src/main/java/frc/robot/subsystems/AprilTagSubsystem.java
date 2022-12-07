@@ -40,7 +40,8 @@ public class AprilTagSubsystem {
                 Transform3d transformToTarget = target.getBestCameraToTarget();
                 Pose3d robotPose3d = targetPose.plus(transformToTarget);
                 if (Math.abs(robotPose3d.getZ()) >= 0.2){
-                    poses.add(new Pose2d(robotPose3d.getX(), robotPose3d.getY(), robotPose3d.getRotation().toRotation2d()));
+                    poses.add(robotPose3d.toPose2d());
+                
                 }
             }
             return poses;

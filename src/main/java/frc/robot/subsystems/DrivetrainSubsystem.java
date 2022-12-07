@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems;
 
-import com.blackunicornsswerve.ModuleInfo;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
@@ -22,7 +21,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -74,9 +72,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
-    private SwerveDriveOdometry driveOdometry;
-
-    public Pose2d robotPose = new Pose2d();
 
     private boolean extraBrake = false;
     private boolean holdAngle = true;
@@ -123,7 +118,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         GyroSubsystem.getInstance().updateGyroAngle();
 
-        driveOdometry = new SwerveDriveOdometry(kinematics, GyroSubsystem.getInstance().getGyroscopeRotation());
 
         // SET PID
         double steerkP = 0.4;
@@ -159,17 +153,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     }
 
-    public void zeroPosition(Pose2d newPose) {
-        System.out.println("Zero!");
-
-        GyroSubsystem.getInstance().zeroGyro(newPose.getRotation());
-        holdAngleSetpoint = newPose.getRotation().getRadians();
-
-        driveOdometry.resetPosition(newPose, newPose.getRotation());
-    }
-    public void zeroPosition (){
-        zeroPosition(new Pose2d());
-    }
 
     public void matchEncoders() {
         resetEncoder = true;
@@ -246,39 +229,47 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     private void updateOdometry() {
+        // // Updating the odometry
+        // Pose2d tempPose = driveOdometry.update(GyroSubsystem.getInstance().getGyroscopeRotation(),
+        //         new SwerveModuleState(frontLeftModule.getDriveVelocity(),
+        //                 new Rotation2d(frontLeftModule.getSteerAngle())),
+        //         new SwerveModuleState(frontRightModule.getDriveVelocity(),
+        //                 new Rotation2d(frontRightModule.getSteerAngle())),
+        //         new SwerveModuleState(backLeftModule.getDriveVelocity(),
+        //                 new Rotation2d(backLeftModule.getSteerAngle())),
+        //         new SwerveModuleState(backRightModule.getDriveVelocity(),
+        //                 new Rotation2d(backRightModule.getSteerAngle())));
 
-        // Updating the odometry
-        Pose2d tempPose = driveOdometry.update(GyroSubsystem.getInstance().getGyroscopeRotation(),
-                new SwerveModuleState(frontLeftModule.getDriveVelocity(),
-                        new Rotation2d(frontLeftModule.getSteerAngle())),
-                new SwerveModuleState(frontRightModule.getDriveVelocity(),
-                        new Rotation2d(frontRightModule.getSteerAngle())),
-                new SwerveModuleState(backLeftModule.getDriveVelocity(),
-                        new Rotation2d(backLeftModule.getSteerAngle())),
-                new SwerveModuleState(backRightModule.getDriveVelocity(),
-                        new Rotation2d(backRightModule.getSteerAngle())));
+        // // Compensation for field carpet grain
+        // if (Constants.CARPET_COMPENSATION) {
+        //     double difference = tempPose.getX() - robotPose.getX();
+        //     if (difference > 0 && compensationDirection) {
+        //         difference = difference * (1 - (double) 100 / 105);
 
-        // Compensation for field carpet grain
-        if (Constants.CARPET_COMPENSATION) {
-            double difference = tempPose.getX() - robotPose.getX();
-            if (difference > 0 && compensationDirection) {
-                difference = difference * (1 - (double) 100 / 105);
+        //         Pose2d tempPose2 = tempPose
+        //                 .plus(new Transform2d(new Translation2d(-difference, 0),
+        //                         new Rotation2d()));
+        //         tempPose = tempPose2;
+        //     } else if (difference < 0 && !compensationDirection) {
+        //         difference = difference * (1 - (double) 100 / 105);
 
-                Pose2d tempPose2 = tempPose
-                        .plus(new Transform2d(new Translation2d(-difference, 0),
-                                new Rotation2d()));
-                tempPose = tempPose2;
-            } else if (difference < 0 && !compensationDirection) {
-                difference = difference * (1 - (double) 100 / 105);
-
-                Pose2d tempPose2 = tempPose
-                        .plus(new Transform2d(new Translation2d(difference, 0),
-                                new Rotation2d()));
-                tempPose = tempPose2;
-            }
-            driveOdometry.resetPosition(tempPose, GyroSubsystem.getInstance().getGyroscopeRotation());
-        }
-        robotPose = tempPose;
+        //         Pose2d tempPose2 = tempPose
+        //                 .plus(new Transform2d(new Translation2d(difference, 0),
+        //                         new Rotation2d()));
+        //         tempPose = tempPose2;
+        //     }
+        //     driveOdometry.resetPosition(tempPose, GyroSubsystem.getInstance().getGyroscopeRotation());
+        // }
+        // robotPose = tempPose;
+        SwerveModuleState[] states = {new SwerveModuleState(frontLeftModule.getDriveVelocity(),
+                                            new Rotation2d(frontLeftModule.getSteerAngle())),
+                                    new SwerveModuleState(frontRightModule.getDriveVelocity(),
+                                            new Rotation2d(frontRightModule.getSteerAngle())),
+                                    new SwerveModuleState(backLeftModule.getDriveVelocity(),
+                                            new Rotation2d(backLeftModule.getSteerAngle())),
+                                    new SwerveModuleState(backRightModule.getDriveVelocity(),
+                                            new Rotation2d(backRightModule.getSteerAngle()))};
+        PoseFinderSubsystem.getInstance().addOdometry(states);
     }
 
     public void onEnable() {

@@ -21,6 +21,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.PoseFinderSubsystem;
 
 public class TrajectoryFollowingCommand extends CommandBase {
 
@@ -66,7 +67,7 @@ public class TrajectoryFollowingCommand extends CommandBase {
     PathPlannerState headingGoal = (PathPlannerState) trajectory.getInitialState();
     Pose2d startingPose = new Pose2d(headingGoal.poseMeters.getX(), headingGoal.poseMeters.getY(), headingGoal.holonomicRotation);
     
-    driveTrain.zeroPosition(startingPose);
+    PoseFinderSubsystem.getInstance().setPose(startingPose);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -76,7 +77,7 @@ public class TrajectoryFollowingCommand extends CommandBase {
       Trajectory.State goal = trajectory.sample(counter * 0.02);
       PathPlannerState headingGoal = (PathPlannerState) trajectory.sample(counter * 0.02);
 
-      ChassisSpeeds movement = controller.calculate(driveTrain.robotPose, goal, Rotation2d.fromDegrees(headingGoal.holonomicRotation.getDegrees()));
+      ChassisSpeeds movement = controller.calculate(PoseFinderSubsystem.getInstance().getPose(), goal, Rotation2d.fromDegrees(headingGoal.holonomicRotation.getDegrees()));
       //System.out.println(movement);
       driveTrain.drive(movement);
 

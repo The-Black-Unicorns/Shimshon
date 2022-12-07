@@ -29,6 +29,7 @@ import frc.robot.subsystems.BallSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.GyroSubsystem;
+import frc.robot.subsystems.PoseFinderSubsystem;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.Logger;
 import io.github.oblarg.oblog.annotations.Config;
@@ -138,10 +139,10 @@ public class RobotContainer {
         // Back button zeros the gyroscope
         new JoystickButton(controller, 3)
                 // No requirements because we don't need to interrupt anything
-                .whenPressed(() -> drivetrainSubsystem.zeroPosition());
+                .whenPressed(() -> GyroSubsystem.getInstance().zeroGyro());
 
         new JoystickButton(alternateDriveController, PS4Controller.Button.kCross.value)
-                .whenPressed(() -> drivetrainSubsystem.zeroPosition());
+                .whenPressed(() -> GyroSubsystem.getInstance().zeroGyro());
 
         new JoystickButton(controller, 4)
                 .whenPressed(() -> drivetrainSubsystem.matchEncoders());
