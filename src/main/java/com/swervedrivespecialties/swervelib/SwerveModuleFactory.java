@@ -1,6 +1,5 @@
 package com.swervedrivespecialties.swervelib;
 
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 
 public class SwerveModuleFactory<DriveConfiguration, SteerConfiguration> {
@@ -87,7 +86,7 @@ public class SwerveModuleFactory<DriveConfiguration, SteerConfiguration> {
                 steerAngle += 2.0 * Math.PI;
             }
 
-            double speedMultiplier = Math.cos(steerAngle - steerController.getStateAngle());
+            // double speedMultiplier = Math.cos(steerAngle - steerController.getStateAngle());
 
             driveController.setReferenceVoltage(driveVoltage);
             steerController.setReferenceAngle(steerAngle, matchEncoder);

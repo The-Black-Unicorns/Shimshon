@@ -13,13 +13,10 @@ import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -73,7 +70,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
 
-    private boolean extraBrake = false;
     private boolean holdAngle = true;
 
     public double holdAngleSetpoint = Math.toRadians(0);
@@ -280,10 +276,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     public void onDisable() {
         enabled = false;
-    }
-
-    public void setExtraBrake(boolean value) {
-        extraBrake = value;
     }
 
     public void setHoldAngleMode (boolean value){

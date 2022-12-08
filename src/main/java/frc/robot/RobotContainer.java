@@ -24,13 +24,11 @@ import frc.robot.commands.AutoCommands.Auto2Ball;
 import frc.robot.commands.AutoCommands.Auto3Ball;
 import frc.robot.commands.AutoCommands.TestPath2;
 import frc.robot.commands.PitTest.TestCommand;
-import frc.robot.subsystems.AprilTagSubsystem;
 import frc.robot.subsystems.BallSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.GyroSubsystem;
-import frc.robot.subsystems.PoseFinderSubsystem;
-import io.github.oblarg.oblog.Loggable;
+
 import io.github.oblarg.oblog.Logger;
 import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
@@ -221,14 +219,7 @@ public class RobotContainer {
         GyroSubsystem.getInstance().updateGyroAngle();
     }
 
-    @Config(tabName = Constants.MAIN_DASHBOARD_TAB_NAME, name = "Alternate Drive", defaultValueBoolean = false)
-    public void setAlternateDrive(boolean value) {
-        driveCommand.setAlternateDrive(value);
-    }
-    @Config(tabName = Constants.MAIN_DASHBOARD_TAB_NAME, name = "Field Oriented", defaultValueBoolean = true)
-    public void setFieldOriented(boolean value) {
-        driveCommand.setFieldOriented(value);
-    }
+
     @Config(tabName = Constants.MAIN_DASHBOARD_TAB_NAME, name = "Hold Angle", defaultValueBoolean = true)
     public void setHoldAngleMode(boolean value) {
         drivetrainSubsystem.setHoldAngleMode(value);

@@ -15,8 +15,6 @@ public class DefaultDriveCommand extends CommandBase {
     private final Joystick input;
     private final PS4Controller alternateDriveController;
 
-    private boolean isFieldOriented;
-    private boolean isAlternateDriveControl;
 
     //Max acceleration m/s^2
     SlewRateLimiter Xfilter = new SlewRateLimiter(5);
@@ -33,17 +31,6 @@ public class DefaultDriveCommand extends CommandBase {
         changePID();
     }
 
-    // @Config (tabName = Constants.MAIN_DASHBOARD_TAB_NAME, name = "Field
-    // Oriented", defaultValueBoolean = true)
-    public void setFieldOriented(boolean value) {
-        isFieldOriented = value;
-    }
-
-    // @Config (tabName = Constants.MAIN_DASHBOARD_TAB_NAME, name = "Alternate
-    // Drive", defaultValueBoolean = false)
-    public void setAlternateDrive(boolean value) {
-        isAlternateDriveControl = value;
-    }
 
     @Override
     public void execute() {

@@ -46,9 +46,6 @@ public class ClimberSubsystem extends SubsystemBase {
     private boolean isResetingOutsideArm = false;
     private boolean isResetingInsideArm = false;
 
-    private int frameSinceOutsideOpen = 500;
-    private int frameSinceOutsideClose = 500;
-    private int frameSinceInsideOpen = 500;
     private int frameSinceInsideClose = 500;
     private int framesSinceAutoOpen = 500;
 
@@ -92,13 +89,11 @@ public class ClimberSubsystem extends SubsystemBase {
     public void setOutsideSolenoid(boolean open) {
         if (open) {
             outsideSolenoid.set(Value.kForward);
-            frameSinceOutsideOpen = 0;
-            frameSinceOutsideClose = Integer.MIN_VALUE;
+
             outsideMaxHeight = outsideWinchMaxHeight;
         } else {
             outsideSolenoid.set(Value.kReverse);
-            frameSinceOutsideClose = 0;
-            frameSinceOutsideOpen = Integer.MIN_VALUE;
+
             outsideMaxHeight = outsideWinchMaxHeightClosed;
 
         }
@@ -108,13 +103,11 @@ public class ClimberSubsystem extends SubsystemBase {
     public void setInsideSolenoid(boolean open) {
         if (open) {
             insideSolenoid.set(Value.kForward);
-            frameSinceInsideOpen = 0;
             frameSinceInsideClose = Integer.MIN_VALUE;
             insideMaxHeight = insideWinchMaxHeight;
         } else {
             insideSolenoid.set(Value.kReverse);
             frameSinceInsideClose = 0;
-            frameSinceInsideOpen = Integer.MIN_VALUE;
             insideMaxHeight = insideWinchMaxHeightClosed;
         }
     }
@@ -122,13 +115,10 @@ public class ClimberSubsystem extends SubsystemBase {
     public void toggleOutsideSolenoid() {
         if (outsideSolenoid.get() == Value.kReverse) {
             outsideSolenoid.set(Value.kForward);
-            frameSinceOutsideOpen = 0;
-            frameSinceOutsideClose = Integer.MIN_VALUE;
+
             outsideMaxHeight = outsideWinchMaxHeight;
         } else {
             outsideSolenoid.set(Value.kReverse);
-            frameSinceOutsideClose = 0;
-            frameSinceOutsideOpen = Integer.MIN_VALUE;
             outsideMaxHeight = outsideWinchMaxHeightClosed;
         }
     }
@@ -136,13 +126,11 @@ public class ClimberSubsystem extends SubsystemBase {
     public void toggleInsideSolenoid() {
         if (insideSolenoid.get() == Value.kReverse) {
             insideSolenoid.set(Value.kForward);
-            frameSinceInsideOpen = 0;
             frameSinceInsideClose = Integer.MIN_VALUE;
             insideMaxHeight = insideWinchMaxHeight;
         } else {
             insideSolenoid.set(Value.kReverse);
             frameSinceInsideClose = 0;
-            frameSinceInsideOpen = Integer.MIN_VALUE;
             insideMaxHeight = insideWinchMaxHeightClosed;
         }
     }
@@ -255,21 +243,7 @@ public class ClimberSubsystem extends SubsystemBase {
             stopResetInsideArm(true);
         }
 
-        // if (frameSinceOutsideOpen == 15) {
-        // outsideSolenoid.set(Value.kReverse);
-        // } else if (frameSinceOutsideOpen == 19) {
-        // outsideSolenoid.set(Value.kForward);
-        // }
-        // if (frameSinceOutsideClose == 9) {
-        // outsideSolenoid.set(Value.kForward);
-        // } else if (frameSinceOutsideClose == 19) {
-        // outsideSolenoid.set(Value.kReverse);
-        // }
-        // if (frameSinceInsideOpen == 7) {
-        // insideSolenoid.set(Value.kReverse);
-        // } else if (frameSinceInsideOpen == 13) {
-        // insideSolenoid.set(Value.kForward);
-        // }
+
         if (frameSinceInsideClose == 12) {
             insideSolenoid.set(Value.kForward);
         } else if (frameSinceInsideClose == 18) {
@@ -280,9 +254,6 @@ public class ClimberSubsystem extends SubsystemBase {
                 String.format("%2.3f", outsideEncoder.getPosition() * sensorToMeterCoefficientOutside));
         SmartDashboard.putString("Inside Arms Extension", String.format("%2.3f", insideEncoder.getPosition() * sensorToMeterCoefficientInside));
         SmartDashboard.putBoolean("Limits", !useLimits);
-        frameSinceOutsideOpen++;
-        frameSinceOutsideClose++;
-        frameSinceInsideOpen++;
         frameSinceInsideClose++;
         framesSinceAutoOpen++;
     }
