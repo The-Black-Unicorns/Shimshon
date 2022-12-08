@@ -29,9 +29,11 @@ public class AprilTagSubsystem {
     }
     
     PhotonCamera camera = new PhotonCamera("camera");
+    private double latency;
 
     public ArrayList<Pose2d> getVisionPoses(){
         PhotonPipelineResult results = camera.getLatestResult();
+        latency = results.getLatencyMillis();
         if (results.hasTargets()){
             List<PhotonTrackedTarget> targets = results.getTargets();
             ArrayList<Pose2d> poses = new ArrayList<Pose2d>(targets.size());
@@ -48,6 +50,10 @@ public class AprilTagSubsystem {
         } else{
             return null;
         }
+    }
+
+    public double getLatencyMillis(){
+        return latency;
     }
 
     public void takePicture(){

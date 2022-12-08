@@ -5,13 +5,16 @@
 package frc.robot.subsystems;
 
 
+import java.util.ArrayList;
+
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Timer;
 
 /** Add your docs here. */
 public class PoseFinderSubsystem {
@@ -26,8 +29,8 @@ public class PoseFinderSubsystem {
         return instance;
     }
 
-    SwerveDrivePoseEstimator poseEstimator;
-    Pose2d robotPose;
+    private SwerveDrivePoseEstimator poseEstimator;
+    private Pose2d robotPose;
     
 
     public void initialize (SwerveDriveKinematics kinematics){
@@ -36,21 +39,26 @@ public class PoseFinderSubsystem {
         VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
         VecBuilder.fill(Units.degreesToRadians(0.01)),
         VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
-
     }
 
     public Pose2d addOdometry(SwerveModuleState[] states){
-
-
+        poseEstimator.update(GyroSubsystem.getInstance().getGyroscopeRotation(), states);
         return robotPose;
     }
 
-    public void setPosition(Transform2d location){
+    public void addVisionData(ArrayList<Pose2d> poses){
+        for (Pose2d pose : poses){
+            poseEstimator.addVisionMeasurement(pose, Timer.getFPGATimestamp() - AprilTagSubsystem.getInstance().getLatencyMillis() / 1000);
+        }
+    }
 
+    public void setPosition(Translation2d location){
+        poseEstimator.resetPosition(new Pose2d(location, GyroSubsystem.getInstance().getGyroscopeRotation()), GyroSubsystem.getInstance().getGyroscopeRotation());
     }
 
     public void setPose(Pose2d pose){
-        
+        GyroSubsystem.getInstance().zeroGyro(pose.getRotation());
+        poseEstimator.resetPosition(pose, pose.getRotation());
     }
 
     public Pose2d getPose(){
