@@ -24,11 +24,12 @@ import frc.robot.commands.AutoCommands.Auto2Ball;
 import frc.robot.commands.AutoCommands.Auto3Ball;
 import frc.robot.commands.AutoCommands.TestPath2;
 import frc.robot.commands.PitTest.TestCommand;
+import frc.robot.subsystems.AprilTagSubsystem;
 import frc.robot.subsystems.BallSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.GyroSubsystem;
-
+import frc.robot.subsystems.PoseFinderSubsystem;
 import io.github.oblarg.oblog.Logger;
 import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
@@ -139,8 +140,8 @@ public class RobotContainer {
                 // No requirements because we don't need to interrupt anything
                 .whenPressed(() -> GyroSubsystem.getInstance().zeroGyro());
 
-        new JoystickButton(alternateDriveController, PS4Controller.Button.kCross.value)
-                .whenPressed(() -> GyroSubsystem.getInstance().zeroGyro());
+        // new JoystickButton(alternateDriveController, PS4Controller.Button.kCross.value)
+        //         .whenPressed(() -> GyroSubsystem.getInstance().zeroGyro());
 
         new JoystickButton(controller, 4)
                 .whenPressed(() -> drivetrainSubsystem.matchEncoders());
@@ -217,6 +218,7 @@ public class RobotContainer {
     public void robotPeriodic() {
         Logger.updateEntries();
         GyroSubsystem.getInstance().updateGyroAngle();
+        PoseFinderSubsystem.getInstance().addVisionData();
     }
 
 

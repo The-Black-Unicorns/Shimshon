@@ -28,12 +28,13 @@ public class AprilTagSubsystem {
         return aprilTagSubsystemInstance;
     }
     
-    PhotonCamera camera = new PhotonCamera("camera");
+    PhotonCamera camera = new PhotonCamera("gloworm");
     private double latency;
 
     public ArrayList<Pose2d> getVisionPoses(){
         PhotonPipelineResult results = camera.getLatestResult();
         latency = results.getLatencyMillis();
+        System.out.println(results.hasTargets());
         if (results.hasTargets()){
             List<PhotonTrackedTarget> targets = results.getTargets();
             ArrayList<Pose2d> poses = new ArrayList<Pose2d>(targets.size());
@@ -45,6 +46,9 @@ public class AprilTagSubsystem {
                     poses.add(robotPose3d.toPose2d());
                 
                 }
+            }
+            if (poses.isEmpty()){
+                return null;
             }
             return poses;
         } else{

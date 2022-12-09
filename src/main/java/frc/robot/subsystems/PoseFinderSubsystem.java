@@ -42,13 +42,16 @@ public class PoseFinderSubsystem {
     }
 
     public Pose2d addOdometry(SwerveModuleState[] states){
-        poseEstimator.update(GyroSubsystem.getInstance().getGyroscopeRotation(), states);
+        // poseEstimator.update(GyroSubsystem.getInstance().getGyroscopeRotation(), states[0], states[1], states[2], states[3]);
         return robotPose;
     }
 
-    public void addVisionData(ArrayList<Pose2d> poses){
-        for (Pose2d pose : poses){
-            poseEstimator.addVisionMeasurement(pose, Timer.getFPGATimestamp() - AprilTagSubsystem.getInstance().getLatencyMillis() / 1000);
+    public void addVisionData(){
+        ArrayList<Pose2d> poses = AprilTagSubsystem.getInstance().getVisionPoses();
+        if (poses != null){
+            for (Pose2d pose : poses){
+                // poseEstimator.addVisionMeasurement(pose, Timer.getFPGATimestamp() - AprilTagSubsystem.getInstance().getLatencyMillis() / 1000);
+            }
         }
     }
 
