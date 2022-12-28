@@ -4,10 +4,8 @@
 
 package frc.robot.subsystems;
 
+import com.FalconUtil;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.SwerveModule;
@@ -112,18 +110,18 @@ public class DrivetrainSubsystem extends SubsystemBase {;
         double steerkI = 0;
         double steerkD = 0.3;
         double steerKf = 0;
-        updateFalconPID(12, steerkP, steerkI, steerkD, steerKf, NeutralMode.Brake, 0);
-        updateFalconPID(22, steerkP, steerkI, steerkD, steerKf, NeutralMode.Brake, 0);
-        updateFalconPID(32, steerkP, steerkI, steerkD, steerKf, NeutralMode.Brake, 0);
-        updateFalconPID(42, steerkP, steerkI, steerkD, steerKf, NeutralMode.Brake, 0);
+        FalconUtil.updatePID(12, steerkP, steerkI, steerkD, steerKf, NeutralMode.Brake, 0);
+        FalconUtil.updatePID(22, steerkP, steerkI, steerkD, steerKf, NeutralMode.Brake, 0);
+        FalconUtil.updatePID(32, steerkP, steerkI, steerkD, steerKf, NeutralMode.Brake, 0);
+        FalconUtil.updatePID(42, steerkP, steerkI, steerkD, steerKf, NeutralMode.Brake, 0);
         double drivekP = 0.15;
         double drivekI = 0;
         double drivekD = 0.05;
         double drivekF = 0.05;
-        updateFalconPID(11, drivekP, drivekI, drivekD, drivekF, NeutralMode.Brake, 40);
-        updateFalconPID(21, drivekP, drivekI, drivekD, drivekF, NeutralMode.Brake, 40);
-        updateFalconPID(31, drivekP, drivekI, drivekD, drivekF, NeutralMode.Brake, 40);
-        updateFalconPID(41, drivekP, drivekI, drivekD, drivekF, NeutralMode.Brake, 40);
+        FalconUtil.updatePID(11, drivekP, drivekI, drivekD, drivekF, NeutralMode.Brake, 40);
+        FalconUtil.updatePID(21, drivekP, drivekI, drivekD, drivekF, NeutralMode.Brake, 40);
+        FalconUtil.updatePID(31, drivekP, drivekI, drivekD, drivekF, NeutralMode.Brake, 40);
+        FalconUtil.updatePID(41, drivekP, drivekI, drivekD, drivekF, NeutralMode.Brake, 40);
 
 
 
@@ -230,22 +228,4 @@ public class DrivetrainSubsystem extends SubsystemBase {;
     public void onDisable() {
     }
     
-    public static void updateFalconPID(int talonCanID, double kP, double kI, double kD, double kF,
-            NeutralMode neutralMode, double maxCurrent) {
-        TalonFXConfiguration talonConfiguration = new TalonFXConfiguration();
-        talonConfiguration.slot0.kP = kP;
-        talonConfiguration.slot0.kI = kI;
-        talonConfiguration.slot0.kD = kD;
-        talonConfiguration.slot0.kF = kF;
-        
-        // System.out.println("kP = " + kP + ", kD = " + kD);
-        // Shuffleboard.getTab("Drivetrain").add("D",kD);
-        TalonFX talon = new TalonFX(talonCanID);
-        talon.configAllSettings(talonConfiguration);
-        talon.setNeutralMode(neutralMode);
-        talon.setStatusFramePeriod(1, 20);
-        if (maxCurrent != 0){
-            talon.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(false, maxCurrent, maxCurrent, 0.1));
-        }
-    }
 }
