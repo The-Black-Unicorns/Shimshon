@@ -29,7 +29,7 @@ import frc.robot.Constants;
 
 import static frc.robot.Constants.*;
 
-public class DrivetrainSubsystem extends SubsystemBase {
+public class DrivetrainSubsystem extends SubsystemBase {;
     /**
      * The maximum voltage that will be delivered to the drive motors.
      * <p>
@@ -66,27 +66,19 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final SwerveModule frontRightModule;
     private final SwerveModule backLeftModule;
     private final SwerveModule backRightModule;
-
+    //Speed to drive
     private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
-
-    private boolean holdAngle = true;
-
+    //PID loop to keep the angle
     public double holdAngleSetpoint = Math.toRadians(0);
     int fromRotationCounter = 0;
     boolean resetEncoder = false;
     private PIDController holdRobotAngleController = new PIDController(Constants.ROBOT_HOLD_ANGLE_KP, 0, 0);
-
-    private boolean enabled = false;
-
-    public int framesSinceEnable = 0;
-
     
     private boolean compensationDirection;
 
     public DrivetrainSubsystem() {
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
-
         frontLeftModule = Mk4SwerveModuleHelper.createFalcon500(
                 tab.getLayout("Front Left Module", BuiltInLayouts.kList).withSize(2, 4).withPosition(0,
                         0),
@@ -184,12 +176,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         // System.out.println(extraBrake);
         SwerveModuleState[] states = kinematics.toSwerveModuleStates(m_chassisSpeeds, new Translation2d(0, 0));
         driveWithModuleStates(states);
-
-        if (framesSinceEnable < 750)
-            updateOdometry();
-        if (enabled)
-            framesSinceEnable++;
-
+        updateOdometry();
         // System.out.println("Pose is: " + robotPose.getX() + ", " + robotPose.getY()
         // +", " + robotPose.getRotation().getDegrees() + ", " +
         // getGyroscopeRotation().getDegrees());
@@ -225,38 +212,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     private void updateOdometry() {
-        // // Updating the odometry
-        // Pose2d tempPose = driveOdometry.update(GyroSubsystem.getInstance().getGyroscopeRotation(),
-        //         new SwerveModuleState(frontLeftModule.getDriveVelocity(),
-        //                 new Rotation2d(frontLeftModule.getSteerAngle())),
-        //         new SwerveModuleState(frontRightModule.getDriveVelocity(),
-        //                 new Rotation2d(frontRightModule.getSteerAngle())),
-        //         new SwerveModuleState(backLeftModule.getDriveVelocity(),
-        //                 new Rotation2d(backLeftModule.getSteerAngle())),
-        //         new SwerveModuleState(backRightModule.getDriveVelocity(),
-        //                 new Rotation2d(backRightModule.getSteerAngle())));
-
-        // // Compensation for field carpet grain
-        // if (Constants.CARPET_COMPENSATION) {
-        //     double difference = tempPose.getX() - robotPose.getX();
-        //     if (difference > 0 && compensationDirection) {
-        //         difference = difference * (1 - (double) 100 / 105);
-
-        //         Pose2d tempPose2 = tempPose
-        //                 .plus(new Transform2d(new Translation2d(-difference, 0),
-        //                         new Rotation2d()));
-        //         tempPose = tempPose2;
-        //     } else if (difference < 0 && !compensationDirection) {
-        //         difference = difference * (1 - (double) 100 / 105);
-
-        //         Pose2d tempPose2 = tempPose
-        //                 .plus(new Transform2d(new Translation2d(difference, 0),
-        //                         new Rotation2d()));
-        //         tempPose = tempPose2;
-        //     }
-        //     driveOdometry.resetPosition(tempPose, GyroSubsystem.getInstance().getGyroscopeRotation());
-        // }
-        // robotPose = tempPose;
         SwerveModuleState[] states = {new SwerveModuleState(frontLeftModule.getDriveVelocity(),
                                             new Rotation2d(frontLeftModule.getSteerAngle())),
                                     new SwerveModuleState(frontRightModule.getDriveVelocity(),
@@ -270,21 +225,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     public void onEnable() {
         resetHoldAngle();
-        enabled = true;
-        framesSinceEnable = 0;
     }
 
     public void onDisable() {
-        enabled = false;
     }
-
-    public void setHoldAngleMode (boolean value){
-        if (!holdAngle && value){
-            resetHoldAngle();
-        }
-        holdAngle = value;
-    }
-
+    
     public static void updateFalconPID(int talonCanID, double kP, double kI, double kD, double kF,
             NeutralMode neutralMode, double maxCurrent) {
         TalonFXConfiguration talonConfiguration = new TalonFXConfiguration();
