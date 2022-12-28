@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.BallTeleopCommand;
 import frc.robot.commands.ClimberTeleopCommand;
-import frc.robot.commands.DefaultDriveCommand;
+import frc.robot.commands.TeleopDriveCommand;
 import frc.robot.commands.TrajectoryFollowingCommand;
 import frc.robot.commands.AutoCommands.Auto1BallLeft;
 import frc.robot.commands.AutoCommands.Auto2Ball;
@@ -54,8 +54,7 @@ public class RobotContainer {
     private final PS4Controller alternateDriveController = new PS4Controller(2);
 
     // Commands
-    private final DefaultDriveCommand driveCommand = new DefaultDriveCommand(drivetrainSubsystem, controller,
-            alternateDriveController);
+    private final TeleopDriveCommand driveCommand = new TeleopDriveCommand(drivetrainSubsystem, controller);
     private final BallTeleopCommand ballTeleopCommand = new BallTeleopCommand(ballSubsystem, secondDriverController,
             controller);
     private final ClimberTeleopCommand climberCommand = new ClimberTeleopCommand(climberSubsystem, controller,
