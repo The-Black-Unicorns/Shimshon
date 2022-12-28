@@ -7,14 +7,21 @@ package frc.robot.subsystems;
 
 import java.util.ArrayList;
 
+import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
+
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.Constants;
 
 /** Add your docs here. */
 public class PoseFinderSubsystem {
@@ -31,7 +38,8 @@ public class PoseFinderSubsystem {
 
     private SwerveDrivePoseEstimator poseEstimator;
     private Pose2d robotPose;
-    
+    PhotonCamera camera = new PhotonCamera("gloworm");
+    private double latency;
 
     public void initialize (SwerveDriveKinematics kinematics){
         poseEstimator = new SwerveDrivePoseEstimator(GyroSubsystem.getInstance().getGyroscopeRotation(), new Pose2d(),
@@ -47,13 +55,19 @@ public class PoseFinderSubsystem {
     }
 
     public void addVisionData(){
-        ArrayList<Pose2d> poses = AprilTagSubsystem.getInstance().getVisionPoses();
-        if (poses != null){
-            for (Pose2d pose : poses){
-                // poseEstimator.addVisionMeasurement(pose, Timer.getFPGATimestamp() - AprilTagSubsystem.getInstance().getLatencyMillis() / 1000);
-            }
+        PhotonPipelineResult results = camera.getLatestResult();
+        latency = results.getLatencyMillis();
+        System.out.println(results.hasTargets());
+        if (results.hasTargets()){
+            PhotonTrackedTarget target = results.getBestTarget();
+            Pose3d targetPose = Constants.TAGS_POSES[target.getFiducialId()];
+            Transform3d transformToTarget = target.getBestCameraToTarget();
+            Pose3d robotPose3d = targetPose.plus(transformToTarget);
+            System.out.println(robotPose3d);
+            poseEstimator.addVisionMeasurement(robotPose3d.toPose2d(), Timer.getFPGATimestamp() - AprilTagSubsystem.getInstance().getLatencyMillis() / 1000);
         }
     }
+
 
     public void setPosition(Translation2d location){
         poseEstimator.resetPosition(new Pose2d(location, GyroSubsystem.getInstance().getGyroscopeRotation()), GyroSubsystem.getInstance().getGyroscopeRotation());
@@ -66,6 +80,14 @@ public class PoseFinderSubsystem {
 
     public Pose2d getPose(){
         return robotPose;
+    }
+
+    public double getLatencyMillis(){
+        return latency;
+    }
+
+    public void takePicture(){
+        camera.takeOutputSnapshot();
     }
 
 }
