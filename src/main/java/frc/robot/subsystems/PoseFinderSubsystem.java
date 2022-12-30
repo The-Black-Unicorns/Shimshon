@@ -15,6 +15,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
@@ -60,8 +61,8 @@ public class PoseFinderSubsystem {
             PhotonTrackedTarget target = results.getBestTarget();
             Pose3d targetPose = Constants.TAGS_POSES[target.getFiducialId()];
             Transform3d transformToTarget = target.getBestCameraToTarget();
-            Pose3d robotPose3d = targetPose.plus(transformToTarget);
-            System.out.println(robotPose3d);
+            Pose3d robotPose3d = targetPose.transformBy(transformToTarget.inverse());
+            // System.out.println(robotPose3d.toPose2d());
             poseEstimator.addVisionMeasurement(robotPose3d.toPose2d(), Timer.getFPGATimestamp() - latency / 1000);
         }
     }
@@ -77,7 +78,7 @@ public class PoseFinderSubsystem {
     }
 
     public Pose2d getPose(){
-        return robotPose;
+        return poseEstimator.getEstimatedPosition();
     }
 
     public double getLatencyMillis(){

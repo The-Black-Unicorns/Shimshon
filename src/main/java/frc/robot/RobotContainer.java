@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
@@ -135,7 +137,7 @@ public class RobotContainer {
         // Back button zeros the gyroscope
         new JoystickButton(controller, 3)
                 // No requirements because we don't need to interrupt anything
-                .whenPressed(() -> GyroSubsystem.getInstance().zeroGyro());
+                .whenPressed(() -> PoseFinderSubsystem.getInstance().setPose(new Pose2d()));
 
         // new JoystickButton(alternateDriveController, PS4Controller.Button.kCross.value)
         //         .whenPressed(() -> GyroSubsystem.getInstance().zeroGyro());

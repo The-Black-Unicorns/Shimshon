@@ -136,7 +136,7 @@ public class DrivetrainSubsystem extends SubsystemBase {;
             compensationDirection = false;
         }
         compensationDirection = compensationDirection ^ Constants.INVERT_COMPENSATION;
-
+        PoseFinderSubsystem.getInstance().initialize(kinematics);
     }
 
 
@@ -175,9 +175,7 @@ public class DrivetrainSubsystem extends SubsystemBase {;
         SwerveModuleState[] states = kinematics.toSwerveModuleStates(m_chassisSpeeds, new Translation2d(0, 0));
         driveWithModuleStates(states);
         updateOdometry();
-        // System.out.println("Pose is: " + robotPose.getX() + ", " + robotPose.getY()
-        // +", " + robotPose.getRotation().getDegrees() + ", " +
-        // getGyroscopeRotation().getDegrees());
+        System.out.println(PoseFinderSubsystem.getInstance().getPose());
         resetEncoder = false;   
     }
 
