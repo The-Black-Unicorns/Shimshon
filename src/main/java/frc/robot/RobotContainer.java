@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.AlternateDriveCommand;
 import frc.robot.commands.BallTeleopCommand;
 import frc.robot.commands.ClimberTeleopCommand;
 import frc.robot.commands.TeleopDriveCommand;
@@ -61,6 +62,7 @@ public class RobotContainer {
             controller);
     private final ClimberTeleopCommand climberCommand = new ClimberTeleopCommand(climberSubsystem, controller,
             secondDriverController);
+    private final AlternateDriveCommand alternateDriveCommand = new AlternateDriveCommand(drivetrainSubsystem, alternateDriveController);
 
     // Autonomus Commands
     private final Auto1BallLeft auto1BallLeft = new Auto1BallLeft(ballSubsystem, drivetrainSubsystem,
@@ -100,7 +102,7 @@ public class RobotContainer {
     public RobotContainer() {
         Logger.configureLoggingAndConfig(this, false);
 
-        drivetrainSubsystem.setDefaultCommand(driveCommand);
+        drivetrainSubsystem.setDefaultCommand(alternateDriveCommand);
         ballSubsystem.setDefaultCommand(ballTeleopCommand);
         climberSubsystem.setDefaultCommand(climberCommand);
 
@@ -139,8 +141,8 @@ public class RobotContainer {
                 // No requirements because we don't need to interrupt anything
                 .whenPressed(() -> PoseFinderSubsystem.getInstance().setPose(new Pose2d()));
 
-        // new JoystickButton(alternateDriveController, PS4Controller.Button.kCross.value)
-        //         .whenPressed(() -> GyroSubsystem.getInstance().zeroGyro());
+        new JoystickButton(alternateDriveController, PS4Controller.Button.kCross.value)
+                .whenPressed(() -> PoseFinderSubsystem.getInstance().setPose(new Pose2d()));
 
         new JoystickButton(controller, 4)
                 .whenPressed(() -> drivetrainSubsystem.matchEncoders());

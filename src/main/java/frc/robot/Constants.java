@@ -62,7 +62,7 @@ public final class Constants {
     //Wheels at 45 degrees while stationary
     public static final boolean EXTRA_BRAKE = false;
     //Use PS4 controller on port 2 instead of QX7 on port 0
-    public static final boolean ALTERNATE_DRIVE = false;
+    public static final boolean ALTERNATE_DRIVE = true;
     //Use PID to keep the robot straight while not rotating (Works great, cancel only with premission from Ido or Yonatan)
     public static final boolean HOLD_ANGLE = true;
 

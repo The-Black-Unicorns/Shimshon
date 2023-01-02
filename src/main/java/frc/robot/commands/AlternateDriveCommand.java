@@ -35,11 +35,11 @@ public class AlternateDriveCommand extends CommandBase {
         double yInput = deadband(alternateDriveController.getRightY(), 0.1);
         double angle = Math.atan2(yInput, xInput);
         double speed = speedLimiter.calculate(Math.pow(((alternateDriveController.getR2Axis() + 1) / 2)
-                * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND, 1));
+                * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND, 1) * 0.3);
         if (xInput == 0 && yInput == 0) {
             speed = 0;
         }
-        double rotation = deadband(-alternateDriveController.getLeftX(), 0.1)
+        double rotation = deadband(-alternateDriveController.getLeftX(), 0.1) * 0.3
                 * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND;
         double xSpeed = Xfilter.calculate(-Math.cos(angle) * speed);
         double ySpeed = Yfilter.calculate(-Math.sin(angle) * speed);
